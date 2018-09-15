@@ -15,23 +15,22 @@ namespace ui
     public class Startup
     {
         private readonly IMqttServer _mqttServer;
-        private readonly ILogger<Startup> _logger; 
-        
-        public IConfiguration Configuration { get; }
+        private readonly ILogger<Startup> _logger;
+
+        private readonly IConfiguration _configuration;
         
         public Startup(IConfiguration configuration, IMqttServer mqttServer, ILoggerFactory loggerFactory)
         {
-            Configuration = configuration;
+            _configuration = configuration;
             _mqttServer = mqttServer;
             _logger = loggerFactory.CreateLogger<Startup>();
-            
         }
 
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            _logger.LogInformation("ConfigureServices()");
+            _logger.LogInformation("ConfigureServices");
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             
@@ -42,13 +41,13 @@ namespace ui
                 configuration.RootPath = "ClientApp/build";
             });
 
-            services.AddEventBus(Configuration);
+            services.AddEventBus(_configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            _logger.LogInformation("Configure()");
+            _logger.LogInformation("Configure");
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
