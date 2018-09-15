@@ -1,3 +1,5 @@
+using System;
+using System.Net.Mqtt;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -5,14 +7,21 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace ui
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        private readonly IMqttServer mqttServer;
+        private readonly ILogger<Startup> logger; 
+        
+        public Startup(IConfiguration configuration, IMqttServer mqttServer, ILoggerFactory loggerFactory)
         {
             Configuration = configuration;
+            this.mqttServer = mqttServer;
+            logger = loggerFactory.CreateLogger<Startup>();
+            
         }
 
         public IConfiguration Configuration { get; }
@@ -21,7 +30,8 @@ namespace ui
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-
+            
+            
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
             {
@@ -62,6 +72,23 @@ namespace ui
                     spa.UseReactDevelopmentServer(npmScript: "start");
                 }
             });
+            
+            var applicationLifetime = app.ApplicationServices.GetRequiredService<IApplicationLifetime>();
+            applicationLifetime.ApplicationStopping.Register(OnShutdown);
+            applicationLifetime.ApplicationStarted.Register(OnStartup);
+        }
+        
+
+        private void OnShutdown()
+        {
+            mqttServer.Stop();
+            logger.Log(LogLevel.Information, "MQTT-Broker stopped");
+        }
+
+        private void OnStartup()
+        {
+            mqttServer.Start();
+            logger.Log(LogLevel.Information, "MQTT-Broker started");
         }
     }
 }
