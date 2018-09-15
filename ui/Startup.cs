@@ -1,28 +1,25 @@
-using System;
 using System.Net.Mqtt;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+
 using ui.Common;
 
 namespace ui
 {
     public class Startup
     {
-        private readonly IMqttServer _mqttServer;
         private readonly ILogger<Startup> _logger;
 
         private readonly IConfiguration _configuration;
         
-        public Startup(IConfiguration configuration, IMqttServer mqttServer, ILoggerFactory loggerFactory)
+        public Startup(IConfiguration configuration, ILoggerFactory loggerFactory)
         {
             _configuration = configuration;
-            _mqttServer = mqttServer;
             _logger = loggerFactory.CreateLogger<Startup>();
         }
 
@@ -78,23 +75,6 @@ namespace ui
                     spa.UseReactDevelopmentServer(npmScript: "start");
                 }
             });
-            
-            var applicationLifetime = app.ApplicationServices.GetRequiredService<IApplicationLifetime>();
-            applicationLifetime.ApplicationStopping.Register(OnShutdown);
-            applicationLifetime.ApplicationStarted.Register(OnStartup);
-        }
-        
-
-        private void OnShutdown()
-        {
-            _mqttServer.Stop();
-            _logger.LogInformation("MQTT-Broker stopped");
-        }
-
-        private void OnStartup()
-        {
-            _mqttServer.Start();
-            _logger.LogInformation("MQTT-Broker started");
         }
     }
 }

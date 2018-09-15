@@ -12,6 +12,7 @@ namespace ui.Common
         private readonly BrokerConfig _brokerConfig;
         private readonly ILogger<MqttBackgroundService> _logger;
         private IMqttClient _mqttClient;
+        private IMqttServer _mqttServer;
 
         public MqttBackgroundService(IOptions<BrokerConfig> brokerConfig, ILoggerFactory loggerFactory)
         {
@@ -25,7 +26,7 @@ namespace ui.Common
             var configuration = new MqttConfiguration
             {
                 BufferSize = 128 * 1024,
-                Port = 1883,
+                Port = _brokerConfig.Port,
                 KeepAliveSecs = 100,
                 WaitTimeoutSecs = 2,
                 MaximumQualityOfService = MqttQualityOfService.AtMostOnce,
@@ -34,7 +35,7 @@ namespace ui.Common
             
             return await MqttClient.CreateAsync(_brokerConfig.HostName, configuration);
         }
-
+        
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             _mqttClient = await CreateClient();
@@ -44,13 +45,17 @@ namespace ui.Common
 
         public override Task StartAsync(CancellationToken cancellationToken)
         {
-            _logger.LogInformation("Start");
+            _logger.LogInformation("Start MQTT-Broker");
+            _mqttServer = MqttServer.Create(_brokerConfig.Port);
+            _mqttServer.Start();
             return base.StartAsync(cancellationToken);
         }
 
         public override Task StopAsync(CancellationToken cancellationToken)
         {
-            _logger.LogInformation("Stop");
+            _logger.LogInformation("Stop MQTT-Broker");
+            _mqttServer.Stop();
+            _mqttServer.Dispose();
             return base.StopAsync(cancellationToken);
         }
     }
