@@ -8,27 +8,31 @@ using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using ui.Common;
 
 namespace ui
 {
     public class Startup
     {
-        private readonly IMqttServer mqttServer;
-        private readonly ILogger<Startup> logger; 
+        private readonly IMqttServer _mqttServer;
+        private readonly ILogger<Startup> _logger; 
+        
+        public IConfiguration Configuration { get; }
         
         public Startup(IConfiguration configuration, IMqttServer mqttServer, ILoggerFactory loggerFactory)
         {
             Configuration = configuration;
-            this.mqttServer = mqttServer;
-            logger = loggerFactory.CreateLogger<Startup>();
+            _mqttServer = mqttServer;
+            _logger = loggerFactory.CreateLogger<Startup>();
             
         }
 
-        public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            _logger.LogInformation("ConfigureServices()");
+
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             
             
@@ -37,11 +41,14 @@ namespace ui
             {
                 configuration.RootPath = "ClientApp/build";
             });
+
+            services.AddEventBus(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            _logger.LogInformation("Configure()");
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -81,14 +88,14 @@ namespace ui
 
         private void OnShutdown()
         {
-            mqttServer.Stop();
-            logger.Log(LogLevel.Information, "MQTT-Broker stopped");
+            _mqttServer.Stop();
+            _logger.LogInformation("MQTT-Broker stopped");
         }
 
         private void OnStartup()
         {
-            mqttServer.Start();
-            logger.Log(LogLevel.Information, "MQTT-Broker started");
+            _mqttServer.Start();
+            _logger.LogInformation("MQTT-Broker started");
         }
     }
 }
