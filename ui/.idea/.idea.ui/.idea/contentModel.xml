@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ContentModelStore">
+    <e p="$USER_HOME$/Library/Caches/Rider2018.2/extResources" t="IncludeRecursive" />
+    <e p="$USER_HOME$/Library/Caches/Rider2018.2/resharper-host/local/Transient/ReSharperHost/v182/SolutionCaches/_ui.-2100079118.00" t="ExcludeRecursive" />
+    <e p="$PROJECT_DIR$" t="IncludeRecursive">
+      <e p=".gitignore" t="Include" />
+      <e p="appsettings.Development.json" t="Include" />
+      <e p="appsettings.json" t="Include" />
+      <e p="bin" t="ExcludeRecursive" />
+      <e p="ClientApp" t="Include">
+        <e p=".gitignore" t="Include" />
+        <e p="dist" t="Include">
+          <e p="index.html" t="Include" />
+          <e p="main.js" t="Include" />
+        </e>
+        <e p="node_modules" t="ExcludeRecursive">
+          <e p="bootstrap" t="IncludeRecursive" />
+          <e p="react" t="IncludeRecursive" />
+          <e p="react-bootstrap" t="IncludeRecursive" />
+          <e p="react-dom" t="IncludeRecursive" />
+          <e p="react-redux" t="IncludeRecursive" />
+          <e p="react-router-bootstrap" t="IncludeRecursive" />
+          <e p="react-router-dom" t="IncludeRecursive" />
+          <e p="react-router-redux" t="IncludeRecursive" />
+          <e p="react-scripts" t="IncludeRecursive" />
+          <e p="redux" t="IncludeRecursive" />
+          <e p="redux-thunk" t="IncludeRecursive" />
+          <e p="rimraf" t="IncludeRecursive" />
+        </e>
+        <e p="package-lock.json" t="Include" />
+        <e p="package.json" t="Include" />
+        <e p="public" t="Include">
+          <e p="favicon.png" t="Include" />
+          <e p="index.html" t="Include" />
+          <e p="manifest.json" t="Include" />
+        </e>
+        <e p="README.md" t="Include" />
+        <e p="src" t="Include">
+          <e p="App.js" t="Include" />
+          <e p="App.test.js" t="Include" />
+          <e p="components" t="Include">
+            <e p="Counter.js" t="Include" />
+            <e p="Home.js" t="Include" />
+            <e p="Layout.js" t="Include" />
+            <e p="NavMenu.css" t="Include" />
+            <e p="NavMenu.js" t="Include" />
+          </e>
+          <e p="index.css" t="Include" />
+          <e p="index.js" t="Include" />
+          <e p="registerServiceWorker.js" t="Include" />
+          <e p="store" t="Include">
+            <e p="configureStore.js" t="Include" />
+            <e p="Counter.js" t="Include" />
+          </e>
+        </e>
+      </e>
+      <e p="Common" t="Include">
+        <e p="BrokerConfig.cs" t="Include" />
+        <e p="EventBus" t="Include">
+          <e p="Abstractions" t="Include">
+            <e p="IEventBus.cs" t="Include" />
+            <e p="IIntegrationEventHandler.cs" t="Include" />
+          </e>
+          <e p="EventBusMQTT" t="Include">
+            <e p="EventBusMQTT.cs" t="Include" />
+          </e>
+          <e p="events" t="Include">
+            <e p="IntegrationEvent.cs" t="Include" />
+          </e>
+          <e p="IEventBusSubscriptionsManager.cs" t="Include" />
+        </e>
+        <e p="EventBusExtensions.cs" t="Include" />
+        <e p="MqttBackgroundService.cs" t="Include" />
+      </e>
+      <e p="Controllers" t="Include">
+        <e p="SampleDataController.cs" t="Include" />
+      </e>
+      <e p="obj" t="ExcludeRecursive">
+        <e p="Debug" t="Include">
+          <e p="netcoreapp2.1" t="Include">
+            <e p="ui.AssemblyInfo.cs" t="Include" />
+          </e>
+        </e>
+      </e>
+      <e p="packages" t="ExcludeRecursive" />
+      <e p="Program.cs" t="Include" />
+      <e p="Properties" t="Include">
+        <e p="launchSettings.json" t="Include" />
+      </e>
+      <e p="Startup.cs" t="Include" />
+      <e p="ui.csproj" t="IncludeRecursive" />
+    </e>
+  </component>
+</project>
