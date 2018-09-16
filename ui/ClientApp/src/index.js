@@ -18,14 +18,12 @@ const history = createBrowserHistory({ basename: baseUrl });
 const initialState = window.initialReduxState;
 const store = configureStore(history, initialState);
 
-const rootElement = document.getElementById('root');
-
 ReactDOM.render(
   <Provider store={store}>
     <ConnectedRouter history={history}>
       <App />
     </ConnectedRouter>
   </Provider>,
-  rootElement);
+    document.getElementById('app'));
 
 registerServiceWorker();
