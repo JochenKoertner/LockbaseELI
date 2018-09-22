@@ -6,7 +6,7 @@
 #include "MQTTClient.h"
 
 #define ADDRESS     "tcp://localhost:1883"
-#define CLIENTID    "Alice"
+#define CLIENT_ID    "Alice"
 #define TOPIC       "channel"
 #define PAYLOAD     "The dark side of the moon (Pink Flyod)"
 #define QOS         2
@@ -24,16 +24,20 @@ int myCallBack( const char* sSessID, int nJob, const char* sJob) {
 int main() {
 
     // initialise driver interface and register a callback function
-    LbwELI("lic", "0.9", myCallBack );
+    const char* retCode = ELICreate("lic", "0.9", myCallBack );
+    printf("ELICreate() => %s\n\n", retCode);
 
     // dump the driver-info to console
-    printf("%s\n",DriverInfo());
+    printf("%s\n",ELIDriverInfo());
 
     // dump product-info to console
-    printf("%s\n",ProductInfo("productid"));
+    printf("%s\n",ELIProductInfo("productid"));
 
     // dump system-info to console
-    //printf("%s\n",SystemInfo("users"));
+    printf("%s\n",ELISystemInfo("users"));
+
+    // call ELIDriverUI
+    ELIDriverUI( "sessionID", "SID");
 
 
     MQTTClient client;
@@ -42,8 +46,8 @@ int main() {
     MQTTClient_deliveryToken token;
     int rc;
 
-    rc = MQTTClient_create(&client, ADDRESS, CLIENTID,
-                      MQTTCLIENT_PERSISTENCE_NONE, NULL);
+    rc = MQTTClient_create(&client, ADDRESS, CLIENT_ID,
+                           MQTTCLIENT_PERSISTENCE_NONE, NULL);
     printf("%d\n", rc);
     conn_opts.keepAliveInterval = 20;
     conn_opts.cleansession = 1;
@@ -65,12 +69,12 @@ int main() {
     }
     printf("Waiting for up to %d seconds for publication of %s\n"
            "on topic %s for client with ClientID: %s\n",
-           (int)(TIMEOUT/1000), PAYLOAD, TOPIC, CLIENTID);
+           (int)(TIMEOUT/1000), PAYLOAD, TOPIC, CLIENT_ID);
     rc = MQTTClient_waitForCompletion(client, token, TIMEOUT);
     printf("Message with delivery token %d delivered\n", token);
     MQTTClient_disconnect(client, 10000);
     MQTTClient_destroy(&client);
 
-    LbELIFinit();
+    ELIDestroy();
     return 0;
 }

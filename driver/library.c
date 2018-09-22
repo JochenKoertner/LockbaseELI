@@ -9,10 +9,10 @@
 /*
  * Global variable for holding the function pointer for the callback from driver
  */
-Drv2App  globalCallback;
+ELIDrv2App  globalCallback;
 
 #define ADDRESS     "tcp://localhost:1883"
-#define CLIENTID    "Alice"
+#define CLIENT_ID   "Alice"
 
 #define TOPIC       "channel"
 #define PAYLOAD     "The Darkside of the moon (Pink Flyod)"
@@ -55,7 +55,7 @@ int mqtt_publish(const char* payload) {
     }
     printf("Waiting for up to %d seconds for publication of %s\n"
            "on topic %s for client with ClientID: %s\n",
-           (int) (TIMEOUT / 1000), PAYLOAD, TOPIC, CLIENTID);
+           (int) (TIMEOUT / 1000), PAYLOAD, TOPIC, CLIENT_ID);
     rc = MQTTClient_waitForCompletion(client, token, TIMEOUT);
     printf("Message with delivery token %d delivered\n", token);
     return rc;
@@ -73,7 +73,7 @@ int mqtt_publish(const char* payload) {
  *  responses to job requests (s.b.).
  */
 
-void LbwELI( const char* sLic, const char* sLbwELIRev, Drv2App callback ) {
+const char* ELICreate( const char* sLic, const char* sLbwELIRev, ELIDrv2App callback ) {
     printf("Lizenz: %s Revision: %s", sLic, sLbwELIRev);
     globalCallback = callback;
 
@@ -82,9 +82,10 @@ void LbwELI( const char* sLic, const char* sLbwELIRev, Drv2App callback ) {
     //int rc = MQTTClient_create(&client, ADDRESS, CLIENTID,
     //                       MQTTCLIENT_PERSISTENCE_NONE, NULL);
     //printf("MQTTClient_create (%d)\n", rc);
+    return "EOK";
 }
 
-void LbELIFinit() {
+void ELIDestroy() {
     // MQTT free
     //MQTTClient_destroy(&client);
 }
@@ -100,12 +101,25 @@ void LbELIFinit() {
  * The information returned by DriverInfo() is expected to be unchanged within the same driver revision.
  */
 
-const char* DriverInfo() {
+const char* ELIDriverInfo() {
 
-    return u8"DriverRevision=0.9\n"
-           u8"LbwELIRevision=0.7\n"
-           u8"Manufacturer = KMGmbH,\"de:Körtner & Muth GmbH\"\n"
-           u8"Products = [ID:product 1],[LTL:product name 1];[ID: product 2],[LTL:product name 2]\n";
+    return u8"DriverRevision=0.9\n"         // required
+           u8"LbwELIRevision=0.1.1837\n"    // required
+           u8"Manufacturer = KMGmbH,\"de:Körtner & Muth GmbH\"\n" // required
+           u8"Products = [ID:product 1],[LTL:product name 1];[ID: product 2],[LTL:product name 2]\n" // required
+           u8"DriverAuthor = [LTL:CaptainFuture]\n" // optional
+           u8"DriverCopyright = [LTL:Copyright CaptainFuture (c) 2018]\n" // optional
+           u8"DriverUI = [LTL:Start DemoApp]\n" // optional
+            ;
+}
+
+/*
+ * ELIDriverUI() will receive the application's current session id and the id of the current active system as
+ * parameters (s.b.). This variable is optional, by default no driver provided user interface will be supported.
+ */
+
+void ELIDriverUI(const char* SessID, const char* SID) {
+    printf("Start Browser  SessID='%s'  SID='%s'\n", SessID, SID);
 }
 
 /*
@@ -117,16 +131,35 @@ const char* DriverInfo() {
  * The information returned by ProductInfo() is expected to be unchanged within the same driver revision.
  */
 
-const char* ProductInfo( const char* sProductID ) {
+const char* ELIProductInfo( const char* sProductID ) {
 
-    return u8"ProgrammingTarget=0\n";
+    return
+            u8"ProgrammingTarget=0\n" // required
+            u8"DeviceCapacity=INT\n"  // required
+            u8"TimePeriodCapacity=INT\n"  // required
+            u8"EventTypes =[ID:EventID0],[ID:Class],[LTL:Description0];" // required
+            u8"[ID:EventID1],[ID:Class],[LTL:Description1];\n"
+
+            // the following values are optional
+            u8"OnlineSystem=0\n"
+            u8"DefaultAccess=0\n"
+            u8"AccessByNmbOfLockings=0\n"
+            u8"AccessByFloatingPeriod=0\n"
+            u8"TimePeriodRecurrence=[ID:RecIntID1],[ID:RecIntID2]\n"
+            u8"EventUpdateInterval=[INT:60]\n"
+            u8"AccessUpdateInterval=[INT:120]\n"
+            ;
 }
 
-const char* SystemInfo( const char* sUsers ) {
+const char* ELISystemInfo( const char* sUsers ) {
     // send message to broker
     //connect();
     //publish(PAYLOAD);
+    // wait for response (PAYLOAD)
     //disconnect();
-
-    return u8"ProgrammingTarget=0\n";
+    return
+            u8"[ID:Sys1],[ID:ProductID],[TXT:Name],[ACLR],['0':disable|'1':enable]\n"
+            u8"[ID:Sys2],[ID:ProductID],[TXT:Name],[ACLR],['0':disable|'1':enable]\n"
+            u8",[ID:Product1],,[ACLR]\n"
+            u8",[ID:Product2],,[ACLR]\n";
 }
