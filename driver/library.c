@@ -2,6 +2,9 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
+#include <time.h>
+#include <regex.h>
 
 #include "MQTTClient.h"
 #include "library.h"
@@ -15,13 +18,12 @@ ELIDrv2App  globalCallback;
 #define CLIENT_ID   "Alice"
 
 #define TOPIC       "channel"
-#define PAYLOAD     "The Darkside of the moon (Pink Flyod)"
 #define QOS         2
 #define TIMEOUT     10000L
 
 
 MQTTClient client;
-MQTTClient_message pubmsg = MQTTClient_message_initializer;
+// MQTTClient_message pubmsg = MQTTClient_message_initializer;
 MQTTClient_deliveryToken token;
 
 int mqtt_create() {
@@ -36,7 +38,6 @@ void mqtt_destroy() {
 
 int mqtt_connect() {
     MQTTClient_connectOptions conn_opts = MQTTClient_connectOptions_initializer;
-
     conn_opts.keepAliveInterval = 20;
     conn_opts.cleansession = 1;
     int rc ;
@@ -46,16 +47,17 @@ int mqtt_connect() {
         printf("Failed to connect, return code %d\n", rc);
         return rc;
     }
-    return 0;
+    return rc;
 }
 
-void mqtt_disconnect() {
-    MQTTClient_disconnect(client, 10000);
+int mqtt_disconnect() {
+    return MQTTClient_disconnect(client, 10000);
 }
 
 int mqtt_publish(const char* payload) {
-    pubmsg.payload = PAYLOAD;
-    pubmsg.payloadlen = (int) strlen(PAYLOAD);
+    MQTTClient_message pubmsg = MQTTClient_message_initializer;
+    pubmsg.payload = (char*)payload;
+    pubmsg.payloadlen = (int) strlen(payload);
     pubmsg.qos = QOS;
     pubmsg.retained = 0;
     int rc;
@@ -65,7 +67,7 @@ int mqtt_publish(const char* payload) {
     }
     printf("Waiting for up to %d seconds for publication of %s\n"
            "on topic %s for client with ClientID: %s\n",
-           (int) (TIMEOUT / 1000), PAYLOAD, TOPIC, CLIENT_ID);
+           (int) (TIMEOUT / 1000), "sss", TOPIC, CLIENT_ID);
     rc = MQTTClient_waitForCompletion(client, token, TIMEOUT);
     printf("Message with delivery token %d delivered\n", token);
     return rc;
@@ -95,10 +97,10 @@ const char* ELICreate( const char* sLic, const char* sLbwELIRev, ELIDrv2App call
         return "EUNKNOWN";
     }
 
-    /*
+    /* check requested revision
     if (sLbwELIRev > "1.2") {
        return "EREV\n"
-              u8"";
+              u8"[ID:Error],[TXT:DrvELIRev]";
     }*/
 
     globalCallback = callback;
@@ -154,7 +156,6 @@ void ELIDriverUI(const char* SessID, const char* SID) {
  */
 
 const char* ELIProductInfo( const char* sProductID ) {
-
     return
             u8"ProgrammingTarget=0\n" // required
             u8"DeviceCapacity=INT\n"  // required
@@ -175,13 +176,44 @@ const char* ELIProductInfo( const char* sProductID ) {
 
 const char* ELISystemInfo( const char* sUsers ) {
     // send message to broker
-    //connect();
-    //publish(PAYLOAD);
+    // connect();
+    // publish(PAYLOAD);
     // wait for response (PAYLOAD)
-    //disconnect();
+    // disconnect();
     return
             u8"[ID:Sys1],[ID:ProductID],[TXT:Name],[ACLR],['0':disable|'1':enable]\n"
             u8"[ID:Sys2],[ID:ProductID],[TXT:Name],[ACLR],['0':disable|'1':enable]\n"
             u8",[ID:Product1],,[ACLR]\n"
             u8",[ID:Product2],,[ACLR]\n";
 }
+
+const char* ELIOpen( const char* sUserList, const char* sSystem, const char* sExtData) {
+
+    int ret = mqtt_connect();
+    if (ret != MQTTCLIENT_SUCCESS) {
+        printf("mqtt_connect() => %i\n", ret);
+        return "EUNKNOWN";
+    }
+
+    srand(clock());
+    int n = rand();
+
+    char hex[9];
+    sprintf(hex, "%08X", rand());
+    printf("Session %s\n", hex);
+
+    mqtt_publish("The Darkside of the moon (Pink Flyod)");
+
+    return hex;
+    // return "EOK";
+}
+
+const char* ELIClose( const char* sSessID ) {
+    int ret = mqtt_disconnect();
+    if (ret != MQTTCLIENT_SUCCESS) {
+        printf("mqtt_disconnect() => %i\n", ret);
+        return "EUNKNOWN";
+    }
+    return "EOK";
+}
+
