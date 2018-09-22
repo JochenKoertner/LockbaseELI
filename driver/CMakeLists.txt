@@ -23,7 +23,7 @@ configure_file (
         "paho.mqtt.c/src/VersionInfo.h.in"
         "../paho.mqtt.c/src/VersionInfo.h"
 )
-add_library(lbweli_driver ${SOURCES_PAHO} library.c library.h VersionInfo.h)
+add_library(lbweli_driver ${SOURCES_PAHO} library.c library.h VersionInfo.h session_list.c session_list.h)
 
 # Lockbase Electronic Lock Interface - CommandLineInterface
 project(LbELI_cli)

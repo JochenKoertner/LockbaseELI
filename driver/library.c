@@ -8,6 +8,7 @@
 
 #include "MQTTClient.h"
 #include "library.h"
+#include "session_list.h"
 
 /*
  * Global variable for holding the function pointer for the callback from driver
@@ -19,12 +20,15 @@ ELIDrv2App  globalCallback;
 
 #define TOPIC       "channel"
 #define QOS         2
-#define TIMEOUT     10000L
+#define TIMEOUT     2000L
 
 
 MQTTClient client;
 // MQTTClient_message pubmsg = MQTTClient_message_initializer;
 MQTTClient_deliveryToken token;
+
+// session list
+node_t * sessions = NULL;
 
 int mqtt_create() {
     return MQTTClient_create(&client, ADDRESS, CLIENT_ID, MQTTCLIENT_PERSISTENCE_NONE, NULL);
@@ -90,6 +94,8 @@ int mqtt_publish(const char* payload) {
 const char* ELICreate( const char* sLic, const char* sLbwELIRev, ELIDrv2App callback ) {
     printf("Lizenz: %s Revision: %s", sLic, sLbwELIRev);
 
+    // seed random number generator with clock
+    srand(clock());
 
     int ret = mqtt_create();
     if (ret != MQTTCLIENT_SUCCESS) {
@@ -195,20 +201,25 @@ const char* ELIOpen( const char* sUserList, const char* sSystem, const char* sEx
         return "EUNKNOWN";
     }
 
-    srand(clock());
-    int n = rand();
-
-    char hex[9];
-    sprintf(hex, "%08X", rand());
-    printf("Session %s\n", hex);
+    node_t * node = new_session(&sessions, sUserList, sSystem, sExtData);
+    printf("Session %08X\n", node->session_id);
 
     mqtt_publish("The Darkside of the moon (Pink Flyod)");
 
-    return hex;
+    static char buf[9];
+    sprintf(buf, "%08X", node->session_id);
+
+    return buf;
     // return "EOK";
 }
 
 const char* ELIClose( const char* sSessID ) {
+
+    int session_id = (int)strtol(sSessID, NULL, 16);
+
+    printf("remove session_id %i\n", session_id);
+    remove_session(&sessions, session_id);
+
     int ret = mqtt_disconnect();
     if (ret != MQTTCLIENT_SUCCESS) {
         printf("mqtt_disconnect() => %i\n", ret);
