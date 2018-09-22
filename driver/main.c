@@ -39,7 +39,7 @@ int main() {
     // call ELIDriverUI
     ELIDriverUI( "sessionID", "SID");
 
-
+/*
     MQTTClient client;
     MQTTClient_connectOptions conn_opts = MQTTClient_connectOptions_initializer;
     MQTTClient_message pubmsg = MQTTClient_message_initializer;
@@ -74,6 +74,7 @@ int main() {
     printf("Message with delivery token %d delivered\n", token);
     MQTTClient_disconnect(client, 10000);
     MQTTClient_destroy(&client);
+*/
 
     ELIDestroy();
     return 0;

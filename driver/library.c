@@ -24,6 +24,16 @@ MQTTClient client;
 MQTTClient_message pubmsg = MQTTClient_message_initializer;
 MQTTClient_deliveryToken token;
 
+int mqtt_create() {
+    return MQTTClient_create(&client, ADDRESS, CLIENT_ID, MQTTCLIENT_PERSISTENCE_NONE, NULL);
+}
+
+void mqtt_destroy() {
+    MQTTClient_destroy(&client);
+}
+
+
+
 int mqtt_connect() {
     MQTTClient_connectOptions conn_opts = MQTTClient_connectOptions_initializer;
 
@@ -62,36 +72,48 @@ int mqtt_publish(const char* payload) {
 
 }
 
-
-
-
 /*
  *  LbwELI() is the constructor of the interface object, which is required to use the interface. It expects the
  *  application to identify itself by its licence and LbwELI revision number, which allows the driver to support
  *  different interface revisions and adjust its services to different types of installations (e.g. factory, locksmith
  *  or end user installation). Secondly the constructor expects a callback function pointer to launch the driver's
  *  responses to job requests (s.b.).
+ *  In case the constructor supports the requested interface revision, it simply returns EOK. In case it does not,
+ *  it returns EREV, followed by the best interface it supports:
+ *       [ID:Error],[TXT:DrvELIRev]
+ *   This allows the application to 'downgrade' to an older drivers capabilities. If the driver cannot start
+ *   for ny other reason, the constructor returns EUNKNOWN.
  */
 
 const char* ELICreate( const char* sLic, const char* sLbwELIRev, ELIDrv2App callback ) {
     printf("Lizenz: %s Revision: %s", sLic, sLbwELIRev);
+
+
+    int ret = mqtt_create();
+    if (ret != MQTTCLIENT_SUCCESS) {
+        printf("mqtt_create() => %i\n", ret);
+        return "EUNKNOWN";
+    }
+
+    /*
+    if (sLbwELIRev > "1.2") {
+       return "EREV\n"
+              u8"";
+    }*/
+
     globalCallback = callback;
 
-    printf("MQTTClient_create (start)\n");
-
-    //int rc = MQTTClient_create(&client, ADDRESS, CLIENTID,
-    //                       MQTTCLIENT_PERSISTENCE_NONE, NULL);
-    //printf("MQTTClient_create (%d)\n", rc);
     return "EOK";
 }
 
+/*
+ * ELIDestroy() is the destructor of the interface object, it will be called on application termination or when
+ * the application detaches from the driver for other reasons. The application will call the destructor anyway,
+ * even if the constructor did not returned EOK.
+ */
 void ELIDestroy() {
-    // MQTT free
-    //MQTTClient_destroy(&client);
+    mqtt_destroy();
 }
-
-
-
 
 /*
  * To retrieve global information about the driver the application will call the interface function DriverInfo()
