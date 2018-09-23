@@ -14,7 +14,7 @@ namespace ui.Common
     {
         private readonly BrokerConfig _brokerConfig;
         private readonly ILogger<MqttBackgroundService> _logger;
-        private IMqttClient _mqttClient;
+        // private IMqttClient _mqttClient;
         private IMqttServer _mqttServer;
 
         public MqttBackgroundService(IOptions<BrokerConfig> brokerConfig, ILoggerFactory loggerFactory)
@@ -41,45 +41,38 @@ namespace ui.Common
         
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _mqttClient = await CreateClient();
+            var client = await CreateClient();
             _logger.LogInformation("Execute");
             
             
-            var sessionState = await Connect(_mqttClient, _brokerConfig.User);
+            var sessionState = await Connect(client, _brokerConfig.User);
             
-            await _mqttClient.SubscribeAsync(_brokerConfig.Topic, MqttQualityOfService.ExactlyOnce); //QoS2
+            await client.SubscribeAsync(_brokerConfig.Topic, MqttQualityOfService.ExactlyOnce); //QoS2
             
-            _mqttClient
-                .MessageStream
-                .Subscribe(msg => Console.WriteLine($"Message received in topic {msg.Topic}"));
-  	
-            _mqttClient
+            
+            client
                 .MessageStream
                 .Where(msg => msg.Topic == _brokerConfig.Topic)
                 .Subscribe(LogMessage);
 
             // sends a initial message on the topic
-            await Publish(_mqttClient, _brokerConfig.Topic, "Hello from C#", MqttQualityOfService.ExactlyOnce);     
+            await Publish(client, _brokerConfig.Topic, "Hello from C#", MqttQualityOfService.ExactlyOnce);     
          
             
             while (!stoppingToken.IsCancellationRequested)
             {
 
-                // This eShopOnContainers method is querying a database table 
-                // and publishing events into the Event Bus (RabbitMS / ServiceBus)
-                // CheckConfirmedGracePeriodOrders();
+                // all five second do some lookup for working 
+                // ... 
 
                 await Task.Delay(5000, stoppingToken);
             }
             
-            _logger.LogDebug($"GracePeriod background task is stopping.");
-            
-            
             //Method to unsubscribe a topic or many topics, which means that the message will no longer
             //be received in the MessageStream anymore
-            await _mqttClient.UnsubscribeAsync(_brokerConfig.Topic);
+            await client.UnsubscribeAsync(_brokerConfig.Topic);
             
-            await Disconnect(_mqttClient);
+            await Disconnect(client);
         }
 
         public override Task StartAsync(CancellationToken cancellationToken)
