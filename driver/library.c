@@ -80,6 +80,23 @@ int mqtt_publish(const char* payload) {
     return rc;
 }
 
+int mqtt_receive_msg() {
+    char* topicName = NULL;
+    int topicLen;
+    MQTTClient_message* msg = NULL;
+    int rc;
+    if ((rc = MQTTClient_receive(client, &topicName, &topic_len, &msg, 10000L)) != MQTTCLIENT_SUCCESS) {
+        printf("Failed to receive, return code %d\n", rc);
+        return rc;
+    }
+    if (msg != NULL) {
+        printf("Receive from %s\n", topicName);
+        MQTTClient_free(topicName);
+        MQTTClient_freeMessage(&msg);
+    }
+    return MQTTCLIENT_SUCCESS;
+}
+
 char* session_id_to_string(int session_id) {
     static char buf[9];
     sprintf(buf, "%08X", session_id);
@@ -227,6 +244,7 @@ const char* ELIOpen( const char* sUserList, const char* sSystem, const char* sEx
     const char* sSessID = session_id_to_string(node->session_id);
     mqtt_publish(json_payload_create(sSessID, "The Dark side of the moon..."));
 
+    mqtt_receive_msg();
     return sSessID;
     // return "EOK";
 }
