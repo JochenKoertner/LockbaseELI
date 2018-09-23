@@ -20,12 +20,12 @@ ELIDrv2App  globalCallback;
 
 #define TOPIC       "channel"
 #define QOS         2
-#define TIMEOUT     2000L
+#define TIMEOUT     1000L
 
 
 MQTTClient client;
 // MQTTClient_message pubmsg = MQTTClient_message_initializer;
-MQTTClient_deliveryToken token;
+
 
 // session list
 node_t * sessions = NULL;
@@ -55,10 +55,13 @@ int mqtt_connect() {
 }
 
 int mqtt_disconnect() {
-    return MQTTClient_disconnect(client, 10000);
+    return MQTTClient_disconnect(client, 1000);
 }
 
 int mqtt_publish(const char* payload) {
+
+    MQTTClient_deliveryToken token;
+
     MQTTClient_message pubmsg = MQTTClient_message_initializer;
     pubmsg.payload = (char*)payload;
     pubmsg.payloadlen = (int) strlen(payload);
@@ -75,7 +78,24 @@ int mqtt_publish(const char* payload) {
     rc = MQTTClient_waitForCompletion(client, token, TIMEOUT);
     printf("Message with delivery token %d delivered\n", token);
     return rc;
+}
 
+char* session_id_to_string(int session_id) {
+    static char buf[9];
+    sprintf(buf, "%08X", session_id);
+    return buf;
+}
+
+int string_to_session_id(const char* sSessID) {
+    return (int)strtol(sSessID, NULL, 16);
+}
+
+char* json_payload_create(const char* sSessID, const char* sText) {
+    static char buf[200];
+    sprintf(buf,
+            u8"{ session_id : '%s', text : '%s' }",
+            sSessID, sText);
+    return buf;
 }
 
 /*
@@ -204,27 +224,31 @@ const char* ELIOpen( const char* sUserList, const char* sSystem, const char* sEx
     node_t * node = new_session(&sessions, sUserList, sSystem, sExtData);
     printf("Session %08X\n", node->session_id);
 
-    mqtt_publish("The Darkside of the moon (Pink Flyod)");
+    const char* sSessID = session_id_to_string(node->session_id);
+    mqtt_publish(json_payload_create(sSessID, "The Dark side of the moon..."));
 
-    static char buf[9];
-    sprintf(buf, "%08X", node->session_id);
-
-    return buf;
+    return sSessID;
     // return "EOK";
 }
 
 const char* ELIClose( const char* sSessID ) {
 
-    int session_id = (int)strtol(sSessID, NULL, 16);
+    int session_id = string_to_session_id(sSessID);
 
-    printf("remove session_id %i\n", session_id);
+    printf("remove session_id %08X\n", session_id);
     remove_session(&sessions, session_id);
+    printf("removed session_id %08X\n", session_id);
 
     int ret = mqtt_disconnect();
     if (ret != MQTTCLIENT_SUCCESS) {
         printf("mqtt_disconnect() => %i\n", ret);
         return "EUNKNOWN";
     }
+    printf("disconnected\n");
+
     return "EOK";
 }
+
+
+
 
