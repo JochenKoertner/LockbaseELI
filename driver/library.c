@@ -85,7 +85,7 @@ int mqtt_receive_msg() {
     int topicLen;
     MQTTClient_message* msg = NULL;
     int rc;
-    if ((rc = MQTTClient_receive(client, &topicName, &topic_len, &msg, 10000L)) != MQTTCLIENT_SUCCESS) {
+    if ((rc = MQTTClient_receive(client, &topicName, &topicLen, &msg, 10000L)) != MQTTCLIENT_SUCCESS) {
         printf("Failed to receive, return code %d\n", rc);
         return rc;
     }
