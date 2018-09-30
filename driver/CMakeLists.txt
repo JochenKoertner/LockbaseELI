@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.12)
 
+## Build PahoMqtt Library 
+
 project(PahoMqtt C)
 set(CMAKE_C_STANDARD 11)
 
@@ -17,9 +19,27 @@ set(PROJECT_SOURCE_DIR ${PROJECT_SOURCE_DIR}/paho.mqtt.c/src)
 file(GLOB SOURCES_PAHO ${PROJECT_SOURCE_DIR}/*.c)
 file(GLOB INCLUDE_PAHO ${PROJECT_SOURCE_DIR}/MQTT*.h)
 
+configure_file( 
+	"${PROJECT_SOURCE_DIR}/VersionInfo.h.in"
+	"${PROJECT_BINARY_DIR}/VersionInfo.h"
+	 )
 
-message(STATUS "This is BINARY dir " ${PROJECT_BINARY_DIR})
-message(STATUS "This is SOURCE dir " ${PROJECT_SOURCE_DIR})
+include_directories( "${PROJECT_BINARY_DIR}" )
+
 add_library(${PROJECT_NAME} ${SOURCES_PAHO} )
 
+## Build Driver Dynamic Library 
+
+project(LbELI C)
+
+include_directories( "${PROJECT_SOURCE_DIR}/paho.mqtt.c/src" ) 
+add_library(${PROJECT_NAME} library.c session_list.c)
+target_link_libraries(${PROJECT_NAME} PahoMqtt)
+
+## Build Sample console Application 
+
+project(LbELI_cli)
+
+add_executable(${PROJECT_NAME}  main.c)
+target_link_libraries(${PROJECT_NAME} LbELI)
 
