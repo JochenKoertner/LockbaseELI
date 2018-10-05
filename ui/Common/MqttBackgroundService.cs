@@ -67,6 +67,12 @@ namespace ui.Common
                     Publish(client, "response", "Echo", MqttQualityOfService.ExactlyOnce).Wait(stoppingToken);
                 });
 
+            client
+                .MessageStream
+                .Where(msg => msg.Topic == "heartbeat")
+                .Subscribe(msg => LogMessage(msg));
+            
+
             // sends a initial message on the topic
             await Publish(client, _brokerConfig.Topic, "Hello from C#", MqttQualityOfService.ExactlyOnce);     
          
@@ -125,6 +131,7 @@ namespace ui.Common
         
         private async Task Publish(IMqttClient client, string topic, string payload, MqttQualityOfService qos)
         {
+            // _logger.LogInformation($"Publish to topic {topic}");
             var message = new Message()
             {
                 session_id = "123435", 
