@@ -18,10 +18,12 @@ Remove-Item Makefile -Force
 $genArgs = @('-G')
 $genArgs += @('"MinGW Makefiles"');
 
-$genArgs += ('DCMAKE_BUILD_TYPE={0}' -f $buildType);
+$genArgs += ('-DCMAKE_BUILD_TYPE={0}' -f $buildType);
+$genArgs += ('-DCMAKE_C_COMPILER={0}' -f $clang);
+$genArgs += ('-DCMAKE_MAKE_PROGRAM={0}' -f $make);
 
-$genArgs += ('-B{0}' -f $buildPath);
-$genArgs += ('-H{0}' -f $path);
+$genArgs += ('-B {0}' -f $buildPath);
+$genArgs += ('{0}' -f $path);
 
 # Create the generate call
 $genCall = ('cmake {0}' -f ($genArgs -Join ' '));
