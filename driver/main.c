@@ -7,7 +7,7 @@
 
 #define ADDRESS     "tcp://localhost:1883"
 #define CLIENT_ID    "Alice"
-#define TOPIC       "channel"
+#define TOPIC       "heartbeat"
 #define PAYLOAD     "The dark side of the moon (Pink Flyod)"
 #define QOS         2
 #define TIMEOUT     10000L

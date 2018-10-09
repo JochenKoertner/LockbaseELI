@@ -84,16 +84,41 @@ int mqtt_receive_msg() {
     char* topicName = NULL;
     int topicLen;
     MQTTClient_message* msg = NULL;
+    char* test_topic = "heartbeat";
+
+
     int rc;
-    if ((rc = MQTTClient_receive(client, &topicName, &topicLen, &msg, 10000L)) != MQTTCLIENT_SUCCESS) {
+
+
+    rc = MQTTClient_subscribe(client, test_topic, 2);
+    if (rc != MQTTCLIENT_SUCCESS) {
+        printf("Failed to subscribe return code %d\n", rc);
+        return rc;
+    }
+
+
+    if ((rc = MQTTClient_receive(client, &topicName, &topicLen, &msg, 5000L)) != MQTTCLIENT_SUCCESS) {
         printf("Failed to receive, return code %d\n", rc);
         return rc;
     }
-    if (msg != NULL) {
-        printf("Receive from %s\n", topicName);
+
+    if (topicName) {
+
+        if (msg != NULL) {
+            printf("Message received on topic %s is %.*s", topicName, msg->payloadlen, (char*)(msg->payload));
+            MQTTClient_freeMessage(&msg);
+        }
         MQTTClient_free(topicName);
-        MQTTClient_freeMessage(&msg);
     }
+    else
+        printf("No message received within timeout period\n");
+
+    rc = MQTTClient_unsubscribe(client, test_topic);
+    if (rc != MQTTCLIENT_SUCCESS) {
+        printf("Failed to unsubscribe return code %d\n", rc);
+        return rc;
+    }
+
     return MQTTCLIENT_SUCCESS;
 }
 
@@ -242,7 +267,7 @@ const char* ELIOpen( const char* sUserList, const char* sSystem, const char* sEx
     printf("Session %08X\n", node->session_id);
 
     const char* sSessID = session_id_to_string(node->session_id);
-    mqtt_publish(json_payload_create(sSessID, "The Dark side of the moon..."));
+  //  mqtt_publish(json_payload_create(sSessID, "The Dark side of the moon..."));
 
     mqtt_receive_msg();
     return sSessID;

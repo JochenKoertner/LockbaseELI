@@ -58,6 +58,7 @@ namespace ui.Common
             await client.SubscribeAsync(_brokerConfig.Topic, MqttQualityOfService.ExactlyOnce); //QoS2
             
             
+            
             client
                 .MessageStream
                 .Where(msg => msg.Topic == _brokerConfig.Topic)
@@ -67,24 +68,29 @@ namespace ui.Common
                     Publish(client, "response", "Echo", MqttQualityOfService.ExactlyOnce).Wait(stoppingToken);
                 });
 
+/* Not subscripe here, 
+            await client.SubscribeAsync("heartbeat", MqttQualityOfService.ExactlyOnce); //QoS2
             client
                 .MessageStream
                 .Where(msg => msg.Topic == "heartbeat")
                 .Subscribe(msg => LogMessage(msg));
-            
+   */         
 
             // sends a initial message on the topic
             await Publish(client, _brokerConfig.Topic, "Hello from C#", MqttQualityOfService.ExactlyOnce);     
          
             
+            int qos = 0;
             while (!stoppingToken.IsCancellationRequested)
             {
 
                 // all five second do some lookup for working 
                 // ...
-                await Publish(client, "heartbeat", "abc", MqttQualityOfService.AtMostOnce);
+                await Publish(client, "heartbeat", $"abc {qos}", (MqttQualityOfService)qos);
 
-                await Task.Delay(5000, stoppingToken);
+                qos = qos + 1;
+                if (qos > 2) qos = 0;     
+                await Task.Delay(1000, stoppingToken);
             }
             
             //Method to unsubscribe a topic or many topics, which means that the message will no longer
@@ -131,7 +137,7 @@ namespace ui.Common
         
         private async Task Publish(IMqttClient client, string topic, string payload, MqttQualityOfService qos)
         {
-            // _logger.LogInformation($"Publish to topic {topic}");
+            _logger.LogInformation($"Publish to topic {topic}");
             var message = new Message()
             {
                 session_id = "123435", 
