@@ -312,6 +312,7 @@ const char* ELIClose( const char* sSessID ) {
 
     int rc = mqtt_publish(node->sSystem, json_payload_create(sSessID, "ELIClose"), QoS_FireAndForget);
     if (rc != MQTTCLIENT_SUCCESS) {
+        printf("not publish to %s retcode %d \n", rc);
         return "ECONNECTION";
     }
 

@@ -79,18 +79,13 @@ namespace ui.Common
             // sends a initial message on the topic
             await Publish(client, _brokerConfig.Topic, "Hello from C#", MqttQualityOfService.ExactlyOnce);     
          
-            
-            int qos = 0;
             while (!stoppingToken.IsCancellationRequested)
             {
 
                 // all five second do some lookup for working 
-                // ...
-                await Publish(client, "heartbeat", $"abc {qos}", (MqttQualityOfService)qos);
+                await Publish(client, "heartbeat", DateTime.UtcNow.ToShortTimeString(), MqttQualityOfService.AtMostOnce);
 
-                qos = qos + 1;
-                if (qos > 2) qos = 0;     
-                await Task.Delay(1000, stoppingToken);
+                await Task.Delay(5000, stoppingToken);
             }
             
             //Method to unsubscribe a topic or many topics, which means that the message will no longer
