@@ -1,5 +1,14 @@
 # CMake
 cmake-build-*/
+CMakeFiles/
+CMakeCache.txt
+Makefile
+cmake_install.cmake
 
 # Idea
 **/.idea/
+
+# Build Artefakte
+LbELI_cli.cbp
+bin
+build

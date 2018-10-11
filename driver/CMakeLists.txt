@@ -1,33 +1,54 @@
 cmake_minimum_required(VERSION 3.12)
 
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build)
+
+
+## Build PahoMqtt Library 
+
+
+project(PahoMqtt C)
+set(CMAKE_C_STANDARD 11)
+
+message(STATUS "Current Binary Dir is ${CMAKE_CURRENT_BINARY_DIR}")
+
+
 ## build settings
-SET(PAHO_VERSION_MAJOR 1)
-SET(PAHO_VERSION_MINOR 2)
-SET(PAHO_VERSION_PATCH 1)
-SET(CLIENT_VERSION ${PAHO_VERSION_MAJOR}.${PAHO_VERSION_MINOR}.${PAHO_VERSION_PATCH})
+set(PAHO_VERSION_MAJOR 1)
+set(PAHO_VERSION_MINOR 2)
+set(PAHO_VERSION_PATCH 1)
+set(CLIENT_VERSION ${PAHO_VERSION_MAJOR}.${PAHO_VERSION_MINOR}.${PAHO_VERSION_PATCH})
 
-STRING(TIMESTAMP BUILD_TIMESTAMP UTC)
-MESSAGE(STATUS "Timestamp is ${BUILD_TIMESTAMP}")
+string(TIMESTAMP BUILD_TIMESTAMP UTC)
+message(STATUS "Timestamp is ${BUILD_TIMESTAMP}")
 
+set(PROJECT_SOURCE_DIR ${PROJECT_SOURCE_DIR}/paho.mqtt.c/src)
 
-file(GLOB SOURCES_PAHO paho.mqtt.c/src/*.c)
-file(GLOB INCLUDE_PAHO paho.mqtt.c/src/*.h)
+file(GLOB SOURCES_PAHO ${PROJECT_SOURCE_DIR}/*.c)
+file(GLOB INCLUDE_PAHO ${PROJECT_SOURCE_DIR}/MQTT*.h)
 
+configure_file( 
+	"${PROJECT_SOURCE_DIR}/VersionInfo.h.in"
+	"${PROJECT_BINARY_DIR}/build/VersionInfo.h"
+	 )
 
-# Lockbase Electronic Lock Interface - Library
+include_directories( "${PROJECT_BINARY_DIR}/build" )
+
+add_library(${PROJECT_NAME} ${SOURCES_PAHO} )
+
+## Build Driver Dynamic Library 
+
 project(LbELI C)
-set(CMAKE_C_STANDARD 11)
-# configure a header file to pass some of the CMake settings
-# to the source code
-configure_file (
-        "paho.mqtt.c/src/VersionInfo.h.in"
-        "../paho.mqtt.c/src/VersionInfo.h"
-)
-add_library(lbweli_driver ${SOURCES_PAHO} library.c library.h VersionInfo.h)
 
-# Lockbase Electronic Lock Interface - CommandLineInterface
+include_directories( "${PROJECT_SOURCE_DIR}/paho.mqtt.c/src" ) 
+add_library(${PROJECT_NAME} library.c session_list.c)
+target_link_libraries(${PROJECT_NAME} PahoMqtt)
+
+## Build Sample console Application 
+
 project(LbELI_cli)
-set(CMAKE_C_STANDARD 11)
-add_executable(mqtt_cli  ${INCLUDE_PAHO} main.c)
-target_link_libraries(mqtt_cli lbweli_driver)
+
+add_executable(${PROJECT_NAME}  main.c)
+target_link_libraries(${PROJECT_NAME} LbELI)
 
