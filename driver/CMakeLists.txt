@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.12)
 
+
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build)
@@ -12,7 +13,7 @@ project(PahoMqtt C)
 set(CMAKE_C_STANDARD 11)
 
 message(STATUS "Current Binary Dir is ${CMAKE_CURRENT_BINARY_DIR}")
-
+message(STATUS "C-Compiler is ${CMAKE_C_COMPILER}" )
 
 ## build settings
 set(PAHO_VERSION_MAJOR 1)
@@ -47,7 +48,7 @@ target_link_libraries(${PROJECT_NAME} PahoMqtt)
 
 ## Build Sample console Application 
 
-project(LbELI_cli)
+project(LbELI_cli C)
 
 add_executable(${PROJECT_NAME}  main.c)
 target_link_libraries(${PROJECT_NAME} LbELI)

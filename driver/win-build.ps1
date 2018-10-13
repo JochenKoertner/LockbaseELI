@@ -1,11 +1,15 @@
 # Set-ExecutionPolicy Unrestricted 
 
-$clang = '"C:/Program\ Files/LLVM/bin/clang.exe"'
+$clang = '"C:/LLVM/bin/clang-cl.exe"'
+$clangxx = '"C:/Program\ Files/LLVM/bin/clang++.exe"'
 $make = '"C:/MinGW/bin/mingw32-make.exe"'
 $generator = '"MinGW Makefiles"'
 $buildType = 'Debug'
 $path = '.'
 $buildPath = './build'
+
+
+# https://www.powershellgallery.com/packages/WebKitDev/0.1.12/Content/Functions%5CInvoke-CMakeBuild.ps1
 
 # Remove temp files
 
@@ -28,10 +32,10 @@ $genArgs += ('{0}' -f $path);
 # Create the generate call
 $genCall = ('cmake {0}' -f ($genArgs -Join ' '));
 
-Write-Host $genCall
+# Write-Host $genCall
 Invoke-Expression $genCall
 
-#$buildCall = ('cmake {0}' -f ($buildArgs -Join ' '));
+# $buildCall = ('cmake {0}' -f ($buildArgs -Join ' '));
 
 #Write-Host $buildCall
 #Invoke-Expression $buildCall
