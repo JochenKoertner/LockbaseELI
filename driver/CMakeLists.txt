@@ -41,8 +41,6 @@ add_library(${PROJECT_NAME} ${SOURCES_PAHO} )
 
 project(LbELI C)
 
-## set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ./build )
-
 include_directories( "${PROJECT_SOURCE_DIR}/paho.mqtt.c/src" ) 
 add_library(${PROJECT_NAME} library.c session_list.c)
 target_link_libraries(${PROJECT_NAME} PahoMqtt)
@@ -50,8 +48,6 @@ target_link_libraries(${PROJECT_NAME} PahoMqtt)
 ## Build Sample console Application 
 
 project(LbELI_cli)
-
-## set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ./build )
 
 add_executable(${PROJECT_NAME}  main.c)
 target_link_libraries(${PROJECT_NAME} LbELI)

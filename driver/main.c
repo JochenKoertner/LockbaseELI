@@ -7,7 +7,9 @@
 
 #define ADDRESS     "tcp://localhost:1883"
 #define CLIENT_ID    "Alice"
-#define TOPIC       "channel"
+#define SYSTEM       "channel"
+
+#define TOPIC       "heartbeat"
 #define PAYLOAD     "The dark side of the moon (Pink Flyod)"
 #define QOS         2
 #define TIMEOUT     10000L
@@ -40,7 +42,7 @@ int main() {
     ELIDriverUI( "sessionID", "SID");
 
     // open connection to hardware (in this case MQTT broker)
-    const char* session = ELIOpen("UserList", TOPIC, CLIENT_ID);
+    const char* session = ELIOpen("UserList", SYSTEM, CLIENT_ID);
     printf("Session : %s\n", session);
 
     // close connection to hardware (i.e. MQTT broker disconnect)

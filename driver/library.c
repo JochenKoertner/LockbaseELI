@@ -18,9 +18,12 @@ ELIDrv2App  globalCallback;
 #define ADDRESS     "tcp://localhost:1883"
 #define CLIENT_ID   "Alice"
 
-#define TOPIC       "channel"
-#define QOS         2
 #define TIMEOUT     1000L
+
+
+#define QoS_FireAndForget   0
+#define QoS_AtLeastOnce     1
+#define QoS_ExactlyOnce     2
 
 
 MQTTClient client;
@@ -58,42 +61,85 @@ int mqtt_disconnect() {
     return MQTTClient_disconnect(client, 1000);
 }
 
-int mqtt_publish(const char* payload) {
+int mqtt_publish(const char* topic, const char* payload, int qos) {
 
     MQTTClient_deliveryToken token;
 
     MQTTClient_message pubmsg = MQTTClient_message_initializer;
     pubmsg.payload = (char*)payload;
     pubmsg.payloadlen = (int) strlen(payload);
-    pubmsg.qos = QOS;
+    pubmsg.qos = qos;
     pubmsg.retained = 0;
     int rc;
-    if ((rc = MQTTClient_publishMessage(client, TOPIC, &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
+    if ((rc = MQTTClient_publishMessage(client, topic, &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
         printf("Failed to publish, return code %d\n", rc);
         return rc;
     }
+
+    if (qos == QoS_FireAndForget)
+        return rc;
+
     printf("Waiting for up to %d seconds for publication of %s\n"
            "on topic %s for client with ClientID: %s\n",
-           (int) (TIMEOUT / 1000), "sss", TOPIC, CLIENT_ID);
+           (int) (TIMEOUT / 1000), "sss", topic, CLIENT_ID);
     rc = MQTTClient_waitForCompletion(client, token, TIMEOUT);
-    printf("Message with delivery token %d delivered\n", token);
+    if (rc != MQTTCLIENT_SUCCESS) {
+        printf("Message publish timed out, return code %d\n", rc);
+        return rc;
+    }
+    return token;
+}
+
+int mqtt_subscribe(const char* topic, int qos) {
+    int rc = MQTTClient_subscribe(client, topic, qos);
+    if (rc != MQTTCLIENT_SUCCESS) {
+        printf("Failed to subscribe '%s' return code %d\n", topic, rc);
+    }
     return rc;
 }
+
+int mqtt_unsubscribe(const char* topic) {
+    int rc = MQTTClient_unsubscribe(client, topic);
+    if (rc != MQTTCLIENT_SUCCESS) {
+        printf("Failed to unsubscribe return code %d\n", rc);
+    }
+    return rc;
+}
+
+
+
 
 int mqtt_receive_msg() {
     char* topicName = NULL;
     int topicLen;
     MQTTClient_message* msg = NULL;
-    int rc;
-    if ((rc = MQTTClient_receive(client, &topicName, &topicLen, &msg, 10000L)) != MQTTCLIENT_SUCCESS) {
+
+    int rc = mqtt_subscribe("heartbeat", QoS_ExactlyOnce);
+    if (rc != MQTTCLIENT_SUCCESS) {
+        return rc;
+    }
+
+
+    if ((rc = MQTTClient_receive(client, &topicName, &topicLen, &msg, 5000L)) != MQTTCLIENT_SUCCESS) {
         printf("Failed to receive, return code %d\n", rc);
         return rc;
     }
-    if (msg != NULL) {
-        printf("Receive from %s\n", topicName);
+
+    if (topicName) {
+
+        if (msg != NULL) {
+            printf("Message received on topic %s is %.*s", topicName, msg->payloadlen, (char*)(msg->payload));
+            MQTTClient_freeMessage(&msg);
+        }
         MQTTClient_free(topicName);
-        MQTTClient_freeMessage(&msg);
     }
+    else
+        printf("No message received within timeout period\n");
+
+    rc = mqtt_unsubscribe("heartbeat");
+    if (rc != MQTTCLIENT_SUCCESS)
+        return rc;
+
     return MQTTCLIENT_SUCCESS;
 }
 
@@ -232,9 +278,9 @@ const char* ELISystemInfo( const char* sUsers ) {
 
 const char* ELIOpen( const char* sUserList, const char* sSystem, const char* sExtData) {
 
-    int ret = mqtt_connect();
-    if (ret != MQTTCLIENT_SUCCESS) {
-        printf("mqtt_connect() => %i\n", ret);
+    int rc = mqtt_connect();
+    if (rc != MQTTCLIENT_SUCCESS) {
+        printf("mqtt_connect() => %i\n", rc);
         return "EUNKNOWN";
     }
 
@@ -242,7 +288,10 @@ const char* ELIOpen( const char* sUserList, const char* sSystem, const char* sEx
     printf("Session %08X\n", node->session_id);
 
     const char* sSessID = session_id_to_string(node->session_id);
-    mqtt_publish(json_payload_create(sSessID, "The Dark side of the moon..."));
+    rc = mqtt_publish(sSystem, json_payload_create(sSessID, "ELIOpen"), QoS_FireAndForget);
+    if (rc != MQTTCLIENT_SUCCESS) {
+        return "EUNKNOWN";
+    }
 
     mqtt_receive_msg();
     return sSessID;
@@ -251,7 +300,21 @@ const char* ELIOpen( const char* sUserList, const char* sSystem, const char* sEx
 
 const char* ELIClose( const char* sSessID ) {
 
+
     int session_id = string_to_session_id(sSessID);
+
+    node_t * node = find_session(sessions, session_id);
+    if (!node)
+    {
+        printf("session %s unknown\n", sSessID);
+        return "EUNKNOWN";
+    }
+
+    int rc = mqtt_publish(node->sSystem, json_payload_create(sSessID, "ELIClose"), QoS_FireAndForget);
+    if (rc != MQTTCLIENT_SUCCESS) {
+        printf("not publish to %s retcode %d \n", rc);
+        return "ECONNECTION";
+    }
 
     printf("remove session_id %08X\n", session_id);
     remove_session(&sessions, session_id);
