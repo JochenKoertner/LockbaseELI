@@ -1,5 +1,12 @@
 cmake_minimum_required(VERSION 3.12)
 
+set(CMAKE_SYSTEM_NAME Windows)
+
+set(CMAKE_C_COMPILER clang-cl)
+set(CMAKE_C_FLAGS -m32)
+
+
+set(CMAKE_LIBRARY_PATH "C:/Program\ Files/Microsoft\ SDKs/Windows/v7.1/lib")
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build)
