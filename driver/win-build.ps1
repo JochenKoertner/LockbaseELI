@@ -5,40 +5,41 @@ $clangxx = '"C:/Program\ Files/LLVM/bin/clang++.exe"'
 $make = '"C:/MinGW/bin/mingw32-make.exe"'
 $generator = '"MinGW Makefiles"'
 $buildType = 'Debug'
-$path = '.'
-$buildPath = './build'
+$path = '..'
 
 
 # https://www.powershellgallery.com/packages/WebKitDev/0.1.12/Content/Functions%5CInvoke-CMakeBuild.ps1
 
-# Remove temp files
+# Remove temp file
 
-Remove-Item build -Recurse -Force 
+# call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" x86
+
+
 Remove-Item CMakeFiles -Recurse -Force
 Remove-Item CMakeCache.txt -Force
-Remove-Item cmake_install.cmake -Force
-Remove-Item Makefile -Force
 
 $genArgs = @('-G')
-$genArgs += @('"MinGW Makefiles"');
+$genArgs += @('"Visual Studio 14 2015"');
+$genArgs += ('-T "{0}"' -f "LLVM-vs2014");
 
 $genArgs += ('-DCMAKE_BUILD_TYPE={0}' -f $buildType);
-$genArgs += ('-DCMAKE_C_COMPILER={0}' -f $clang);
-$genArgs += ('-DCMAKE_MAKE_PROGRAM={0}' -f $make);
+$genArgs += '-DPAHO_WITH_SSL=FALSE';
+$genArgs += '-DPAHO_BUILD_DOCUMENTATION=FALSE';
+$genArgs += '-DPAHO_BUILD_SAMPLES=FALSE';
+$genArgs += '-DCMAKE_VERBOSE_MAKEFILE=TRUE';
 
-$genArgs += ('-B {0}' -f $buildPath);
 $genArgs += ('{0}' -f $path);
 
 # Create the generate call
 $genCall = ('cmake {0}' -f ($genArgs -Join ' '));
 
 # Write-Host $genCall
-Invoke-Expression $genCall
+Invoke-Expression $genCall;
 
-# $buildCall = ('cmake {0}' -f ($buildArgs -Join ' '));
+$buildCall = 'cmake --build .';
 
 #Write-Host $buildCall
-#Invoke-Expression $buildCall
+Invoke-Expression $buildCall
 
 # Call cmake 
 #Write-Host $clang

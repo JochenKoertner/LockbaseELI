@@ -5,7 +5,8 @@
 
 #include "MQTTClient.h"
 
-#define ADDRESS     "tcp://localhost:1883"
+// #define ADDRESS     "tcp://localhost:1883"
+#define ADDRESS     "tcp://10.0.2.2:1883"
 #define CLIENT_ID    "Alice"
 #define SYSTEM       "channel"
 

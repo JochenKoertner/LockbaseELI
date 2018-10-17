@@ -4,7 +4,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>
-#include <regex.h>
 
 #include "MQTTClient.h"
 #include "library.h"
@@ -15,7 +14,8 @@
  */
 ELIDrv2App  globalCallback;
 
-#define ADDRESS     "tcp://localhost:1883"
+// #define ADDRESS     "tcp://localhost:1883"
+#define ADDRESS     "tcp://10.0.2.2:1883"
 #define CLIENT_ID   "Alice"
 
 #define TIMEOUT     1000L
