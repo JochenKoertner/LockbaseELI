@@ -1,5 +1,3 @@
-
-
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -14,34 +12,29 @@
  */
 ELIDrv2App  globalCallback;
 
-// #define ADDRESS     "tcp://localhost:1883"
-#define ADDRESS     "tcp://10.0.2.2:1883"
+#define ADDRESS     "tcp://localhost:1883"
+// #define ADDRESS     "tcp://10.0.2.2:1883"
 #define CLIENT_ID   "Alice"
 
 #define TIMEOUT     1000L
-
 
 #define QoS_FireAndForget   0
 #define QoS_AtLeastOnce     1
 #define QoS_ExactlyOnce     2
 
-
 MQTTClient client;
 // MQTTClient_message pubmsg = MQTTClient_message_initializer;
-
 
 // session list
 node_t * sessions = NULL;
 
-int mqtt_create() {
-    return MQTTClient_create(&client, ADDRESS, CLIENT_ID, MQTTCLIENT_PERSISTENCE_NONE, NULL);
+int mqtt_create(const char* serverURI) {
+    return MQTTClient_create(&client, serverURI, CLIENT_ID, MQTTCLIENT_PERSISTENCE_NONE, NULL);
 }
 
 void mqtt_destroy() {
     MQTTClient_destroy(&client);
 }
-
-
 
 int mqtt_connect() {
     MQTTClient_connectOptions conn_opts = MQTTClient_connectOptions_initializer;
@@ -105,9 +98,6 @@ int mqtt_unsubscribe(const char* topic) {
     }
     return rc;
 }
-
-
-
 
 int mqtt_receive_msg() {
     char* topicName = NULL;
@@ -180,7 +170,7 @@ LBELI_EXPORT const char* ELICreate( const char* sLic, const char* sLbwELIRev, EL
     // seed random number generator with clock
     srand(clock());
 
-    int ret = mqtt_create();
+    int ret = mqtt_create(ADDRESS);
     if (ret != MQTTCLIENT_SUCCESS) {
         printf("mqtt_create() => %i\n", ret);
         return "EUNKNOWN";
@@ -311,7 +301,7 @@ LBELI_EXPORT const char* ELIClose( const char* sSessID ) {
 
     int rc = mqtt_publish(node->sSystem, json_payload_create(sSessID, "ELIClose"), QoS_FireAndForget);
     if (rc != MQTTCLIENT_SUCCESS) {
-        printf("not publish to %s retcode %d \n", rc);
+        printf("not publish to %s retcode %d \n", node->sSystem, rc);
         return "ECONNECTION";
     }
 

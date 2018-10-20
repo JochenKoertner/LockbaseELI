@@ -1,5 +1,5 @@
-#ifndef MQTT_LIB_LIBRARY_H
-#define MQTT_LIB_LIBRARY_H
+#ifndef LBELI_LIBRARY_H
+#define LBELI_LIBRARY_H
 
 #include <stdio.h>
 
