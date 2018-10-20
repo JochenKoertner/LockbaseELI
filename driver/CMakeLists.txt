@@ -24,8 +24,6 @@ set(CLIENT_VERSION ${PAHO_VERSION_MAJOR}.${PAHO_VERSION_MINOR}.${PAHO_VERSION_PA
 string(TIMESTAMP BUILD_TIMESTAMP UTC)
 message(STATUS "Timestamp is ${BUILD_TIMESTAMP}")
 
-# ADD_SUBDIRECTORY(paho.mqtt.c/src)
-
 set(PROJECT_SOURCE_DIR ${PROJECT_SOURCE_DIR}/paho.mqtt.c/src)
 
 file(GLOB SOURCES_PAHO ${PROJECT_SOURCE_DIR}/*.c)
@@ -44,9 +42,9 @@ add_library(${PROJECT_NAME} ${SOURCES_PAHO} )
 
 project(LbELI C)
 
-include_directories( "${PROJECT_SOURCE_DIR}/paho.mqtt.c/src" ) 
-add_library(${PROJECT_NAME} library.c session_list.c)
-target_link_libraries(${PROJECT_NAME} PahoMqtt)
+include_directories( "${PROJECT_SOURCE_DIR}/paho.mqtt.c/src" )
+add_library(${PROJECT_NAME} SHARED library.c session_list.c)
+target_link_libraries(${PROJECT_NAME} PahoMqtt ${LIBS_SYSTEM} )
 
 ## Build Sample console Application ------------------------------------
 
