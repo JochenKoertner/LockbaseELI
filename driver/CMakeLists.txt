@@ -1,18 +1,19 @@
 cmake_minimum_required(VERSION 3.12)
 
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build)
+IF (WIN32)
+    SET(LIBS_SYSTEM ws2_32)
+ENDIF()
 
-
-## Build PahoMqtt Library 
-
-
-project(PahoMqtt C)
 set(CMAKE_C_STANDARD 11)
 
-message(STATUS "Current Binary Dir is ${CMAKE_CURRENT_BINARY_DIR}")
+## Build PahoMqtt Library ----------------------------------------------
+project(PahoMqtt C)
 
+IF(WIN32)
+  ADD_DEFINITIONS(-D_CRT_SECURE_NO_DEPRECATE -DWIN32_LEAN_AND_MEAN -MD)
+ELSEIF(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
+  ADD_DEFINITIONS(-DOSX)
+ENDIF()
 
 ## build settings
 set(PAHO_VERSION_MAJOR 1)
@@ -30,25 +31,24 @@ file(GLOB INCLUDE_PAHO ${PROJECT_SOURCE_DIR}/MQTT*.h)
 
 configure_file( 
 	"${PROJECT_SOURCE_DIR}/VersionInfo.h.in"
-	"${PROJECT_BINARY_DIR}/build/VersionInfo.h"
+	"${PROJECT_BINARY_DIR}/VersionInfo.h"
 	 )
 
-include_directories( "${PROJECT_BINARY_DIR}/build" )
+include_directories( "${PROJECT_BINARY_DIR}" )
 
 add_library(${PROJECT_NAME} ${SOURCES_PAHO} )
 
-## Build Driver Dynamic Library 
+## Build Driver Dynamic Library ----------------------------------------
 
 project(LbELI C)
 
-include_directories( "${PROJECT_SOURCE_DIR}/paho.mqtt.c/src" ) 
-add_library(${PROJECT_NAME} library.c session_list.c)
-target_link_libraries(${PROJECT_NAME} PahoMqtt)
+include_directories( "${PROJECT_SOURCE_DIR}/paho.mqtt.c/src" )
+add_library(${PROJECT_NAME} SHARED library.c session_list.c)
+target_link_libraries(${PROJECT_NAME} PahoMqtt ${LIBS_SYSTEM} )
 
-## Build Sample console Application 
+## Build Sample console Application ------------------------------------
 
-project(LbELI_cli)
+project(LbELI_cli C)
 
 add_executable(${PROJECT_NAME}  main.c)
-target_link_libraries(${PROJECT_NAME} LbELI)
-
+target_link_libraries(${PROJECT_NAME} LbELI ${LIBS_SYSTEM} )

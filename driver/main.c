@@ -3,15 +3,8 @@
 
 #include "library.h"
 
-#include "MQTTClient.h"
-
-#define ADDRESS     "tcp://localhost:1883"
 #define CLIENT_ID    "Alice"
 #define SYSTEM       "channel"
-
-#define TOPIC       "heartbeat"
-#define PAYLOAD     "The dark side of the moon (Pink Flyod)"
-#define QOS         2
 #define TIMEOUT     10000L
 
 int myCallBack( const char* sSessID, int nJob, const char* sJob) {
@@ -48,6 +41,7 @@ int main() {
     // close connection to hardware (i.e. MQTT broker disconnect)
     printf("%s\n", ELIClose(session));
 
+    // destroy the driver interface
     ELIDestroy();
     return 0;
 }

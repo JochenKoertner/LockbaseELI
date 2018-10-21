@@ -1,10 +1,7 @@
-
-
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>
-#include <regex.h>
 
 #include "MQTTClient.h"
 #include "library.h"
@@ -16,32 +13,28 @@
 ELIDrv2App  globalCallback;
 
 #define ADDRESS     "tcp://localhost:1883"
+// #define ADDRESS     "tcp://10.0.2.2:1883"
 #define CLIENT_ID   "Alice"
 
 #define TIMEOUT     1000L
-
 
 #define QoS_FireAndForget   0
 #define QoS_AtLeastOnce     1
 #define QoS_ExactlyOnce     2
 
-
 MQTTClient client;
 // MQTTClient_message pubmsg = MQTTClient_message_initializer;
-
 
 // session list
 node_t * sessions = NULL;
 
-int mqtt_create() {
-    return MQTTClient_create(&client, ADDRESS, CLIENT_ID, MQTTCLIENT_PERSISTENCE_NONE, NULL);
+int mqtt_create(const char* serverURI) {
+    return MQTTClient_create(&client, serverURI, CLIENT_ID, MQTTCLIENT_PERSISTENCE_NONE, NULL);
 }
 
 void mqtt_destroy() {
     MQTTClient_destroy(&client);
 }
-
-
 
 int mqtt_connect() {
     MQTTClient_connectOptions conn_opts = MQTTClient_connectOptions_initializer;
@@ -106,9 +99,6 @@ int mqtt_unsubscribe(const char* topic) {
     return rc;
 }
 
-
-
-
 int mqtt_receive_msg() {
     char* topicName = NULL;
     int topicLen;
@@ -162,25 +152,25 @@ char* json_payload_create(const char* sSessID, const char* sText) {
 }
 
 /*
- *  LbwELI() is the constructor of the interface object, which is required to use the interface. It expects the
- *  application to identify itself by its licence and LbwELI revision number, which allows the driver to support
- *  different interface revisions and adjust its services to different types of installations (e.g. factory, locksmith
- *  or end user installation). Secondly the constructor expects a callback function pointer to launch the driver's
- *  responses to job requests (s.b.).
- *  In case the constructor supports the requested interface revision, it simply returns EOK. In case it does not,
- *  it returns EREV, followed by the best interface it supports:
- *       [ID:Error],[TXT:DrvELIRev]
- *   This allows the application to 'downgrade' to an older drivers capabilities. If the driver cannot start
- *   for ny other reason, the constructor returns EUNKNOWN.
- */
+*  LbwELI() is the constructor of the interface object, which is required to use the interface. It expects the
+*  application to identify itself by its licence and LbwELI revision number, which allows the driver to support
+*  different interface revisions and adjust its services to different types of installations (e.g. factory, locksmith
+*  or end user installation). Secondly the constructor expects a callback function pointer to launch the driver's
+*  responses to job requests (s.b.).
+*  In case the constructor supports the requested interface revision, it simply returns EOK. In case it does not,
+*  it returns EREV, followed by the best interface it supports:
+*       [ID:Error],[TXT:DrvELIRev]
+*   This allows the application to 'downgrade' to an older drivers capabilities. If the driver cannot start
+*   for ny other reason, the constructor returns EUNKNOWN.
+*/
 
-const char* ELICreate( const char* sLic, const char* sLbwELIRev, ELIDrv2App callback ) {
+LBELI_EXPORT const char* ELICreate( const char* sLic, const char* sLbwELIRev, ELIDrv2App callback ) {
     printf("Lizenz: %s Revision: %s", sLic, sLbwELIRev);
 
     // seed random number generator with clock
     srand(clock());
 
-    int ret = mqtt_create();
+    int ret = mqtt_create(ADDRESS);
     if (ret != MQTTCLIENT_SUCCESS) {
         printf("mqtt_create() => %i\n", ret);
         return "EUNKNOWN";
@@ -188,8 +178,8 @@ const char* ELICreate( const char* sLic, const char* sLbwELIRev, ELIDrv2App call
 
     /* check requested revision
     if (sLbwELIRev > "1.2") {
-       return "EREV\n"
-              u8"[ID:Error],[TXT:DrvELIRev]";
+    return "EREV\n"
+            u8"[ID:Error],[TXT:DrvELIRev]";
     }*/
 
     globalCallback = callback;
@@ -198,53 +188,53 @@ const char* ELICreate( const char* sLic, const char* sLbwELIRev, ELIDrv2App call
 }
 
 /*
- * ELIDestroy() is the destructor of the interface object, it will be called on application termination or when
- * the application detaches from the driver for other reasons. The application will call the destructor anyway,
- * even if the constructor did not returned EOK.
- */
-void ELIDestroy() {
+* ELIDestroy() is the destructor of the interface object, it will be called on application termination or when
+* the application detaches from the driver for other reasons. The application will call the destructor anyway,
+* even if the constructor did not returned EOK.
+*/
+LBELI_EXPORT void ELIDestroy() {
     mqtt_destroy();
 }
 
 /*
- * To retrieve global information about the driver the application will call the interface function DriverInfo()
- *
- * The function returns a text pointer containing definitions for the following variables (s.b.).
- * The returned text must be available for the application at least until the next call of an interface function.
- * The information returned by DriverInfo() is expected to be unchanged within the same driver revision.
- */
+* To retrieve global information about the driver the application will call the interface function DriverInfo()
+*
+* The function returns a text pointer containing definitions for the following variables (s.b.).
+* The returned text must be available for the application at least until the next call of an interface function.
+* The information returned by DriverInfo() is expected to be unchanged within the same driver revision.
+*/
 
-const char* ELIDriverInfo() {
+LBELI_EXPORT const char* ELIDriverInfo() {
 
     return u8"DriverRevision=0.9\n"         // required
-           u8"LbwELIRevision=0.1.1837\n"    // required
-           u8"Manufacturer = KMGmbH,\"de:Körtner & Muth GmbH\"\n" // required
-           u8"Products = [ID:product 1],[LTL:product name 1];[ID: product 2],[LTL:product name 2]\n" // required
-           u8"DriverAuthor = [LTL:CaptainFuture]\n" // optional
-           u8"DriverCopyright = [LTL:Copyright CaptainFuture (c) 2018]\n" // optional
-           u8"DriverUI = [LTL:Start DemoApp]\n" // optional
+        u8"LbwELIRevision=0.1.1837\n"    // required
+        u8"Manufacturer = KMGmbH,\"de:Körtner & Muth GmbH\"\n" // required
+        u8"Products = [ID:product 1],[LTL:product name 1];[ID: product 2],[LTL:product name 2]\n" // required
+        u8"DriverAuthor = [LTL:CaptainFuture]\n" // optional
+        u8"DriverCopyright = [LTL:Copyright CaptainFuture (c) 2018]\n" // optional
+        u8"DriverUI = [LTL:Start DemoApp]\n" // optional
             ;
 }
 
 /*
- * ELIDriverUI() will receive the application's current session id and the id of the current active system as
- * parameters (s.b.). This variable is optional, by default no driver provided user interface will be supported.
- */
+* ELIDriverUI() will receive the application's current session id and the id of the current active system as
+* parameters (s.b.). This variable is optional, by default no driver provided user interface will be supported.
+*/
 
-void ELIDriverUI(const char* SessID, const char* SID) {
+LBELI_EXPORT void ELIDriverUI(const char* SessID, const char* SID) {
     printf("Start Browser  SessID='%s'  SID='%s'\n", SessID, SID);
 }
 
 /*
- * The device capabilities and limitations are regarded to be product dependent.
- * They will be requested by a call to the ProductInfo() method
- *
- * The function returns a text pointer containing definitions for the following variables (s.b.).
- * The returned text must be available for the application at least until the next call of an interface function.
- * The information returned by ProductInfo() is expected to be unchanged within the same driver revision.
- */
+* The device capabilities and limitations are regarded to be product dependent.
+* They will be requested by a call to the ProductInfo() method
+*
+* The function returns a text pointer containing definitions for the following variables (s.b.).
+* The returned text must be available for the application at least until the next call of an interface function.
+* The information returned by ProductInfo() is expected to be unchanged within the same driver revision.
+*/
 
-const char* ELIProductInfo( const char* sProductID ) {
+LBELI_EXPORT const char* ELIProductInfo( const char* sProductID ) {
     return
             u8"ProgrammingTarget=0\n" // required
             u8"DeviceCapacity=INT\n"  // required
@@ -263,7 +253,7 @@ const char* ELIProductInfo( const char* sProductID ) {
             ;
 }
 
-const char* ELISystemInfo( const char* sUsers ) {
+LBELI_EXPORT const char* ELISystemInfo( const char* sUsers ) {
     // send message to broker
     // connect();
     // publish(PAYLOAD);
@@ -276,7 +266,7 @@ const char* ELISystemInfo( const char* sUsers ) {
             u8",[ID:Product2],,[ACLR]\n";
 }
 
-const char* ELIOpen( const char* sUserList, const char* sSystem, const char* sExtData) {
+LBELI_EXPORT const char* ELIOpen( const char* sUserList, const char* sSystem, const char* sExtData) {
 
     int rc = mqtt_connect();
     if (rc != MQTTCLIENT_SUCCESS) {
@@ -298,8 +288,7 @@ const char* ELIOpen( const char* sUserList, const char* sSystem, const char* sEx
     // return "EOK";
 }
 
-const char* ELIClose( const char* sSessID ) {
-
+LBELI_EXPORT const char* ELIClose( const char* sSessID ) {
 
     int session_id = string_to_session_id(sSessID);
 
@@ -312,7 +301,7 @@ const char* ELIClose( const char* sSessID ) {
 
     int rc = mqtt_publish(node->sSystem, json_payload_create(sSessID, "ELIClose"), QoS_FireAndForget);
     if (rc != MQTTCLIENT_SUCCESS) {
-        printf("not publish to %s retcode %d \n", rc);
+        printf("not publish to %s retcode %d \n", node->sSystem, rc);
         return "ECONNECTION";
     }
 
@@ -329,7 +318,3 @@ const char* ELIClose( const char* sSessID ) {
 
     return "EOK";
 }
-
-
-
-
