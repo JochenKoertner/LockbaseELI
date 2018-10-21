@@ -1,0 +1,50 @@
+@startuml
+
+' skinparam handwritten true
+' http://plantuml.com/sequence-diagram
+
+title Message Style - Sequence Diagram
+
+participant "Lockbase" as LB
+participant "Driver" as ELI
+participant "Backend" as BE
+participant "Frontend" as FE
+
+group 
+    LB -> ELI: ELICreate()
+    activate ELI #yellow
+    
+    ELI -> BE : mqtt_create()
+    LB <-- ELI: "EOK"
+    
+    
+    group Topic 'Channel'
+    
+        LB -> ELI: ELIOpen()
+        activate ELI #green
+        ELI -> BE : mqtt_publish("Open")
+        LB <-- ELI: sessionId
+        
+        
+
+
+        LB -> ELI: ELIClose(sessionId)
+        ELI -> BE : mqtt_publish("Close")
+        deactivate ELI
+        
+        
+    end
+    
+    LB -> ELI: ELIDestroy()
+    
+    ELI -> BE : mqtt_destroy()
+    
+    
+    
+    LB <-- ELI: "EOK"
+    deactivate ELI
+    
+end
+
+
+@enduml
