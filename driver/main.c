@@ -38,6 +38,9 @@ int main() {
     const char* session = ELIOpen("UserList", SYSTEM, CLIENT_ID);
     printf("Session : %s\n", session);
 
+    int rc = ELIApp2Drv( session, 4711, "Job");
+
+
     // close connection to hardware (i.e. MQTT broker disconnect)
     printf("%s\n", ELIClose(session));
 

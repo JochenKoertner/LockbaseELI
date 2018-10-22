@@ -40,7 +40,7 @@ add_library(${PROJECT_NAME} ${SOURCES_PAHO} )
 
 ## Build Driver Dynamic Library ----------------------------------------
 
-project(LbELI C)
+project(LbwELI.KMGmbH C)
 
 include_directories( "${PROJECT_SOURCE_DIR}/paho.mqtt.c/src" )
 add_library(${PROJECT_NAME} SHARED library.c session_list.c)
@@ -51,4 +51,4 @@ target_link_libraries(${PROJECT_NAME} PahoMqtt ${LIBS_SYSTEM} )
 project(LbELI_cli C)
 
 add_executable(${PROJECT_NAME}  main.c)
-target_link_libraries(${PROJECT_NAME} LbELI ${LIBS_SYSTEM} )
+target_link_libraries(${PROJECT_NAME} LbwELI.KMGmbH ${LIBS_SYSTEM} )
