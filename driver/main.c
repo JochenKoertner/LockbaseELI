@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "library.h"
@@ -14,6 +15,19 @@ int myCallBack( const char* sSessID, int nJob, const char* sJob) {
     printf("%s\n", sJob);
 
     return 42;
+}
+
+const char* getfield(char* line, int num)
+{
+    const char* tok;
+    for (tok = strtok(line, ",");
+            tok && *tok;
+            tok = strtok(NULL, ","))
+    {
+        if (!--num)
+            return tok;
+    }
+    return NULL;
 }
 
 int main() {
@@ -35,11 +49,22 @@ int main() {
     ELIDriverUI( "sessionID", "SID");
 
     // open connection to hardware (in this case MQTT broker)
-    const char* session = ELIOpen("UserList", SYSTEM, CLIENT_ID);
-    printf("Session : %s\n", session);
+    char* csv = ELIOpen("UserList", SYSTEM, CLIENT_ID);
+
+    const char* errorCode = getfield(csv, 1);
+    const char* session = getfield(csv, 2);
+    printf("[%s]\n[%s]\n", csv, session);
+    
+
+    // split csv
+    // retrieve first & second element 
+    // first => EOK
+    // second => sessionId 
+
+    // approach Regular Expressions or spliting bei , ?
+
 
     int rc = ELIApp2Drv( session, 4711, "Job");
-
 
     // close connection to hardware (i.e. MQTT broker disconnect)
     printf("%s\n", ELIClose(session));

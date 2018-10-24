@@ -13,6 +13,14 @@ node_t * new_session(node_t ** head, const char * sUserList, const char * sSyste
     new_node = malloc(sizeof(node_t));
 
     new_node->session_id = rand();
+    if (*head != NULL)
+    {
+        new_node->last_session_id = (*head)->session_id;
+    }
+    else
+    {
+        new_node->last_session_id = 0;
+    }
     new_node->sUserList = strdup(sUserList);
     new_node->sSystem = strdup(sSystem);
     new_node->sExtData = strdup(sExtData);

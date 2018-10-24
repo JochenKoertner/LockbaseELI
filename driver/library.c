@@ -271,7 +271,7 @@ LBELI_EXPORT const char* ELIOpen( const char* sUserList, const char* sSystem, co
     int rc = mqtt_connect();
     if (rc != MQTTCLIENT_SUCCESS) {
         printf("mqtt_connect() => %i\n", rc);
-        return "EUNKNOWN";
+        return "EUNKNOWN,,,,'0'";
     }
 
     node_t * node = new_session(&sessions, sUserList, sSystem, sExtData);
@@ -280,10 +280,12 @@ LBELI_EXPORT const char* ELIOpen( const char* sUserList, const char* sSystem, co
     const char* sSessID = session_id_to_string(node->session_id);
     rc = mqtt_publish(sSystem, json_payload_create(sSessID, "ELIOpen"), QoS_FireAndForget);
     if (rc != MQTTCLIENT_SUCCESS) {
-        return "EUNKNOWN";
+        return "EUNKNOWN,,,,'0'";
     }
     
-    return sSessID;
+    static char buf[100];
+    sprintf(buf, "%s,%08X,ACLR,%08X,'1'", "EOK", node->session_id, node->last_session_id);
+    return buf;
 }
 
 LBELI_EXPORT const char* ELIClose( const char* sSessID ) {
