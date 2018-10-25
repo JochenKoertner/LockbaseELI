@@ -13,6 +13,9 @@
     #define LBELI_EXPORT
 #endif
 
+
+#define LbwELI_VERSION     "0.1.1837"
+
 typedef int (*ELIDrv2App)( const char* sSessID, int nJob, const char* sJob);
 
 LBELI_EXPORT const char* ELIDriverInfo();

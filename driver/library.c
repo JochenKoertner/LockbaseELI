@@ -12,6 +12,7 @@
  */
 ELIDrv2App  globalCallback;
 
+
 #define ADDRESS     "tcp://localhost:1883"
 // #define ADDRESS     "tcp://10.0.2.2:1883"
 #define CLIENT_ID   "Alice"
@@ -165,14 +166,16 @@ char* json_payload_create(const char* sSessID, const char* sText) {
 */
 
 LBELI_EXPORT const char* ELICreate( const char* sLic, const char* sLbwELIRev, ELIDrv2App callback ) {
-    printf("Lizenz: %s Revision: %s", sLic, sLbwELIRev);
-
+    if (strcmp(sLbwELIRev, LbwELI_VERSION) != 0) {
+        return u8"EREV,"
+                LbwELI_VERSION;
+    }
+    
     // seed random number generator with clock
     srand(clock());
 
     int ret = mqtt_create(ADDRESS);
     if (ret != MQTTCLIENT_SUCCESS) {
-        printf("mqtt_create() => %i\n", ret);
         return "EUNKNOWN";
     }
 
