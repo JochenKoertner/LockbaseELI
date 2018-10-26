@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "library.h"
+#include "jsmn/jsmn.h"
 
 #define CLIENT_ID    "Alice"
 #define SYSTEM       "channel"
@@ -15,6 +16,56 @@ int myCallBack( const char* sSessID, int nJob, const char* sJob) {
     printf("%s\n", sJob);
 
     return 42;
+}
+
+static const char *JSON_STRING =
+	"{\"host\": \"localhost\", \"port\": 1883,\n }";
+
+static int jsoneq(const char *json, jsmntok_t *tok, const char *s) {
+	if (tok->type == JSMN_STRING && (int) strlen(s) == tok->end - tok->start &&
+			strncmp(json + tok->start, s, tok->end - tok->start) == 0) {
+		return 0;
+	}
+	return -1;
+}
+
+void parseConfigFile() {
+
+    int i;
+    int r;
+    jsmn_parser p;
+	jsmntok_t t[128]; /* We expect no more than 128 tokens */
+
+	jsmn_init(&p);
+	r = jsmn_parse(&p, JSON_STRING, strlen(JSON_STRING), t, sizeof(t)/sizeof(t[0]));
+	if (r < 0) {
+		printf("Failed to parse JSON: %d\n", r);
+	}
+
+    	/* Assume the top-level element is an object */
+	if (r < 1 || t[0].type != JSMN_OBJECT) {
+		printf("Object expected\n");
+	}
+
+	/* Loop over all keys of the root object */
+	for (i = 1; i < r; i++) {
+		if (jsoneq(JSON_STRING, &t[i], "host") == 0) {
+			/* We may use strndup() to fetch string value */
+			printf("- Host: %.*s\n", t[i+1].end-t[i+1].start,
+					JSON_STRING + t[i+1].start);
+			i++;
+		} else if (jsoneq(JSON_STRING, &t[i], "port") == 0) {
+			/* We may want to do strtol() here to get numeric value */
+			printf("- port: %.*s\n", t[i+1].end-t[i+1].start,
+					JSON_STRING + t[i+1].start);
+			i++;
+		} else {
+			printf("Unexpected key: %.*s\n", t[i].end-t[i].start,
+					JSON_STRING + t[i].start);
+		}
+	}
+
+    printf("All ok %d Tokens found!\n", r);
 }
 
 const char* getfield(const char* line, int num)
@@ -35,6 +86,10 @@ const char* getfield(const char* line, int num)
 }
 
 int main() {
+
+    // read configuration from Json File
+    parseConfigFile();
+    return 0;
 
     // initialise driver interface and register a callback function
     const char* retCode = ELICreate("lic", LbwELI_VERSION, myCallBack );
