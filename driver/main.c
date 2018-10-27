@@ -68,6 +68,32 @@ void parseConfigFile() {
     printf("All ok %d Tokens found!\n", r);
 }
 
+char* readFile(const char* file) {
+    FILE *fp = fopen(file, "rb");
+	if ( fp != NULL )
+	{
+        char *buf;
+        unsigned long fileLen = 0;
+        unsigned long bytesRead = 0;
+
+		fseek(fp, 0, SEEK_END);
+		int fileLen = ftell(fp);
+		fseek(fp, 0, SEEK_SET);
+		buf=(char *)malloc(fileLen);
+		bytesRead = (int)fread(buf, sizeof(char), fileLen, fp);
+		*buffer = buf;
+		*buflen = bytesRead;
+		if ( bytesRead != fileLen )
+		{
+            free(buf);
+            return NULL;
+        }
+		fclose(fp);
+	    return buf;
+	}
+    return NULL;
+}
+
 const char* getfield(const char* line, int num)
 {
     static char _line[200];
