@@ -7,11 +7,7 @@
 #include "library.h"
 #include "session_list.h"
 
-/*
- * Global variable for holding the function pointer for the callback from driver
- */
-ELIDrv2App  globalCallback;
-
+#include "driver.h"
 
 #define ADDRESS     "tcp://localhost:1883"
 // #define ADDRESS     "tcp://10.0.2.2:1883"
@@ -23,18 +19,14 @@ ELIDrv2App  globalCallback;
 #define QoS_AtLeastOnce     1
 #define QoS_ExactlyOnce     2
 
-MQTTClient client;
-// MQTTClient_message pubmsg = MQTTClient_message_initializer;
 
-// session list
-node_t * sessions = NULL;
 
 int mqtt_create(const char* serverURI) {
-    return MQTTClient_create(&client, serverURI, CLIENT_ID, MQTTCLIENT_PERSISTENCE_NONE, NULL);
+    return MQTTClient_create(&driverInfo->client, serverURI, CLIENT_ID, MQTTCLIENT_PERSISTENCE_NONE, NULL);
 }
 
 void mqtt_destroy() {
-    MQTTClient_destroy(&client);
+    MQTTClient_destroy(&driverInfo->client);
 }
 
 int mqtt_connect() {
@@ -43,7 +35,7 @@ int mqtt_connect() {
     conn_opts.cleansession = 1;
     int rc ;
 
-    if ((rc = MQTTClient_connect(client, &conn_opts)) != MQTTCLIENT_SUCCESS) // TODO: Hier kommt er nicht zurück??
+    if ((rc = MQTTClient_connect(driverInfo->client, &conn_opts)) != MQTTCLIENT_SUCCESS) // TODO: Hier kommt er nicht zurück??
     {
         printf("Failed to connect, return code %d\n", rc);
         return rc;
@@ -52,7 +44,7 @@ int mqtt_connect() {
 }
 
 int mqtt_disconnect() {
-    return MQTTClient_disconnect(client, 1000);
+    return MQTTClient_disconnect(driverInfo->client, 1000);
 }
 
 int mqtt_publish(const char* topic, const char* payload, int qos) {
@@ -65,7 +57,7 @@ int mqtt_publish(const char* topic, const char* payload, int qos) {
     pubmsg.qos = qos;
     pubmsg.retained = 0;
     int rc;
-    if ((rc = MQTTClient_publishMessage(client, topic, &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
+    if ((rc = MQTTClient_publishMessage(driverInfo->client, topic, &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
         printf("Failed to publish, return code %d\n", rc);
         return rc;
     }
@@ -76,7 +68,7 @@ int mqtt_publish(const char* topic, const char* payload, int qos) {
     printf("Waiting for up to %d seconds for publication of %s\n"
            "on topic %s for client with ClientID: %s\n",
            (int) (TIMEOUT / 1000), "sss", topic, CLIENT_ID);
-    rc = MQTTClient_waitForCompletion(client, token, TIMEOUT);
+    rc = MQTTClient_waitForCompletion(driverInfo->client, token, TIMEOUT);
     if (rc != MQTTCLIENT_SUCCESS) {
         printf("Message publish timed out, return code %d\n", rc);
         return rc;
@@ -85,7 +77,7 @@ int mqtt_publish(const char* topic, const char* payload, int qos) {
 }
 
 int mqtt_subscribe(const char* topic, int qos) {
-    int rc = MQTTClient_subscribe(client, topic, qos);
+    int rc = MQTTClient_subscribe(driverInfo->client, topic, qos);
     if (rc != MQTTCLIENT_SUCCESS) {
         printf("Failed to subscribe '%s' return code %d\n", topic, rc);
     }
@@ -93,7 +85,7 @@ int mqtt_subscribe(const char* topic, int qos) {
 }
 
 int mqtt_unsubscribe(const char* topic) {
-    int rc = MQTTClient_unsubscribe(client, topic);
+    int rc = MQTTClient_unsubscribe(driverInfo->client, topic);
     if (rc != MQTTCLIENT_SUCCESS) {
         printf("Failed to unsubscribe return code %d\n", rc);
     }
@@ -111,7 +103,7 @@ int mqtt_receive_msg(const char* topic, int timeout) {
     }
 
 
-    if ((rc = MQTTClient_receive(client, &topicName, &topicLen, &msg, 5000L)) != MQTTCLIENT_SUCCESS) {
+    if ((rc = MQTTClient_receive(driverInfo->client, &topicName, &topicLen, &msg, 5000L)) != MQTTCLIENT_SUCCESS) {
         printf("Failed to receive, return code %d\n", rc);
         return rc;
     }
@@ -174,6 +166,8 @@ LBELI_EXPORT const char* ELICreate( const char* sLic, const char* sLbwELIRev, EL
     // seed random number generator with clock
     srand(clock());
 
+    driverInfo = new_driver(callback);
+
     int ret = mqtt_create(ADDRESS);
     if (ret != MQTTCLIENT_SUCCESS) {
         return "EUNKNOWN";
@@ -185,7 +179,7 @@ LBELI_EXPORT const char* ELICreate( const char* sLic, const char* sLbwELIRev, EL
             u8"[ID:Error],[TXT:DrvELIRev]";
     }*/
 
-    globalCallback = callback;
+
 
     return "EOK";
 }
@@ -197,6 +191,9 @@ LBELI_EXPORT const char* ELICreate( const char* sLic, const char* sLbwELIRev, EL
 */
 LBELI_EXPORT void ELIDestroy() {
     mqtt_destroy();
+
+    free_driver(driverInfo);
+    driverInfo = NULL;
 }
 
 /*
@@ -277,7 +274,7 @@ LBELI_EXPORT const char* ELIOpen( const char* sUserList, const char* sSystem, co
         return "EUNKNOWN,,,,'0'";
     }
 
-    node_t * node = new_session(&sessions, sUserList, sSystem, sExtData);
+    node_t * node = new_session(&driverInfo->sessions, sUserList, sSystem, sExtData);
     printf("Session %08X\n", node->session_id);
 
     const char* sSessID = session_id_to_string(node->session_id);
@@ -295,7 +292,7 @@ LBELI_EXPORT const char* ELIClose( const char* sSessID ) {
 
     int session_id = string_to_session_id(sSessID);
 
-    node_t * node = find_session(sessions, session_id);
+    node_t * node = find_session(driverInfo->sessions, session_id);
     if (!node)
     {
         printf("session %s unknown\n", sSessID);
@@ -309,7 +306,7 @@ LBELI_EXPORT const char* ELIClose( const char* sSessID ) {
     }
 
     printf("remove session_id %08X\n", session_id);
-    remove_session(&sessions, session_id);
+    remove_session(&driverInfo->sessions, session_id);
     printf("removed session_id %08X\n", session_id);
 
     int ret = mqtt_disconnect();
@@ -326,7 +323,7 @@ LBELI_EXPORT int ELIApp2Drv( const char* sSessID, int nJob, const char* sJob) {
 
     int session_id = string_to_session_id(sSessID);
 
-    node_t * node = find_session(sessions, session_id);
+    node_t * node = find_session(driverInfo->sessions, session_id);
     if (!node)
     {
         printf("session %s unknown\n", sSessID);

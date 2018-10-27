@@ -15,7 +15,6 @@ ELSEIF(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
   ADD_DEFINITIONS(-DOSX)
 ENDIF()
 
-
 set(PROJECT_SOURCE_DIR ${PROJECT_SOURCE_DIR}/jsmn)
 
 add_library(${PROJECT_NAME} 
@@ -59,8 +58,8 @@ add_library(${PROJECT_NAME} ${SOURCES_PAHO} )
 project(LbwELI.KMGmbH C)
 
 include_directories( "${PROJECT_SOURCE_DIR}/paho.mqtt.c/src" )
-add_library(${PROJECT_NAME} SHARED library.c session_list.c)
-target_link_libraries(${PROJECT_NAME} PahoMqtt ${LIBS_SYSTEM} )
+add_library(${PROJECT_NAME} SHARED library.c session_list.c driver.c driver.h)
+target_link_libraries(${PROJECT_NAME} PahoMqtt Jsmn ${LIBS_SYSTEM} )
 
 ## Build Sample console Application --------------------------------
 
@@ -68,4 +67,4 @@ project(LbELI_cli C)
 
 add_executable(${PROJECT_NAME}  main.c)
 
-target_link_libraries(${PROJECT_NAME} Jsmn LbwELI.KMGmbH ${LIBS_SYSTEM} )
+target_link_libraries(${PROJECT_NAME} LbwELI.KMGmbH ${LIBS_SYSTEM} )
