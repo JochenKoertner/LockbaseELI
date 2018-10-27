@@ -12,6 +12,7 @@
  */
 ELIDrv2App  globalCallback;
 
+
 #define ADDRESS     "tcp://localhost:1883"
 // #define ADDRESS     "tcp://10.0.2.2:1883"
 #define CLIENT_ID   "Alice"
@@ -99,12 +100,12 @@ int mqtt_unsubscribe(const char* topic) {
     return rc;
 }
 
-int mqtt_receive_msg() {
+int mqtt_receive_msg(const char* topic, int timeout) {
     char* topicName = NULL;
     int topicLen;
     MQTTClient_message* msg = NULL;
 
-    int rc = mqtt_subscribe("heartbeat", QoS_ExactlyOnce);
+    int rc = mqtt_subscribe(topic, QoS_ExactlyOnce);
     if (rc != MQTTCLIENT_SUCCESS) {
         return rc;
     }
@@ -126,7 +127,7 @@ int mqtt_receive_msg() {
     else
         printf("No message received within timeout period\n");
 
-    rc = mqtt_unsubscribe("heartbeat");
+    rc = mqtt_unsubscribe(topic);
     if (rc != MQTTCLIENT_SUCCESS)
         return rc;
 
@@ -165,14 +166,16 @@ char* json_payload_create(const char* sSessID, const char* sText) {
 */
 
 LBELI_EXPORT const char* ELICreate( const char* sLic, const char* sLbwELIRev, ELIDrv2App callback ) {
-    printf("Lizenz: %s Revision: %s", sLic, sLbwELIRev);
-
+    if (strcmp(sLbwELIRev, LbwELI_VERSION) != 0) {
+        return u8"EREV,"
+                LbwELI_VERSION;
+    }
+    
     // seed random number generator with clock
     srand(clock());
 
     int ret = mqtt_create(ADDRESS);
     if (ret != MQTTCLIENT_SUCCESS) {
-        printf("mqtt_create() => %i\n", ret);
         return "EUNKNOWN";
     }
 
@@ -271,7 +274,7 @@ LBELI_EXPORT const char* ELIOpen( const char* sUserList, const char* sSystem, co
     int rc = mqtt_connect();
     if (rc != MQTTCLIENT_SUCCESS) {
         printf("mqtt_connect() => %i\n", rc);
-        return "EUNKNOWN";
+        return "EUNKNOWN,,,,'0'";
     }
 
     node_t * node = new_session(&sessions, sUserList, sSystem, sExtData);
@@ -280,12 +283,12 @@ LBELI_EXPORT const char* ELIOpen( const char* sUserList, const char* sSystem, co
     const char* sSessID = session_id_to_string(node->session_id);
     rc = mqtt_publish(sSystem, json_payload_create(sSessID, "ELIOpen"), QoS_FireAndForget);
     if (rc != MQTTCLIENT_SUCCESS) {
-        return "EUNKNOWN";
+        return "EUNKNOWN,,,,'0'";
     }
-
-    mqtt_receive_msg();
-    return sSessID;
-    // return "EOK";
+    
+    static char buf[100];
+    sprintf(buf, "%s,%08X,ACLR,%08X,'1'", "EOK", node->session_id, node->last_session_id);
+    return buf;
 }
 
 LBELI_EXPORT const char* ELIClose( const char* sSessID ) {
@@ -317,4 +320,26 @@ LBELI_EXPORT const char* ELIClose( const char* sSessID ) {
     printf("disconnected\n");
 
     return "EOK";
+}
+
+LBELI_EXPORT int ELIApp2Drv( const char* sSessID, int nJob, const char* sJob) {
+
+    int session_id = string_to_session_id(sSessID);
+
+    node_t * node = find_session(sessions, session_id);
+    if (!node)
+    {
+        printf("session %s unknown\n", sSessID);
+        return -1;
+    }
+
+    int rc = mqtt_publish(node->sSystem, json_payload_create(sSessID, "ELIApp2Drv"), QoS_FireAndForget);
+    if (rc != MQTTCLIENT_SUCCESS) {
+        printf("not publish to %s retcode %d \n", node->sSystem, rc);
+        return -1;
+    }
+
+    mqtt_receive_msg("heartbeat", 5000L);
+
+    return 0;
 }

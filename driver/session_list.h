@@ -4,6 +4,7 @@
 
 typedef struct node {
     int session_id;
+    int last_session_id;
     char * sUserList;
     char * sSystem;
     char * sExtData;

@@ -6,7 +6,23 @@ ENDIF()
 
 set(CMAKE_C_STANDARD 11)
 
-## Build PahoMqtt Library ----------------------------------------------
+## Build JSMN Library ----------------------------------------------
+project(Jsmn C)
+
+IF(WIN32)
+  ADD_DEFINITIONS(-D_CRT_SECURE_NO_DEPRECATE -DWIN32_LEAN_AND_MEAN -MD)
+ELSEIF(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
+  ADD_DEFINITIONS(-DOSX)
+ENDIF()
+
+
+set(PROJECT_SOURCE_DIR ${PROJECT_SOURCE_DIR}/jsmn)
+
+add_library(${PROJECT_NAME} 
+  ${PROJECT_SOURCE_DIR}/jsmn.c 
+  ${PROJECT_SOURCE_DIR}/jsmn.h)
+
+## Build PahoMqtt Library ------------------------------------------
 project(PahoMqtt C)
 
 IF(WIN32)
@@ -38,17 +54,18 @@ include_directories( "${PROJECT_BINARY_DIR}" )
 
 add_library(${PROJECT_NAME} ${SOURCES_PAHO} )
 
-## Build Driver Dynamic Library ----------------------------------------
+## Build Driver Dynamic Library ------------------------------------
 
-project(LbELI C)
+project(LbwELI.KMGmbH C)
 
 include_directories( "${PROJECT_SOURCE_DIR}/paho.mqtt.c/src" )
 add_library(${PROJECT_NAME} SHARED library.c session_list.c)
 target_link_libraries(${PROJECT_NAME} PahoMqtt ${LIBS_SYSTEM} )
 
-## Build Sample console Application ------------------------------------
+## Build Sample console Application --------------------------------
 
 project(LbELI_cli C)
 
 add_executable(${PROJECT_NAME}  main.c)
-target_link_libraries(${PROJECT_NAME} LbELI ${LIBS_SYSTEM} )
+
+target_link_libraries(${PROJECT_NAME} Jsmn LbwELI.KMGmbH ${LIBS_SYSTEM} )
