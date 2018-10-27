@@ -8,8 +8,8 @@
 
 #include "session_list.h"
 
-node_t * new_session(node_t ** head, const char * sUserList, const char * sSystem, const char * sExtData) {
-    node_t * new_node;
+node_t* new_session(node_t** head, const char * sUserList, const char* sSystem, const char* sExtData) {
+    node_t* new_node;
     new_node = malloc(sizeof(node_t));
 
     new_node->session_id = rand();
@@ -38,8 +38,7 @@ void free_session(node_t * node) {
 }
 
 void pop_session(node_t ** head) {
-    int retval = -1;
-    node_t * next_node = NULL;
+    node_t* next_node = NULL;
 
     if (*head == NULL) {
         return;
@@ -50,8 +49,8 @@ void pop_session(node_t ** head) {
     *head = next_node;
 }
 
-node_t * find_session(node_t * head, int session_id ) {
-    node_t * current = head;
+node_t* find_session(node_t* head, int session_id ) {
+    node_t* current = head;
 
     while (current != NULL) {
         if (current->session_id == session_id)
@@ -62,11 +61,11 @@ node_t * find_session(node_t * head, int session_id ) {
     return NULL;
 }
 
-void remove_session(node_t ** head, int session_id) {
+void remove_session(node_t** head, int session_id) {
 
     int i = 0;
-    node_t * current = *head;
-    node_t * temp_node = NULL;
+    node_t* current = *head;
+    node_t* temp_node = NULL;
 
     if (current->session_id == session_id) {
         pop_session(head);

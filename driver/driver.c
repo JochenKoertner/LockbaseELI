@@ -1,23 +1,12 @@
-//
-// Created by Stefan Böther on 27.10.18.
-//
+// setup and release driver structure
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-
-#include "jsmn/jsmn.h"
+#include <time.h>
 
 #include "driver.h"
-
-static int jsoneq(const char *json, jsmntok_t *tok, const char *s) {
-    if (tok->type == JSMN_STRING && (int) strlen(s) == tok->end - tok->start &&
-        strncmp(json + tok->start, s, tok->end - tok->start) == 0) {
-        return 0;
-    }
-    return -1;
-}
+#include "utils.h"
 
 void parseConfigFile(const char* json, char** host, long* port) {
 
@@ -45,9 +34,6 @@ void parseConfigFile(const char* json, char** host, long* port) {
         } else if (jsoneq(json, &t[i], "port") == 0) {
             *port = strtol(json + t[i+1].start, NULL, 10);
             i++;
-        } else {
-            printf("Unexpected key: %.*s\n", t[i].end-t[i].start,
-                   json + t[i].start);
         }
     }
 }
@@ -81,6 +67,9 @@ char* readFile(const char* file) {
 driver_info_t * driverInfo = NULL;
 
 driver_info_t * new_driver(ELIDrv2App callBack) {
+    // seed random number generator with clock
+    srand(clock());
+
     driver_info_t * new_driver;
     new_driver = malloc(sizeof(driver_info_t));
 
@@ -93,6 +82,9 @@ driver_info_t * new_driver(ELIDrv2App callBack) {
     if (new_driver->config != NULL) {
         parseConfigFile(new_driver->config, &new_driver->host, &new_driver->port);
     }
+    else {
+        new_driver->host = strdup("localhost");
+    }
 
     return new_driver;
 }
@@ -102,7 +94,3 @@ void free_driver(driver_info_t * driver) {
     free(driver->host);
     free(driver);
 }
-
-
-
-

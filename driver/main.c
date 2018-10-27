@@ -10,11 +10,7 @@
 #define TIMEOUT     10000L
 
 int myCallBack( const char* sSessID, int nJob, const char* sJob) {
-
-    printf("%s\n", sSessID);
-    printf("%i\n", nJob);
-    printf("%s\n", sJob);
-
+    printf("myCallBack: Session '%s' Job #%i ('%s') \n", sSessID, nJob, sJob);
     return 42;
 }
 
@@ -39,11 +35,11 @@ int main() {
 
     // initialise driver interface and register a callback function
     const char* retCode = ELICreate("lic", LbwELI_VERSION, myCallBack );
+    printf("ELICreate(...) => '%s'\n", retCode);
     if (strcmp(retCode, "EOK") != 0) {
-        printf("%s\n", retCode);
         return -1;
     }
-    
+
     // dump the driver-info to console
     // printf("%s\n",ELIDriverInfo());
 
@@ -61,12 +57,12 @@ int main() {
     const char* errorCode = getfield(csv, 1);
     if (strcmp(errorCode, "EOK") == 0) {
         const char* session = getfield(csv, 2);
-        printf("#3 %s\n", session);
+        printf("ELIOpen(...) => '%s' (%s)\n", retCode, session);
 
         int rc = ELIApp2Drv( session, 4711, "Job");
 
         // close connection to hardware (i.e. MQTT broker disconnect)
-        printf("%s\n", ELIClose(session));
+        printf("ELIClose('%s') => '%s'\n", session, ELIClose(session));
     }
     else 
         printf("[%s]\n", errorCode);
@@ -82,5 +78,6 @@ int main() {
 
     // destroy the driver interface
     ELIDestroy();
+    printf("ELIDestroy()\n");
     return 0;
 }

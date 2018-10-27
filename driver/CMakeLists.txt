@@ -58,7 +58,7 @@ add_library(${PROJECT_NAME} ${SOURCES_PAHO} )
 project(LbwELI.KMGmbH C)
 
 include_directories( "${PROJECT_SOURCE_DIR}/paho.mqtt.c/src" )
-add_library(${PROJECT_NAME} SHARED library.c session_list.c driver.c driver.h)
+add_library(${PROJECT_NAME} SHARED library.c session_list.c driver.c driver.h utils.c utils.h)
 target_link_libraries(${PROJECT_NAME} PahoMqtt Jsmn ${LIBS_SYSTEM} )
 
 ## Build Sample console Application --------------------------------
