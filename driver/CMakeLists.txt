@@ -58,7 +58,11 @@ add_library(${PROJECT_NAME} ${SOURCES_PAHO} )
 project(LbwELI.KMGmbH C)
 
 include_directories( "${PROJECT_SOURCE_DIR}/paho.mqtt.c/src" )
-add_library(${PROJECT_NAME} SHARED library.c session_list.c driver.c driver.h utils.c utils.h)
+add_library(${PROJECT_NAME} SHARED 
+  library.c library.h 
+  session_list.c session_list.h 
+  driver.c driver.h 
+  utils.c utils.h)
 target_link_libraries(${PROJECT_NAME} PahoMqtt Jsmn ${LIBS_SYSTEM} )
 
 ## Build Sample console Application --------------------------------
@@ -68,3 +72,8 @@ project(LbELI_cli C)
 add_executable(${PROJECT_NAME}  main.c)
 
 target_link_libraries(${PROJECT_NAME} LbwELI.KMGmbH ${LIBS_SYSTEM} )
+
+
+IF(WIN32)
+  file( GENERATE OUTPUT "./Debug/config.json" CONTENT "{ \"host\" : \"10.10.10.2\", \"port\": 1883 }"  )
+ENDIF()

@@ -31,6 +31,23 @@ char* create_event_payload(const char* eventName, const char* sSessID, const cha
     return buf;
 }
 
+#ifdef WIN32
+char *strndup(char *str, int chars)
+{
+    char *buffer;
+    int n;
+
+    buffer = (char *) malloc(chars +1);
+    if (buffer)
+    {
+        for (n = 0; ((n < chars) && (str[n] != 0)) ; n++) buffer[n] = str[n];
+        buffer[n] = 0;
+    }
+
+    return buffer;
+}
+#endif
+
 void parse_payload(const char* json, char** sessionId, char** text) {
 
     int i;

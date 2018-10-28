@@ -20,4 +20,8 @@ char* formatUrl(const char* protocol, const char* host, long port);
 char* create_event_payload(const char* eventName, const char* sSessID, const char* sText);
 void parse_payload(const char* json, char** sessionId, char** text);
 
+#ifdef WIN32
+char *strndup(char *str, int chars);
+#endif
+
 #endif //UTILS_H
