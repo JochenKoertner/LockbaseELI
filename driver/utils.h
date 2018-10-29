@@ -21,7 +21,7 @@ char* create_event_payload(const char* eventName, const char* sSessID, const cha
 void parse_payload(const char* json, char** sessionId, char** text);
 
 #ifdef WIN32
-char *strndup(char *str, int chars);
+char *strndup(const char *str, unsigned int chars);
 #endif
 
 #endif //UTILS_H

@@ -32,7 +32,7 @@ git submodule update
 Der Treiber kann über eine JSON Datei mit dem Namen `config.json` konfiguriert werden. 
 Derzeit werden dort die Einstellungen hinterlegt, wo sich der mqtt-Broker befindet und auf welchem 
 Port er lauscht. Wird der Treiber z.B. in einer Virtuellen Windows Maschine (VirtualBox) betrieben 
-der Broker befindet sich jedoch auf dem Hostsystem müsste der `host` auf `"10.10.10.2"` eingestellt 
+der Broker befindet sich jedoch auf dem Hostsystem müsste der `host` auf `"10.0.2.2"` eingestellt 
 werden.
 
 ```

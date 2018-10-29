@@ -32,7 +32,7 @@ char* create_event_payload(const char* eventName, const char* sSessID, const cha
 }
 
 #ifdef WIN32
-char *strndup(char *str, int chars)
+char *strndup(const char *str, unsigned int chars)
 {
     char *buffer;
     int n;

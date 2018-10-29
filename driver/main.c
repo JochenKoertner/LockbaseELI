@@ -59,7 +59,7 @@ int main() {
         const char* session = getfield(csv, 2);
         printf("ELIOpen(...) => '%s' (%s)\n", retCode, session);
 
-        int rc = ELIApp2Drv( session, 4711, "Job");
+        ELIApp2Drv( session, 4711, "Job");
 
         // close connection to hardware (i.e. MQTT broker disconnect)
         printf("ELIClose('%s') => '%s'\n", session, ELIClose(session));
