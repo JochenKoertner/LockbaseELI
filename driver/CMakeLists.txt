@@ -41,8 +41,36 @@ message(STATUS "Timestamp is ${BUILD_TIMESTAMP}")
 
 set(PROJECT_SOURCE_DIR ${PROJECT_SOURCE_DIR}/paho.mqtt.c/src)
 
-file(GLOB SOURCES_PAHO ${PROJECT_SOURCE_DIR}/*.c)
-file(GLOB INCLUDE_PAHO ${PROJECT_SOURCE_DIR}/MQTT*.h)
+file(GLOB SOURCES_PAHO
+        ${PROJECT_SOURCE_DIR}/Heap.c
+        ${PROJECT_SOURCE_DIR}/LinkedList.c
+        ${PROJECT_SOURCE_DIR}/Log.c
+        ${PROJECT_SOURCE_DIR}/Messages.c
+        ${PROJECT_SOURCE_DIR}/StackTrace.c
+        ${PROJECT_SOURCE_DIR}/Tree.c
+        ${PROJECT_SOURCE_DIR}/Thread.c
+        ${PROJECT_SOURCE_DIR}/utf-8.c
+        ${PROJECT_SOURCE_DIR}/WebSocket.c
+        ${PROJECT_SOURCE_DIR}/MQTTPacket.c
+        ${PROJECT_SOURCE_DIR}/MQTTPacketOut.c
+        ${PROJECT_SOURCE_DIR}/MQTTProperties.c
+        ${PROJECT_SOURCE_DIR}/MQTTClient.c
+        )
+file(GLOB INCLUDE_PAHO
+        ${PROJECT_SOURCE_DIR}/Heap.h
+        ${PROJECT_SOURCE_DIR}/Log.h
+        ${PROJECT_SOURCE_DIR}/Messages.h
+        ${PROJECT_SOURCE_DIR}/LinkedList.h
+        ${PROJECT_SOURCE_DIR}/StackTrace.h
+        ${PROJECT_SOURCE_DIR}/Tree.h
+        ${PROJECT_SOURCE_DIR}/Thread.h
+        ${PROJECT_SOURCE_DIR}/utf-8.h
+        ${PROJECT_SOURCE_DIR}/WebSocket.h
+        ${PROJECT_SOURCE_DIR}/MQTTPacket.h
+        ${PROJECT_SOURCE_DIR}/MQTTPacketOut.h
+        ${PROJECT_SOURCE_DIR}/MQTTProperties.h
+        ${PROJECT_SOURCE_DIR}/MQTTClient.h
+        )
 
 configure_file( 
 	"${PROJECT_SOURCE_DIR}/VersionInfo.h.in"
