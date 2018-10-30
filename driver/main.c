@@ -14,22 +14,40 @@ int myCallBack( const char* sSessID, int nJob, const char* sJob) {
     return 42;
 }
 
-const char* getfield(const char* line, int num)
+const char* getField(const char* line, int num)
 {
-    static char _line[200];
-    strcpy(&_line, line);
-
-    const char* tok;
-    for (tok = strtok(_line, ",");
-            tok && *tok;
-            tok = strtok(NULL, ","))
-    {
-        if (!--num)
-            return tok;
+    static char _result[100];
+    char* prev = line;
+    int len=0;
+    while (num > 0) {
+        if (prev != NULL) {
+            char *separator = strchr(prev, ',');
+            if (separator != NULL)
+            {
+                len = separator - prev;
+                if (num == 1) {
+                    strncpy(_result, prev, len);
+                }
+                prev = separator + 1;
+                if (num == 1) {
+                    return _result;
+                }
+            }
+            else
+            {
+                if (num == 1)
+                {
+                    strcpy(_result, prev);
+                    return _result;
+                }
+                prev = NULL;
+            }
+        }
+        num--;
     }
-    
     return NULL;
 }
+
 
 int main() {
 
@@ -54,12 +72,22 @@ int main() {
 
     // open connection to hardware (in this case MQTT broker)
     const char* csv = ELIOpen("UserList", SYSTEM, CLIENT_ID);
-    const char* errorCode = getfield(csv, 1);
+    const char* errorCode = getField(csv, 1);
     if (strcmp(errorCode, "EOK") == 0) {
-        const char* session = getfield(csv, 2);
+        const char* session = getField(csv, 2);
+
         printf("ELIOpen(...) => '%s' (%s)\n", retCode, session);
 
-        ELIApp2Drv( session, 4711, "Job");
+        ELIApp2Drv( session, 4711, "LD");
+
+        /* >> DK,[ID:KID1],[TXT:Name1],,[B64:ExtData] DK,[ID:KID2],[TXT:Name2],,[B64:ExtData]
+        DL,[ID:LID1],[TXT:Name1],,[B64:ExtData] DL,[ID:LID2],[TXT:Name2],,[B64:ExtData]
+        ... AT,[ID:TID1],0-5,20120508T105000Z/153040,20120608T105000Z/173040 AT,[ID:TID2],,20120509T220000Z/3600,20120510T220000Z/3600
+        ... AK,[ID:KID1],[ID:TID1],[LID1],[LID2],[LID3],... AK,[ID:KID1],[ID:TID2],[LID3],[LID5],[LID7],...
+        12/14 Körtner & Muth GmbH, LbwELI – Lockbase Electronic Lock Interface Rev. 0.1.1837
+        AK,[ID:KID2],[ID:TID1],[LID1],[LID3],[LID4],... ...
+        LDR,OK
+        */
 
         // close connection to hardware (i.e. MQTT broker disconnect)
         printf("ELIClose('%s') => '%s'\n", session, ELIClose(session));

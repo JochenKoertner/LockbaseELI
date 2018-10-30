@@ -68,7 +68,7 @@ driver_info_t * driverInfo = NULL;
 
 driver_info_t * new_driver(ELIDrv2App callBack) {
     // seed random number generator with clock
-    srand(clock());
+    srand(time(0));
 
     driver_info_t * new_driver;
     new_driver = malloc(sizeof(driver_info_t));

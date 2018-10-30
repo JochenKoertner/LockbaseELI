@@ -105,6 +105,7 @@ int mqtt_receive_msg(const char* topic, int timeout, char** payload) {
     }
 
     if ((rc = MQTTClient_receive(driverInfo->client, &topicName, &topicLen, &msg, timeout)) != MQTTCLIENT_SUCCESS) {
+        mqtt_unsubscribe(topic);
         printf("Failed to receive, return code %d\n", rc);
         return rc;
     }
