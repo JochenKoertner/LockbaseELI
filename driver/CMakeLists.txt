@@ -121,12 +121,12 @@ add_library(${PROJECT_NAME} ${SOURCES_PAHO} )
 project(LbwELI.KMGmbH C)
 
 IF(WIN32)
-  ADD_DEFINITIONS(-D_CRT_NONSTDC_NO_DEPRECATE)
-ENDIF()
+    ADD_DEFINITIONS(-D_CRT_NONSTDC_NO_DEPRECATE)
 
-link_directories(
-   "${WinSDKPath}/Lib/${WinSDKVersion}/um/${MACHINE}"
-)
+    link_directories(
+        "${WinSDKPath}/Lib/${WinSDKVersion}/um/${MACHINE}"
+    )
+ENDIF()
 
 include_directories( "${PROJECT_SOURCE_DIR}/paho.mqtt.c/src" )
 add_library(${PROJECT_NAME} SHARED 
@@ -144,8 +144,6 @@ add_executable(${PROJECT_NAME}  main.c)
 
 target_link_libraries(${PROJECT_NAME} LbwELI.KMGmbH ${LIBS_SYSTEM} )
 
-
 IF(WIN32)
-  message(STATUS "BinDir => ${CMAKE_CURRENT_BINARY_DIR}")
   file( GENERATE OUTPUT "./config.json" CONTENT "{ \"host\" : \"10.0.2.2\", \"port\": 1883 }"  )
 ENDIF()
