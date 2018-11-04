@@ -1,8 +1,15 @@
 cmake_minimum_required(VERSION 3.12)
 
 IF (WIN32)
-    SET(LIBS_SYSTEM ws2_32)
-    SET(CMAKE_C_FLAGS -m32)
+    SET(LIBS_SYSTEM ws2_32 crypt32 RpcRT4)
+
+    set(VSVersion "14.15.26726")
+    set(VSPath "C:/wintoolchain/VC/Tools/MSVC")
+    set(VSBasePath "${VSPath}/${VSVersion}")
+
+    set(WinSDKVersion "10.0.15063.0")
+    set(WinSDKPath "C:/wintoolchain/Windows Kits/10")
+    set(MACHINE "x64")
 ENDIF()
 
 set(CMAKE_C_STANDARD 11)
@@ -26,7 +33,7 @@ add_library(${PROJECT_NAME}
 project(PahoMqtt C)
 
 IF(WIN32)
-  ADD_DEFINITIONS(-D_CRT_SECURE_NO_DEPRECATE -DWIN32_LEAN_AND_MEAN -MD)
+  ADD_DEFINITIONS(-D_WINSOCK_DEPRECATED_NO_WARNINGS -D_CRT_SECURE_NO_DEPRECATE -DWIN32_LEAN_AND_MEAN -D_WINSOCK_DEPRECATED_NO_WARNINGS -MD)
 ELSEIF(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
   ADD_DEFINITIONS(-DOSX)
 ENDIF()
@@ -99,7 +106,13 @@ configure_file(
 	"${PROJECT_BINARY_DIR}/VersionInfo.h"
 	 )
 
-include_directories( "${PROJECT_BINARY_DIR}" )
+include_directories( 
+#   "${WinSDKPath}/Include/${WinSDKVersion}/shared" 
+#   "${WinSDKPath}/Include/${WinSDKVersion}/ucrt"
+#   "${WinSDKPath}/Include/${WinSDKVersion}/um"
+#   "${VSBasePath}/include"
+    "${PROJECT_BINARY_DIR}" 
+)
 
 add_library(${PROJECT_NAME} ${SOURCES_PAHO} )
 
@@ -111,13 +124,17 @@ IF(WIN32)
   ADD_DEFINITIONS(-D_CRT_NONSTDC_NO_DEPRECATE)
 ENDIF()
 
+link_directories(
+   "${WinSDKPath}/Lib/${WinSDKVersion}/um/${MACHINE}"
+)
+
 include_directories( "${PROJECT_SOURCE_DIR}/paho.mqtt.c/src" )
 add_library(${PROJECT_NAME} SHARED 
   library.c library.h 
   session_list.c session_list.h 
   driver.c driver.h 
   utils.c utils.h)
-target_link_libraries(${PROJECT_NAME} PahoMqtt Jsmn ${LIBS_SYSTEM} )
+target_link_libraries(${PROJECT_NAME} PahoMqtt Jsmn ${LIBS_SYSTEM}  )
 
 ## Build Sample console Application --------------------------------
 
@@ -130,5 +147,5 @@ target_link_libraries(${PROJECT_NAME} LbwELI.KMGmbH ${LIBS_SYSTEM} )
 
 IF(WIN32)
   message(STATUS "BinDir => ${CMAKE_CURRENT_BINARY_DIR}")
-  file( GENERATE OUTPUT "./Debug/config.json" CONTENT "{ \"host\" : \"10.0.2.2\", \"port\": 1883 }"  )
+  file( GENERATE OUTPUT "./config.json" CONTENT "{ \"host\" : \"10.0.2.2\", \"port\": 1883 }"  )
 ENDIF()
