@@ -14,6 +14,8 @@ Version 2.7.2 (167) runterladen von xxy und installieren
 
 CMake 3.12.2-Darwin installieren
 
+`sudo "/Applications/CMake.app/Contents/bin/cmake-gui" --install`
+
 dotnet core 2.1.5 installieren
 
 Clion Installieren
