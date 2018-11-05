@@ -1,16 +1,39 @@
 cmake_minimum_required(VERSION 3.12)
 
 IF (WIN32)
-    SET(LIBS_SYSTEM ws2_32)
+    SET(LIBS_SYSTEM ws2_32 crypt32 RpcRT4)
+
+    set(VSVersion "14.15.26726")
+    set(VSPath "C:/wintoolchain/VC/Tools/MSVC")
+    set(VSBasePath "${VSPath}/${VSVersion}")
+
+    set(WinSDKVersion "10.0.15063.0")
+    set(WinSDKPath "C:/wintoolchain/Windows Kits/10")
+    set(MACHINE "x64")
 ENDIF()
 
 set(CMAKE_C_STANDARD 11)
 
-## Build PahoMqtt Library ----------------------------------------------
-project(PahoMqtt C)
+## Build JSMN Library ----------------------------------------------
+project(Jsmn C)
 
 IF(WIN32)
   ADD_DEFINITIONS(-D_CRT_SECURE_NO_DEPRECATE -DWIN32_LEAN_AND_MEAN -MD)
+ELSEIF(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
+  ADD_DEFINITIONS(-DOSX)
+ENDIF()
+
+set(PROJECT_SOURCE_DIR ${PROJECT_SOURCE_DIR}/jsmn)
+
+add_library(${PROJECT_NAME} 
+  ${PROJECT_SOURCE_DIR}/jsmn.c 
+  ${PROJECT_SOURCE_DIR}/jsmn.h)
+
+## Build PahoMqtt Library ------------------------------------------
+project(PahoMqtt C)
+
+IF(WIN32)
+  ADD_DEFINITIONS(-D_WINSOCK_DEPRECATED_NO_WARNINGS -D_CRT_SECURE_NO_DEPRECATE -DWIN32_LEAN_AND_MEAN -D_WINSOCK_DEPRECATED_NO_WARNINGS -MD)
 ELSEIF(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
   ADD_DEFINITIONS(-DOSX)
 ENDIF()
@@ -26,29 +49,101 @@ message(STATUS "Timestamp is ${BUILD_TIMESTAMP}")
 
 set(PROJECT_SOURCE_DIR ${PROJECT_SOURCE_DIR}/paho.mqtt.c/src)
 
-file(GLOB SOURCES_PAHO ${PROJECT_SOURCE_DIR}/*.c)
-file(GLOB INCLUDE_PAHO ${PROJECT_SOURCE_DIR}/MQTT*.h)
+
+file(GLOB SOURCES_PAHO
+        ${PROJECT_SOURCE_DIR}/Base64.c
+        ${PROJECT_SOURCE_DIR}/Clients.c
+        ${PROJECT_SOURCE_DIR}/Heap.c
+        ${PROJECT_SOURCE_DIR}/LinkedList.c
+        ${PROJECT_SOURCE_DIR}/Log.c
+        ${PROJECT_SOURCE_DIR}/Messages.c
+        ${PROJECT_SOURCE_DIR}/StackTrace.c
+        ${PROJECT_SOURCE_DIR}/SHA1.c
+        ${PROJECT_SOURCE_DIR}/Socket.c
+        ${PROJECT_SOURCE_DIR}/SocketBuffer.c
+        ${PROJECT_SOURCE_DIR}/WebSocket.c
+        ${PROJECT_SOURCE_DIR}/Tree.c
+        ${PROJECT_SOURCE_DIR}/Thread.c
+        ${PROJECT_SOURCE_DIR}/utf-8.c
+        ${PROJECT_SOURCE_DIR}/MQTTPacket.c
+        ${PROJECT_SOURCE_DIR}/MQTTPacketOut.c
+        ${PROJECT_SOURCE_DIR}/MQTTProperties.c
+        ${PROJECT_SOURCE_DIR}/MQTTPersistence.c
+        ${PROJECT_SOURCE_DIR}/MQTTPersistenceDefault.c
+        ${PROJECT_SOURCE_DIR}/MQTTProtocol.c
+        ${PROJECT_SOURCE_DIR}/MQTTProtocolClient.c
+        ${PROJECT_SOURCE_DIR}/MQTTProtocolOut.c
+        ${PROJECT_SOURCE_DIR}/MQTTClient.c
+        )
+file(GLOB INCLUDE_PAHO
+        ${PROJECT_SOURCE_DIR}/Base64.h
+        ${PROJECT_SOURCE_DIR}/Clients.h
+        ${PROJECT_SOURCE_DIR}/Heap.h
+        ${PROJECT_SOURCE_DIR}/Log.h
+        ${PROJECT_SOURCE_DIR}/Messages.h
+        ${PROJECT_SOURCE_DIR}/LinkedList.h
+        ${PROJECT_SOURCE_DIR}/StackTrace.h
+        ${PROJECT_SOURCE_DIR}/SHA1.h
+        ${PROJECT_SOURCE_DIR}/Socket.h
+        ${PROJECT_SOURCE_DIR}/SocketBuffer.h
+        ${PROJECT_SOURCE_DIR}/WebSocket.h
+        ${PROJECT_SOURCE_DIR}/Tree.h
+        ${PROJECT_SOURCE_DIR}/Thread.h
+        ${PROJECT_SOURCE_DIR}/utf-8.h
+        ${PROJECT_SOURCE_DIR}/MQTTPacket.h
+        ${PROJECT_SOURCE_DIR}/MQTTPacketOut.h
+        ${PROJECT_SOURCE_DIR}/MQTTProperties.h
+        ${PROJECT_SOURCE_DIR}/MQTTPersistence.h
+        ${PROJECT_SOURCE_DIR}/MQTTPersistenceDefault.h
+        ${PROJECT_SOURCE_DIR}/MQTTProtocol.h
+        ${PROJECT_SOURCE_DIR}/MQTTProtocolClient.h
+        ${PROJECT_SOURCE_DIR}/MQTTProtocolOut.h
+        ${PROJECT_SOURCE_DIR}/MQTTClient.h
+        )
 
 configure_file( 
 	"${PROJECT_SOURCE_DIR}/VersionInfo.h.in"
 	"${PROJECT_BINARY_DIR}/VersionInfo.h"
 	 )
 
-include_directories( "${PROJECT_BINARY_DIR}" )
+include_directories( 
+#   "${WinSDKPath}/Include/${WinSDKVersion}/shared" 
+#   "${WinSDKPath}/Include/${WinSDKVersion}/ucrt"
+#   "${WinSDKPath}/Include/${WinSDKVersion}/um"
+#   "${VSBasePath}/include"
+    "${PROJECT_BINARY_DIR}" 
+)
 
 add_library(${PROJECT_NAME} ${SOURCES_PAHO} )
 
-## Build Driver Dynamic Library ----------------------------------------
+## Build Driver Dynamic Library ------------------------------------
 
-project(LbELI C)
+project(LbwELI.KMGmbH C)
+
+IF(WIN32)
+    ADD_DEFINITIONS(-D_CRT_NONSTDC_NO_DEPRECATE)
+
+    link_directories(
+        "${WinSDKPath}/Lib/${WinSDKVersion}/um/${MACHINE}"
+    )
+ENDIF()
 
 include_directories( "${PROJECT_SOURCE_DIR}/paho.mqtt.c/src" )
-add_library(${PROJECT_NAME} SHARED library.c session_list.c)
-target_link_libraries(${PROJECT_NAME} PahoMqtt ${LIBS_SYSTEM} )
+add_library(${PROJECT_NAME} SHARED 
+  library.c library.h 
+  session_list.c session_list.h 
+  driver.c driver.h 
+  utils.c utils.h)
+target_link_libraries(${PROJECT_NAME} PahoMqtt Jsmn ${LIBS_SYSTEM}  )
 
-## Build Sample console Application ------------------------------------
+## Build Sample console Application --------------------------------
 
 project(LbELI_cli C)
 
 add_executable(${PROJECT_NAME}  main.c)
-target_link_libraries(${PROJECT_NAME} LbELI ${LIBS_SYSTEM} )
+
+target_link_libraries(${PROJECT_NAME} LbwELI.KMGmbH ${LIBS_SYSTEM} )
+
+IF(WIN32)
+  file( GENERATE OUTPUT "./config.json" CONTENT "{ \"host\" : \"10.0.2.2\", \"port\": 1883 }"  )
+ENDIF()
