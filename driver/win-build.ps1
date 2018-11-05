@@ -3,7 +3,9 @@
 $clang = '"C:/LLVM/bin/clang-cl.exe"'
 $clangxx = '"C:/Program\ Files/LLVM/bin/clang++.exe"'
 $make = '"C:/MinGW/bin/mingw32-make.exe"'
-$generator = '"MinGW Makefiles"'
+$generator = 'MinGW Makefiles'
+# generator = 'Visual Studio 14 2015'
+
 $buildType = 'Debug'
 $path = '..'
 
@@ -18,9 +20,8 @@ $path = '..'
 Remove-Item CMakeFiles -Recurse -Force
 Remove-Item CMakeCache.txt -Force
 
-$genArgs = @('-G')
-$genArgs += @('"Visual Studio 14 2015"');
-$genArgs += ('-T "{0}"' -f "LLVM-vs2014");
+$genArgs = @('-G "{0}"' -f $generator )
+# $genArgs += ('-T "{0}"' -f "LLVM-vs2014");
 
 $genArgs += ('-DCMAKE_BUILD_TYPE={0}' -f $buildType);
 $genArgs += '-DPAHO_WITH_SSL=FALSE';

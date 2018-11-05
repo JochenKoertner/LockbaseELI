@@ -1,3 +1,6 @@
 [submodule "driver/paho.mqtt.c"]
 	path = driver/paho.mqtt.c
-	url = https://github.com/eclipse/paho.mqtt.c.git
+	url = git@github.com:eclipse/paho.mqtt.c.git
+[submodule "driver/jsmn"]
+	path = driver/jsmn
+	url = git@github.com:zserge/jsmn.git
