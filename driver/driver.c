@@ -16,6 +16,8 @@ void parseConfigFile(const char* json, char** host, long* port) {
     jsmntok_t t[128]; /* We expect no more than 128 tokens */
 
     jsmn_init(&p);
+    if (json == NULL) return;
+
     r = jsmn_parse(&p, json, strlen(json), t, sizeof(t)/sizeof(t[0]));
     if (r < 0) {
         printf("Failed to parse JSON: %d\n", r);
@@ -36,6 +38,41 @@ void parseConfigFile(const char* json, char** host, long* port) {
             i++;
         }
     }
+}
+
+void parseProductInfo(const char* json, const char* sProductID, char** productInfo) {
+    free(driverInfo->productInfo);
+
+    int i;
+    int r;
+    jsmn_parser p;
+    jsmntok_t t[128]; /* We expect no more than 128 tokens */
+
+    jsmn_init(&p);
+    if (json == NULL) return;
+
+    r = jsmn_parse(&p, json, strlen(json), t, sizeof(t)/sizeof(t[0]));
+    if (r < 0) {
+        printf("Failed to parse JSON: %d\n", r);
+    }
+
+    /* Assume the top-level element is an object */
+    if (r < 1 || t[0].type != JSMN_OBJECT) {
+        printf("Object expected\n");
+    }
+
+    /* Loop over all keys of the root object */
+    for (i = 1; i < r; i++) {
+        if (jsoneq(json, &t[i], "productInfos") == 0 && t[i + 1].type == JSMN_OBJECT) {
+            {
+                printf("von bis %i .. %i\n ", t[i + 1].start, t[i + 1].end);
+            }
+        }
+    }
+}
+
+void parseSystemInfo(const char* json, char** systemInfo) {
+
 }
 
 // read config file (json format)
@@ -75,7 +112,7 @@ driver_info_t * new_driver(ELIDrv2App callBack) {
 
     new_driver->callback = callBack;
     new_driver->sessions = NULL;
-    new_driver->config = readFile("config.json");
+    new_driver->config = readFile("../config.json");
     new_driver->port = 1883;
     new_driver->host = NULL;
 
@@ -92,5 +129,7 @@ driver_info_t * new_driver(ELIDrv2App callBack) {
 void free_driver(driver_info_t * driver) {
     free(driver->config);
     free(driver->host);
+    free(driver->productInfo);
+    free(driver->systemInfo);
     free(driver);
 }

@@ -1,0 +1,29 @@
+{
+  "host" : "localhost",
+  "port" : 1883,
+
+
+  "productInfos" : {
+
+    "productid" :  {
+      "ProductName" : "Name of Product",
+      "ProgrammingTarget" : 0,
+      "DeviceCapacity" : 23,
+      "TimePeriodCapacity" : 12,
+      "EventTypes" : [
+        ["EventID0","Class","Description0"],
+        ["EventID1","Class","Description1"]],
+      "OnlineSystem" : false,
+      "DefaultAccess" : true,
+      "AccessByNmbOfLockings" : 0,
+      "AccessByFloatingPeriod" : 0,
+      "TimePeriodRecurrence" : [ "RecIntID1","RecIntID2" ],
+      "EventUpdateInterval" : 60,
+      "AccessUpdateInterval" : 120
+    }
+  },
+
+  "systemInfo" : {
+
+  }
+}

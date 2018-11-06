@@ -14,7 +14,7 @@
 #endif
 
 
-#define LbwELI_VERSION     "0.1.1837"
+#define LbwELI_VERSION     "0.2.1844"
 
 typedef int (*ELIDrv2App)( const char* sSessID, int nJob, const char* sJob);
 
