@@ -2,7 +2,7 @@
 #include <string>
 
 // Callback function type
-typedef int (*ELIDrv2AppCallback)( const char* sSessID, int nJob, const char* sJob/*=NULL*/ );
+typedef int (*ELIDrv2AppCallback)( const char* sSessID, const char* sJobID, const char* sJobData/*=NULL*/ );
 // Application callback function pointer, NULL until initialized
 static ELIDrv2AppCallback ELIDrv2App = NULL;
 
@@ -15,7 +15,7 @@ static std::string sDrvReturn;
 #define DLLEXPORT extern "C" __declspec(dllexport)
 #else
 #define DLLEXPORT extern "C"
-#endif 
+#endif
 
 DLLEXPORT const char* ELICreate( const char* sLic, const char* sLbwELIRev, ELIDrv2AppCallback Drv2App )
 // Constructor, the application identifies by licence number and revision
@@ -53,7 +53,7 @@ DLLEXPORT void ELIDriverUI( const char* SessID, const char* SID )
 }
 
 DLLEXPORT const char* ELIProductInfo( const char* sProductID )
-// Application requests information about capabilities and limitations of a certain product, 
+// Application requests information about capabilities and limitations of a certain product,
 // e.g. programming capacity or event types
 {
 	// Collect the product info in sDrvReturn
@@ -85,16 +85,16 @@ DLLEXPORT const char* ELIClose( const char* sSessID )
 	return sDrvReturn.c_str();
 }
 
-DLLEXPORT int ELIApp2Drv( const char* sSessID, int nJob, const char* sJob/*=NULL*/ )
+DLLEXPORT int ELIApp2Drv( const char* sSessID, const char* sJobID, const char* sJobData/*=NULL*/ )
 // Application launches a job in a given session
 {
 	// Process job
 	// ...
 	// Return result via ELIDrv2App
-	// This is just to demonstrate the callback. Unsually you will NOT do this here, because job processing will be asynchonous.
+	// This is just to demonstrate the callback. This will not necessarily be done here, because job processing may be asynchonous.
 	if( ELIApp2Drv ) {
 		// Job data have been collected in sDrvReturn
-		return ELIApp2Drv( sSessID, nJob, sDrvReturn.c_str() );
+		return ELIApp2Drv( sSessID, sJobID, sDrvReturn.c_str() );
 	}
 	// Something went wrong
 	return -1;
