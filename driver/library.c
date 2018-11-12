@@ -219,8 +219,7 @@ LBELI_EXPORT void ELIDriverUI(const char* SessID, const char* SID) {
 
 LBELI_EXPORT const char* ELIProductInfo( const char* sProductID ) {
 
-    char* pointer = NULL;
-    parseProductInfo(driverInfo->config, sProductID, &pointer);
+    parseProductInfo(driverInfo->config, sProductID, &driverInfo->productInfo);
     return driverInfo->productInfo;
 }
 

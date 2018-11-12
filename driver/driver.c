@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <stdbool.h>
 
 #include "driver.h"
 #include "utils.h"
@@ -40,8 +41,44 @@ void parseConfigFile(const char* json, char** host, long* port) {
     }
 }
 
+/*
+char* strrealloc(char* oldstr, char* appendStr) {
+    char* memalloc(strlen(oldstr)+strlen(appendStr)+1);
+
+}
+*/
+
+char* getStringField(const char* keyName, jsmntok_t* token, const char* json) {
+    char* result=malloc(strlen(keyName)+1+2+(token->end-token->start)+1);
+    sprintf(result, "%s='%.*s'", keyName, token->end-token->start, json + token->start);
+    return result;
+}
+
+char* getIntField(const char* keyName, jsmntok_t* token, const char* json) {
+    char* result=malloc(strlen(keyName)+1+(token->end-token->start)+1);
+    sprintf(result, "%s=%.*s", keyName, token->end-token->start, json + token->start);
+    return result;
+}
+
+char* concatStrings(char* source, const char* appendStr, char separator) {
+
+    if (source == NULL)
+        return strdup(appendStr);
+    else {
+        int lenSource = strlen(source);
+        int lenAppend = strlen(appendStr);
+        char* result = malloc(lenSource+1+lenAppend+1);
+        strncpy(result, source, lenSource);
+        result[lenSource] = separator;
+        result[lenSource+1] = 0;
+        strncpy(result+(lenSource+1), appendStr, lenAppend);
+        free(source);
+        return result;
+    }
+}
+
 void parseProductInfo(const char* json, const char* sProductID, char** productInfo) {
-    free(driverInfo->productInfo);
+    free(*productInfo);
 
     int i;
     int r;
@@ -61,14 +98,70 @@ void parseProductInfo(const char* json, const char* sProductID, char** productIn
         printf("Object expected\n");
     }
 
+    int found = false;
     /* Loop over all keys of the root object */
     for (i = 1; i < r; i++) {
         if (jsoneq(json, &t[i], "productInfos") == 0 && t[i + 1].type == JSMN_OBJECT) {
             {
-                printf("von bis %i .. %i\n ", t[i + 1].start, t[i + 1].end);
+                found = true;
+                break;
             }
         }
     }
+
+    if (found) {
+        const char* pi = json + t[i + 1].start;
+        r = jsmn_parse(&p, pi, t[i+1].end - t[i+1].end, t, sizeof(t)/sizeof(t[0]));
+        if (r < 0) {
+            printf("Failed to parse JSON: %d\n", r);
+        }
+
+        found = false;
+        for (i = 1; i < r; i++) {
+            if (jsoneq(json, &t[i], sProductID) == 0 && t[i + 1].type == JSMN_OBJECT) {
+                {
+                    found = true;
+                    printf("von bis %i .. %i\n ", t[i + 1].start, t[i + 1].end);
+                    break;
+                }
+            }
+        }
+
+        if (found) {
+            const char* pii = json + t[i + 1].start;
+            r = jsmn_parse(&p, pii, t[i+1].end - t[i+1].end, t, sizeof(t)/sizeof(t[0]));
+            if (r < 0) {
+                printf("Failed to parse JSON: %d\n", r);
+            }
+
+            const char* PRODUCT_NAME = "ProductName";
+            const char* PROGRAMMING_TARGET = "ProgrammingTarget";
+            const char* DEVICE_CAPACITY = "DeviceCapacity";
+
+            /* Loop over all keys of the root object */
+            for (i = 1; i < r; i++) {
+                if (jsoneq(json, &t[i], PRODUCT_NAME) == 0) {
+                    char* productName = getStringField(PRODUCT_NAME, &t[i+1], json);
+                    *productInfo = concatStrings(*productInfo, productName,';');
+                    free(productName);
+                    i++;
+                } else if (jsoneq(json, &t[i], PROGRAMMING_TARGET) == 0) {
+                    char* programmingTarget = getStringField(PROGRAMMING_TARGET, &t[i+1], json);
+                    *productInfo = concatStrings(*productInfo, programmingTarget,';');
+                    free(programmingTarget);
+
+                    i++;
+                } else if (jsoneq(json, &t[i], DEVICE_CAPACITY) == 0) {
+                    char* deviceCapacity = getIntField(DEVICE_CAPACITY, &t[i+1], json);
+                    *productInfo = concatStrings(*productInfo, deviceCapacity,';');
+                    free(deviceCapacity);
+                    i++;
+                }
+            }
+
+        }
+    }
+
 }
 
 void parseSystemInfo(const char* json, char** systemInfo) {
@@ -115,6 +208,9 @@ driver_info_t * new_driver(ELIDrv2App callBack) {
     new_driver->config = readFile("../config.json");
     new_driver->port = 1883;
     new_driver->host = NULL;
+    new_driver->productInfo = NULL;
+    new_driver->systemInfo = NULL;
+
 
     if (new_driver->config != NULL) {
         parseConfigFile(new_driver->config, &new_driver->host, &new_driver->port);
