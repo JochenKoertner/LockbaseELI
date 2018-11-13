@@ -15,8 +15,8 @@
         ["EventID1","Class","Description1"]],
       "OnlineSystem" : false,
       "DefaultAccess" : true,
-      "AccessByNmbOfLockings" : 0,
-      "AccessByFloatingPeriod" : 0,
+      "AccessByNmbOfLockings" : true,
+      "AccessByFloatingPeriod" : false,
       "TimePeriodRecurrence" : [ "RecIntID1","RecIntID2" ],
       "EventUpdateInterval" : 60,
       "AccessUpdateInterval" : 120

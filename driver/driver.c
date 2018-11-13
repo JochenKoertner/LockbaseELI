@@ -60,6 +60,14 @@ char* getIntField(const char* keyName, jsmntok_t* token, const char* json) {
     return result;
 }
 
+char* getBoolField(const char* keyName, jsmntok_t* token, const char* json) {
+    char* result=malloc(strlen(keyName)+4+1);
+    int flag = json[token->start] == 't' || json[token->start] == 'T';
+    sprintf(result, "%s='%i'", keyName, flag);
+    return result;
+}
+
+
 char* concatStrings(char* source, const char* appendStr, char separator) {
 
     if (source == NULL)
@@ -137,6 +145,16 @@ void parseProductInfo(const char* json, const char* sProductID, char** productIn
             const char* PRODUCT_NAME = "ProductName";
             const char* PROGRAMMING_TARGET = "ProgrammingTarget";
             const char* DEVICE_CAPACITY = "DeviceCapacity";
+            const char* TIMEPERIOD_CAPACITY = "TimePeriodCapacity";
+            const char* ONLINE_SYSTEM = "OnlineSystem";
+            const char* DEFAULT_ACCESS = "DefaultAccess";
+
+            const char* ACCESS_BY_NMBOFLOCKINGS = "AccessByNmbOfLockings";
+            const char* ACCESS_BY_FLOATINGPERIOD = "AccessByFloatingPeriod";
+
+            const char* EVENT_UPDATE_INTERVAL = "EventUpdateInterval";
+            const char* ACCESS_UPDATE_INTERVAL = "AccessUpdateInterval";
+
 
             /* Loop over all keys of the root object */
             for (i = 1; i < r; i++) {
@@ -149,14 +167,49 @@ void parseProductInfo(const char* json, const char* sProductID, char** productIn
                     char* programmingTarget = getStringField(PROGRAMMING_TARGET, &t[i+1], json);
                     *productInfo = concatStrings(*productInfo, programmingTarget,';');
                     free(programmingTarget);
-
                     i++;
                 } else if (jsoneq(json, &t[i], DEVICE_CAPACITY) == 0) {
                     char* deviceCapacity = getIntField(DEVICE_CAPACITY, &t[i+1], json);
                     *productInfo = concatStrings(*productInfo, deviceCapacity,';');
                     free(deviceCapacity);
                     i++;
+                } else if (jsoneq(json, &t[i], TIMEPERIOD_CAPACITY) == 0) {
+                    char* timePeriodCapacity = getIntField(TIMEPERIOD_CAPACITY, &t[i+1], json);
+                    *productInfo = concatStrings(*productInfo, timePeriodCapacity,';');
+                    free(timePeriodCapacity);
+                    i++;
+                } else if (jsoneq(json, &t[i], ONLINE_SYSTEM) == 0) {
+                    char* onlineSystem = getBoolField(ONLINE_SYSTEM, &t[i+1], json);
+                    *productInfo = concatStrings(*productInfo, onlineSystem,';');
+                    free(onlineSystem);
+                    i++;
+                } else if (jsoneq(json, &t[i], DEFAULT_ACCESS) == 0) {
+                    char* defaultAccess = getBoolField(DEFAULT_ACCESS, &t[i+1], json);
+                    *productInfo = concatStrings(*productInfo, defaultAccess,';');
+                    free(defaultAccess);
+                    i++;
+                } else if (jsoneq(json, &t[i], EVENT_UPDATE_INTERVAL) == 0) {
+                    char* eventUpdateInterval = getIntField(EVENT_UPDATE_INTERVAL, &t[i+1], json);
+                    *productInfo = concatStrings(*productInfo, eventUpdateInterval,';');
+                    free(eventUpdateInterval);
+                    i++;
+                } else if (jsoneq(json, &t[i], ACCESS_UPDATE_INTERVAL) == 0) {
+                    char* accessUpdateInterval = getIntField(ACCESS_UPDATE_INTERVAL, &t[i+1], json);
+                    *productInfo = concatStrings(*productInfo, accessUpdateInterval,';');
+                    free(accessUpdateInterval);
+                    i++;
+                } else if (jsoneq(json, &t[i], ACCESS_BY_NMBOFLOCKINGS) == 0) {
+                    char* accessByNmbOfLockings = getBoolField(ACCESS_BY_NMBOFLOCKINGS, &t[i+1], json);
+                    *productInfo = concatStrings(*productInfo, accessByNmbOfLockings,';');
+                    free(accessByNmbOfLockings);
+                    i++;
+                } else if (jsoneq(json, &t[i], ACCESS_BY_FLOATINGPERIOD) == 0) {
+                    char* accessByFloatingPeriod = getBoolField(ACCESS_BY_FLOATINGPERIOD, &t[i+1], json);
+                    *productInfo = concatStrings(*productInfo, accessByFloatingPeriod,';');
+                    free(accessByFloatingPeriod);
+                    i++;
                 }
+
             }
 
         }
