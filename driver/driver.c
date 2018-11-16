@@ -49,7 +49,7 @@ char* strrealloc(char* oldstr, char* appendStr) {
 */
 
 char* getStringField(const char* keyName, jsmntok_t* token, const char* json) {
-    char* result=malloc(strlen(keyName)+1+2+(token->end-token->start)+1);
+    char* result=malloc(strlen(keyName)+3+(token->end-token->start)+1);
     sprintf(result, "%s='%.*s'", keyName, token->end-token->start, json + token->start);
     return result;
 }
@@ -79,7 +79,7 @@ char* concatStrings(char* source, const char* appendStr, char separator) {
         strncpy(result, source, lenSource);
         result[lenSource] = separator;
         result[lenSource+1] = 0;
-        strncpy(result+(lenSource+1), appendStr, lenAppend);
+        strncpy(result+(lenSource+1), appendStr, lenAppend+1);
         free(source);
         return result;
     }
