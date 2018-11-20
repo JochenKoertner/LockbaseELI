@@ -41,12 +41,23 @@ void parseConfigFile(const char* json, char** host, long* port) {
     }
 }
 
-/*
-char* strrealloc(char* oldstr, char* appendStr) {
-    char* memalloc(strlen(oldstr)+strlen(appendStr)+1);
 
+char* concatStrings(char* source, const char* appendStr, char separator) {
+
+    if (source == NULL)
+        return strdup(appendStr);
+    else {
+        int lenSource = strlen(source);
+        int lenAppend = strlen(appendStr);
+        char* result = malloc(lenSource+1+lenAppend+1);
+        strncpy(result, source, lenSource);
+        result[lenSource] = separator;
+        result[lenSource+1] = 0;
+        strncpy(result+(lenSource+1), appendStr, lenAppend+1);
+        free(source);
+        return result;
+    }
 }
-*/
 
 char* getStringField(const char* keyName, jsmntok_t* token, const char* json) {
     char* result=malloc(strlen(keyName)+3+(token->end-token->start)+1);
@@ -67,23 +78,38 @@ char* getBoolField(const char* keyName, jsmntok_t* token, const char* json) {
     return result;
 }
 
+char* getIdArrayField(const char* keyName, jsmntok_t* token, const char* json) {
 
-char* concatStrings(char* source, const char* appendStr, char separator) {
+    int i;
+    int r;
+    jsmn_parser p;
+    jsmntok_t t[128]; /* We expect no more than 128 tokens */
 
-    if (source == NULL)
-        return strdup(appendStr);
-    else {
-        int lenSource = strlen(source);
-        int lenAppend = strlen(appendStr);
-        char* result = malloc(lenSource+1+lenAppend+1);
-        strncpy(result, source, lenSource);
-        result[lenSource] = separator;
-        result[lenSource+1] = 0;
-        strncpy(result+(lenSource+1), appendStr, lenAppend+1);
-        free(source);
-        return result;
+    jsmn_init(&p);
+
+    r = jsmn_parse(&p, json + token->start, token->end-token->start, t, sizeof(t)/sizeof(t[0]));
+    if (r < 0) {
+        printf("Failed to parse JSON: %d\n", r);
     }
+
+    char* list = NULL;
+    for (i = 1; i < r; i++) {
+        if (t[i].type == JSMN_STRING) {
+            {
+                int len=t[i].end - t[i].start;
+                char* value = malloc(len + 1);
+                strncpy(value, json + token->start + t[i].start, len);
+                list = concatStrings(list, value, ',');
+                free(value);
+            }
+        }
+    }
+
+    char* result = concatStrings(strdup(keyName), list, '=');
+    free(list);
+    return result;
 }
+
 
 void parseProductInfo(const char* json, const char* sProductID, char** productInfo) {
     free(*productInfo);
@@ -155,58 +181,64 @@ void parseProductInfo(const char* json, const char* sProductID, char** productIn
             const char* EVENT_UPDATE_INTERVAL = "EventUpdateInterval";
             const char* ACCESS_UPDATE_INTERVAL = "AccessUpdateInterval";
 
+            const char* TIMEPERIOD_RECURRENCE = "TimePeriodRecurrence";
 
             /* Loop over all keys of the root object */
             for (i = 1; i < r; i++) {
                 if (jsoneq(json, &t[i], PRODUCT_NAME) == 0) {
                     char* productName = getStringField(PRODUCT_NAME, &t[i+1], json);
-                    *productInfo = concatStrings(*productInfo, productName,';');
+                    *productInfo = concatStrings(*productInfo, productName, NEWLINE);
                     free(productName);
                     i++;
                 } else if (jsoneq(json, &t[i], PROGRAMMING_TARGET) == 0) {
                     char* programmingTarget = getStringField(PROGRAMMING_TARGET, &t[i+1], json);
-                    *productInfo = concatStrings(*productInfo, programmingTarget,';');
+                    *productInfo = concatStrings(*productInfo, programmingTarget, NEWLINE);
                     free(programmingTarget);
                     i++;
                 } else if (jsoneq(json, &t[i], DEVICE_CAPACITY) == 0) {
                     char* deviceCapacity = getIntField(DEVICE_CAPACITY, &t[i+1], json);
-                    *productInfo = concatStrings(*productInfo, deviceCapacity,';');
+                    *productInfo = concatStrings(*productInfo, deviceCapacity, NEWLINE);
                     free(deviceCapacity);
                     i++;
                 } else if (jsoneq(json, &t[i], TIMEPERIOD_CAPACITY) == 0) {
                     char* timePeriodCapacity = getIntField(TIMEPERIOD_CAPACITY, &t[i+1], json);
-                    *productInfo = concatStrings(*productInfo, timePeriodCapacity,';');
+                    *productInfo = concatStrings(*productInfo, timePeriodCapacity, NEWLINE);
                     free(timePeriodCapacity);
                     i++;
                 } else if (jsoneq(json, &t[i], ONLINE_SYSTEM) == 0) {
                     char* onlineSystem = getBoolField(ONLINE_SYSTEM, &t[i+1], json);
-                    *productInfo = concatStrings(*productInfo, onlineSystem,';');
+                    *productInfo = concatStrings(*productInfo, onlineSystem, NEWLINE);
                     free(onlineSystem);
                     i++;
                 } else if (jsoneq(json, &t[i], DEFAULT_ACCESS) == 0) {
                     char* defaultAccess = getBoolField(DEFAULT_ACCESS, &t[i+1], json);
-                    *productInfo = concatStrings(*productInfo, defaultAccess,';');
+                    *productInfo = concatStrings(*productInfo, defaultAccess, NEWLINE);
                     free(defaultAccess);
                     i++;
                 } else if (jsoneq(json, &t[i], EVENT_UPDATE_INTERVAL) == 0) {
                     char* eventUpdateInterval = getIntField(EVENT_UPDATE_INTERVAL, &t[i+1], json);
-                    *productInfo = concatStrings(*productInfo, eventUpdateInterval,';');
+                    *productInfo = concatStrings(*productInfo, eventUpdateInterval, NEWLINE);
                     free(eventUpdateInterval);
                     i++;
                 } else if (jsoneq(json, &t[i], ACCESS_UPDATE_INTERVAL) == 0) {
                     char* accessUpdateInterval = getIntField(ACCESS_UPDATE_INTERVAL, &t[i+1], json);
-                    *productInfo = concatStrings(*productInfo, accessUpdateInterval,';');
+                    *productInfo = concatStrings(*productInfo, accessUpdateInterval, NEWLINE);
                     free(accessUpdateInterval);
                     i++;
                 } else if (jsoneq(json, &t[i], ACCESS_BY_NMBOFLOCKINGS) == 0) {
                     char* accessByNmbOfLockings = getBoolField(ACCESS_BY_NMBOFLOCKINGS, &t[i+1], json);
-                    *productInfo = concatStrings(*productInfo, accessByNmbOfLockings,';');
+                    *productInfo = concatStrings(*productInfo, accessByNmbOfLockings, NEWLINE);
                     free(accessByNmbOfLockings);
                     i++;
                 } else if (jsoneq(json, &t[i], ACCESS_BY_FLOATINGPERIOD) == 0) {
                     char* accessByFloatingPeriod = getBoolField(ACCESS_BY_FLOATINGPERIOD, &t[i+1], json);
-                    *productInfo = concatStrings(*productInfo, accessByFloatingPeriod,';');
+                    *productInfo = concatStrings(*productInfo, accessByFloatingPeriod, NEWLINE);
                     free(accessByFloatingPeriod);
+                    i++;
+                } else if (jsoneq(json, &t[i], TIMEPERIOD_RECURRENCE) == 0) {
+                    char* timePeriodRecurrence = getIdArrayField(TIMEPERIOD_RECURRENCE, &t[i+1], json);
+                    *productInfo = concatStrings(*productInfo, timePeriodRecurrence, NEWLINE);
+                    free(timePeriodRecurrence);
                     i++;
                 }
 
