@@ -110,6 +110,82 @@ char* getIdArrayField(const char* keyName, jsmntok_t* token, const char* json) {
     return result;
 }
 
+char* getEventArray(jsmntok_t* token, const char* json) {
+
+    int i;
+    int r;
+    jsmn_parser p;
+    jsmntok_t t[128]; /* We expect no more than 128 tokens */
+
+    jsmn_init(&p);
+
+    r = jsmn_parse(&p, json + token->start, token->end-token->start, t, sizeof(t)/sizeof(t[0]));
+    if (r < 0) {
+        printf("Failed to parse JSON: %d\n", r);
+    }
+
+    char* list = NULL;
+    for (i = 1; i < r; i++) {
+        if (t[i].type == JSMN_STRING) {
+            {
+                int len=t[i].end - t[i].start;
+                char* value = malloc(len + 1);
+                strncpy(value, json + token->start + t[i].start, len);
+                list = concatStrings(list, value, ',');
+                free(value);
+            }
+        }
+    }
+
+    return list;
+}
+
+char* getEventTypesField(const char* keyName, jsmntok_t* token, const char* json) {
+
+    int i;
+    int r;
+    jsmn_parser p;
+    jsmntok_t t[128]; /* We expect no more than 128 tokens */
+
+    jsmn_init(&p);
+
+    r = jsmn_parse(&p, json + token->start, token->end-token->start, t, sizeof(t)/sizeof(t[0]));
+    if (r < 0) {
+        printf("Failed to parse JSON: %d\n", r);
+    }
+
+    char* list = NULL;
+    for (i = 1; i < r; i++) {
+        if (t[i].type == JSMN_ARRAY) {
+            {
+                int start = i+1;
+                int end = i + t[i].size;
+
+                char* items = NULL;
+
+                for( i = start; i <= end; i++) {
+                    if (t[i].type == JSMN_STRING)
+                    {
+                        int len=t[i].end - t[i].start;
+                        char* value = string_alloc(json + token->start + t[i].start, len);
+                        items = concatStrings(items, value, ',');
+                        free(value);
+                    }
+                }
+
+                list = concatStrings(list, items, ';');
+                free(items);
+
+                i = end;
+            }
+        }
+    }
+
+    char* result = concatStrings(strdup(keyName), list, '=');
+    free(list);
+    return result;
+}
+
 
 void parseProductInfo(const char* json, const char* sProductID, char** productInfo) {
     free(*productInfo);
@@ -182,6 +258,7 @@ void parseProductInfo(const char* json, const char* sProductID, char** productIn
             const char* ACCESS_UPDATE_INTERVAL = "AccessUpdateInterval";
 
             const char* TIMEPERIOD_RECURRENCE = "TimePeriodRecurrence";
+            const char* EVENT_TYPES = "EventTypes";
 
             /* Loop over all keys of the root object */
             for (i = 1; i < r; i++) {
@@ -240,13 +317,15 @@ void parseProductInfo(const char* json, const char* sProductID, char** productIn
                     *productInfo = concatStrings(*productInfo, timePeriodRecurrence, NEWLINE);
                     free(timePeriodRecurrence);
                     i++;
+                } else if (jsoneq(json, &t[i], EVENT_TYPES) == 0) {
+                    char* eventTypes = getEventTypesField(TIMEPERIOD_RECURRENCE, &t[i+1], json);
+                    *productInfo = concatStrings(*productInfo, eventTypes, NEWLINE);
+                    free(eventTypes);
+                    i++;
                 }
-
             }
-
         }
     }
-
 }
 
 void parseSystemInfo(const char* json, char** systemInfo) {
