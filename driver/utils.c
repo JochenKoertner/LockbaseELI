@@ -79,10 +79,5 @@ void parse_payload(const char* json, char** sessionId, char** text) {
 }
 
 char* string_alloc(const char* source, int len) {
-
-    char* result = malloc(len + 1);
-    strncpy(result, source, len);
-    result[len] = 0;
-    return result;
+    return strndup(source, len);
 }
-

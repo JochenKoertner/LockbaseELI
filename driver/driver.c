@@ -32,7 +32,7 @@ void parseConfigFile(const char* json, char** host, long* port) {
     /* Loop over all keys of the root object */
     for (i = 1; i < r; i++) {
         if (jsoneq(json, &t[i], "host") == 0) {
-            *host = strndup(json + t[i+1].start, t[i+1].end-t[i+1].start);
+            *host = string_alloc(json + t[i+1].start, t[i+1].end-t[i+1].start);
             i++;
         } else if (jsoneq(json, &t[i], "port") == 0) {
             *port = strtol(json + t[i+1].start, NULL, 10);
@@ -58,6 +58,22 @@ char* concatStrings(char* source, const char* appendStr, char separator) {
         return result;
     }
 }
+
+char* concatStringArray(jsmntok_t* t, int start, int end, const char* json) {
+    char* items = NULL;
+
+    for( int i = start; i <= end; i++) {
+        if (t[i].type == JSMN_STRING)
+        {
+            int len=t[i].end - t[i].start;
+            char* value = string_alloc(json + t[i].start, len);
+            items = concatStrings(items, value, ',');
+            free(value);
+        }
+    }
+    return items;
+}
+
 
 char* getStringField(const char* keyName, jsmntok_t* token, const char* json) {
     char* result=malloc(strlen(keyName)+3+(token->end-token->start)+1);
@@ -92,53 +108,12 @@ char* getIdArrayField(const char* keyName, jsmntok_t* token, const char* json) {
         printf("Failed to parse JSON: %d\n", r);
     }
 
-    char* list = NULL;
-    for (i = 1; i < r; i++) {
-        if (t[i].type == JSMN_STRING) {
-            {
-                int len=t[i].end - t[i].start;
-                char* value = malloc(len + 1);
-                strncpy(value, json + token->start + t[i].start, len);
-                list = concatStrings(list, value, ',');
-                free(value);
-            }
-        }
-    }
-
+    char* list = concatStringArray(&t, 1, r-1, json + token->start);
     char* result = concatStrings(strdup(keyName), list, '=');
     free(list);
     return result;
 }
 
-char* getEventArray(jsmntok_t* token, const char* json) {
-
-    int i;
-    int r;
-    jsmn_parser p;
-    jsmntok_t t[128]; /* We expect no more than 128 tokens */
-
-    jsmn_init(&p);
-
-    r = jsmn_parse(&p, json + token->start, token->end-token->start, t, sizeof(t)/sizeof(t[0]));
-    if (r < 0) {
-        printf("Failed to parse JSON: %d\n", r);
-    }
-
-    char* list = NULL;
-    for (i = 1; i < r; i++) {
-        if (t[i].type == JSMN_STRING) {
-            {
-                int len=t[i].end - t[i].start;
-                char* value = malloc(len + 1);
-                strncpy(value, json + token->start + t[i].start, len);
-                list = concatStrings(list, value, ',');
-                free(value);
-            }
-        }
-    }
-
-    return list;
-}
 
 char* getEventTypesField(const char* keyName, jsmntok_t* token, const char* json) {
 
@@ -161,18 +136,7 @@ char* getEventTypesField(const char* keyName, jsmntok_t* token, const char* json
                 int start = i+1;
                 int end = i + t[i].size;
 
-                char* items = NULL;
-
-                for( i = start; i <= end; i++) {
-                    if (t[i].type == JSMN_STRING)
-                    {
-                        int len=t[i].end - t[i].start;
-                        char* value = string_alloc(json + token->start + t[i].start, len);
-                        items = concatStrings(items, value, ',');
-                        free(value);
-                    }
-                }
-
+                char* items = concatStringArray(&t, start, end, json + token->start);
                 list = concatStrings(list, items, ';');
                 free(items);
 
