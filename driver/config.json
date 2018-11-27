@@ -1,0 +1,48 @@
+{
+  "host" : "localhost",
+  "port" : 1883,
+
+
+  "productInfos" : {
+
+    "productid" :  {
+      "ProductName" : "The LOCKBASE ELI Simulator, de:Der LOCKBASE ELI Simulator",
+      "ProgrammingTarget" : 1,
+      "DeviceCapacity" : 1000,
+      "TimePeriodCapacity" : 1000,
+      "EventTypes" : [
+        ["ESUA","security",
+          ":Unauthorized Access:An unauthorized access attempt has occurred,de:Unberechtigter Zutrittsversuch:Es wurde der Zutriit mit einem unberechtigen Schlüssel versucht"
+        ],
+        ["ETBL","technical",
+          ":Battery low:The battery charge level is low,de:Batterie leer:Der Ladestand der Batterie ist niedrig"
+        ],
+        ["ETPO","technical",
+          ":Power off:The power supply is interrupted,de:Kein Strom:Die Stromversorgung ist unterbrochen"
+        ],
+        ["ETMR","technical",
+          ":Maintenance:The device requires maintenance,de:Wartung:Das Gerät benötigt Wartung"
+        ],
+        ["EAAA","access",
+          ":Authorized access:Access was granted to an authorized key,de:Berechtigter Zutritt:Einem berechtigten Schlüssel würde Zutritt gewährt"
+        ],
+      ],
+      "OnlineSystem" : true,
+      "DefaultAccess" : false,
+      "AccessByNmbOfLockings" : false,
+      "AccessByFloatingPeriod" : false,
+      "TimePeriodRecurrence" : [ "RecIntID1","RecIntID2" ],
+      "EventUpdateInterval" : 1,
+      "AccessUpdateInterval" : 1
+    }
+  },
+
+  "systemInfo" : {
+    "System" : "ELIDemo",
+    "ProductId" : "ELIDemo",
+    "Name": "LOCKBASE ELI Simulation",
+    "ACLR": "AL",
+    "Enabled" : true
+  }
+}
+

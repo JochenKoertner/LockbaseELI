@@ -62,7 +62,7 @@ int main() {
     // printf("%s\n",ELIDriverInfo());
 
     // dump product-info to console
-    // printf("%s\n",ELIProductInfo("productid"));
+    printf("%s\n",ELIProductInfo("productid"));
 
     // dump system-info to console
     // printf("%s\n",ELISystemInfo("users"));

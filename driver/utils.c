@@ -77,3 +77,7 @@ void parse_payload(const char* json, char** sessionId, char** text) {
         }
     }
 }
+
+char* string_alloc(const char* source, int len) {
+    return strndup(source, len);
+}
