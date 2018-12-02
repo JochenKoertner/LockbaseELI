@@ -2,7 +2,7 @@
 #include <string>
 
 // Callback function type
-typedef int (*ELIDrv2AppCallback)( const char* sSessID, const char* sJobID, const char* sJobData/*=NULL*/ );
+typedef int (*ELIDrv2AppCallback)( const char* sSysID, const char* sJobID, const char* sJobData );
 // Application callback function pointer, NULL until initialized
 static ELIDrv2AppCallback ELIDrv2App = NULL;
 
@@ -44,7 +44,7 @@ DLLEXPORT const char* ELIDriverInfo()
 	return sDrvReturn.c_str();
 }
 
-DLLEXPORT void ELIDriverUI( const char* SessID, const char* SID )
+DLLEXPORT void ELIDriverUI( const char* sSysID )
 // Application launches driver's user interface on user command, e.g. a driver provided
 // dialogue box, etc.
 {
@@ -69,7 +69,7 @@ DLLEXPORT const char* ELISystemInfo( const char* sUsers )
 	return sDrvReturn.c_str();
 }
 
-DLLEXPORT const char* ELIOpen( const char* sUserList, const char* sSystem/*=NULL*/, const char* sExtData/*=NULL*/ )
+DLLEXPORT const char* ELIOpen( const char* sUserList, const char* sSysID, const char* sExtData/*=NULL*/ )
 // Application logs into a system and receives a session id
 {
 	// Write return text to sDrvReturn
@@ -77,7 +77,7 @@ DLLEXPORT const char* ELIOpen( const char* sUserList, const char* sSystem/*=NULL
 	return sDrvReturn.c_str();
 }
 
-DLLEXPORT const char* ELIClose( const char* sSessID )
+DLLEXPORT const char* ELIClose( const char* sSysID, const char* sSessID )
 // Application closes a given session (pending jobs will still be processed)
 {
 	// Write return code and extra data to sDrvReturn
@@ -85,7 +85,7 @@ DLLEXPORT const char* ELIClose( const char* sSessID )
 	return sDrvReturn.c_str();
 }
 
-DLLEXPORT int ELIApp2Drv( const char* sSessID, const char* sJobID, const char* sJobData/*=NULL*/ )
+DLLEXPORT int ELIApp2Drv( const char* sSysID, const char* sJobID, const char* sJobData )
 // Application launches a job in a given session
 {
 	// Process job
@@ -94,7 +94,7 @@ DLLEXPORT int ELIApp2Drv( const char* sSessID, const char* sJobID, const char* s
 	// This is just to demonstrate the callback. This will not necessarily be done here, because job processing may be asynchonous.
 	if( ELIApp2Drv ) {
 		// Job data have been collected in sDrvReturn
-		return ELIApp2Drv( sSessID, sJobID, sDrvReturn.c_str() );
+		return ELIApp2Drv( sSysID, sJobID, sDrvReturn.c_str() );
 	}
 	// Something went wrong
 	return -1;
