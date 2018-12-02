@@ -218,35 +218,27 @@ LBELI_EXPORT void ELIDriverUI(const char* SessID, const char* SID) {
 */
 
 LBELI_EXPORT const char* ELIProductInfo( const char* sProductID ) {
-    return
-            u8"ProgrammingTarget=0\n" // required
-            u8"DeviceCapacity=INT\n"  // required
-            u8"TimePeriodCapacity=INT\n"  // required
-            u8"EventTypes =[ID:EventID0],[ID:Class],[LTL:Description0];" // required
-            u8"[ID:EventID1],[ID:Class],[LTL:Description1];\n"
 
-            // the following values are optional
-            u8"OnlineSystem=0\n"
-            u8"DefaultAccess=0\n"
-            u8"AccessByNmbOfLockings=0\n"
-            u8"AccessByFloatingPeriod=0\n"
-            u8"TimePeriodRecurrence=[ID:RecIntID1],[ID:RecIntID2]\n"
-            u8"EventUpdateInterval=[INT:60]\n"
-            u8"AccessUpdateInterval=[INT:120]\n"
-            ;
+    parseProductInfo(driverInfo->config, sProductID, &driverInfo->productInfo);
+    return driverInfo->productInfo;
 }
 
 LBELI_EXPORT const char* ELISystemInfo( const char* sUsers ) {
+
+    char* pointer = NULL;
+    parseSystemInfo(driverInfo->config, &pointer);
+    return driverInfo->systemInfo;
+
     // send message to broker
     // connect();
     // publish(PAYLOAD);
     // wait for response (PAYLOAD)
     // disconnect();
-    return
+    /*return
             u8"[ID:Sys1],[ID:ProductID],[TXT:Name],[ACLR],['0':disable|'1':enable]\n"
             u8"[ID:Sys2],[ID:ProductID],[TXT:Name],[ACLR],['0':disable|'1':enable]\n"
             u8",[ID:Product1],,[ACLR]\n"
-            u8",[ID:Product2],,[ACLR]\n";
+            u8",[ID:Product2],,[ACLR]\n"; */
 }
 
 LBELI_EXPORT const char* ELIOpen( const char* sUserList, const char* sSystem, const char* sExtData) {
