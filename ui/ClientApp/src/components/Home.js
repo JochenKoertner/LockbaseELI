@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import { Col, Grid, Row, Button } from 'react-bootstrap';
+
 
 export class Home extends Component {
   displayName = Home.name
@@ -6,21 +8,63 @@ export class Home extends Component {
   render() {
     return (
       <div>
-        <h1>Hello, welt!</h1>
-        <p>Welcome to your new single-page application, built with:</p>
-        <ul>
-          <li><a href='https://get.asp.net/'>ASP.NET Core</a> and <a href='https://msdn.microsoft.com/en-us/library/67ef8sbd.aspx'>C#</a> for cross-platform server-side code</li>
-          <li><a href='https://facebook.github.io/react/'>React</a> for client-side code</li>
-          <li><a href='http://getbootstrap.com/'>Bootstrap</a> for layout and styling</li>
-        </ul>
-        <p>To help you get started, we've also set up:</p>
-        <ul>
-          <li><strong>Client-side navigation</strong>. For example, click <em>Counter</em> then <em>Back</em> to return here.</li>
-          <li><strong>Development server integration</strong>. In development mode, the development server from <code>create-react-app</code> runs in the background automatically, so your client-side resources are dynamically built on demand and the page refreshes when you modify any file.</li>
-          <li><strong>Efficient production builds</strong>. In production mode, development-time features are disabled, and your <code>dotnet publish</code> configuration produces minified, efficiently bundled JavaScript files.</li>
-        </ul>
-        <p>The <code>ClientApp</code> subdirectory is a standard React application based on the <code>create-react-app</code> template. If you open a command prompt in that directory, you can run <code>npm</code> commands such as <code>npm test</code> or <code>npm install</code>.</p>
-      </div>
+		  	<Grid>
+			  	<Row>
+				  	<Col lg={2}>
+						<img src="Images/lockbase.png" alt="Lockbase"></img>
+					</Col>
+					<Col lg={8}>
+					</Col>
+					<Col lg={2}>
+						<img src="Images/logo.png" width="240" height="66" alt="Logo"></img>
+					</Col>
+				</Row>
+
+				<Row className="grid-header">
+					<Col lg={4}>
+						&nbsp;
+					</Col>
+					<Col lg={4} className="col-header-center" >
+						Werkhalle West
+					</Col>
+					<Col lg={4}>
+						&nbsp;
+					</Col>
+				</Row>
+
+				<Row className="grid-content">
+					<Col lg={4}>
+						<div class="container-main">
+							<p>Gewählte Person</p>
+							<p>
+								Ahrens; Andrea
+								Geschäftsführung
+								keine zeitliche Einschränkung
+							</p>
+							<p>Personen</p>
+							<p>Wählen Sie</p>
+							<p>Türen/Tore</p>
+							<p>Büro Barthauer</p>
+
+						</div>
+					</Col>
+					<Col lg={4} className="col-content-center" >
+						Übersichtsplan Werkhalle West
+					</Col>
+					<Col lg={4}>
+						<div class="container-main">&nbsp;
+							<p>Türstatus</p>
+							<p>Geschlossen</p>
+							<p>Schlüssel ID</p>
+							<p>900-1</p>
+							<p>Uhrzeit</p>
+							<p>10 : 45</p>
+							<Button bsStyle="warning" bsSize="large">Jetzt testen</Button>
+						</div>
+					</Col>
+				</Row>
+			</Grid>
+       </div>
     );
   }
 }

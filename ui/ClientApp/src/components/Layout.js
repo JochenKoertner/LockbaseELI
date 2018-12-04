@@ -6,16 +6,15 @@ export class Layout extends Component {
 
   render() {
     return (
-      <Grid fluid>
-        <Row>
-          <Col sm={3}>
-            Hello World
-          </Col>
-          <Col sm={9}>
-            {this.props.children}
-          </Col>
-        </Row>
-      </Grid>
+		<div>
+			<header>
+			</header>
+			
+			{this.props.children}
+			
+			<footer>
+			</footer>
+	  </div>
     );
   }
 }

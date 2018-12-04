@@ -1,6 +1,41 @@
-@media (max-width: 767px) {
-    /* On small screens, the nav menu spans the full width of the screen. Leave a space for it. */
-    body {
-        padding-top: 50px;
-    }
+body {
+	font: normal 106.66%/1.05em Verdana, sans-serif;
+	padding-top: 0;
+	margin: 0;
+	color:#5c5c5c;
+	background-color:#f6f6f6;
+	height:100%;
+	width:100%;   
+	font-size: 18pt; 
 }
+
+.grid-header {
+	background-color: #565656;
+}
+
+.col-header-center {
+	background-color: #f59e01;
+	color: #fff;
+	text-align: center;
+}
+
+.col-content-center {
+	background-color: #565656;
+	color: #fff;
+}
+
+.grid-content {
+	background-color: #dcdcdc;
+}
+
+
+
+/* .row > div {
+	padding: 1rem;
+	background-color: #33b5e5;
+	border: 2px solid #fff;
+	color: #fff;
+	text-align: center;
+  } */
+
+
