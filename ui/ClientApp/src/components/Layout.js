@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { Col, Grid, Row } from 'react-bootstrap';
 
 export class Layout extends Component {
   displayName = Layout.name
@@ -13,6 +12,7 @@ export class Layout extends Component {
 			{this.props.children}
 			
 			<footer>
+				Copyright (c) by km 2018
 			</footer>
 	  </div>
     );

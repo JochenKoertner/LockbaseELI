@@ -9,14 +9,28 @@ body {
 	font-size: 18pt; 
 }
 
+header {
+	height: 20px;
+}
+
+footer {
+	text-align: center;
+}
+
+.grid-image {
+	height: 300px;
+}
+
 .grid-header {
 	background-color: #565656;
+	height: 50px;
 }
 
 .col-header-center {
 	background-color: #f59e01;
 	color: #fff;
 	text-align: center;
+	height: 50px;
 }
 
 .col-content-center {
@@ -29,13 +43,5 @@ body {
 }
 
 
-
-/* .row > div {
-	padding: 1rem;
-	background-color: #33b5e5;
-	border: 2px solid #fff;
-	color: #fff;
-	text-align: center;
-  } */
 
 

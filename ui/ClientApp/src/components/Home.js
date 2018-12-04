@@ -9,12 +9,11 @@ export class Home extends Component {
     return (
       <div>
 		  	<Grid>
-			  	<Row>
+			  	<Row className="grid-image">
 				  	<Col lg={2}>
 						<img src="Images/lockbase.png" alt="Lockbase"></img>
 					</Col>
-					<Col lg={8}>
-					</Col>
+					<Col lg={7}></Col>
 					<Col lg={2}>
 						<img src="Images/logo.png" width="240" height="66" alt="Logo"></img>
 					</Col>
@@ -35,7 +34,7 @@ export class Home extends Component {
 				<Row className="grid-content">
 					<Col lg={4}>
 						<div class="container-main">
-							<p>Gewählte Person</p>
+							<p>Gewählte Person:</p>
 							<p>
 								Ahrens; Andrea
 								Geschäftsführung
