@@ -1,9 +1,17 @@
+
+// km CI color's 
+
+$dark-white: #f6f6f6;
+$dark-grey: #565656;
+$light-grey: #dcdcdc;
+$primary-color:  #f59c00;
+
 body {
 	font: normal 106.66%/1.05em Verdana, sans-serif;
 	padding-top: 0;
 	margin: 0;
-	color:#5c5c5c;
-	background-color:#f6f6f6;
+	color: $dark-grey;
+	background-color: $dark-white;
 	height:100%;
 	width:100%;   
 	font-size: 18pt; 
@@ -22,24 +30,24 @@ footer {
 }
 
 .grid-header {
-	background-color: #565656;
+	background-color: $dark-grey;
 	height: 50px;
 }
 
 .col-header-center {
-	background-color: #f59e01;
-	color: #fff;
+	background-color: $primary-color;
+	color: white;
 	text-align: center;
 	height: 50px;
 }
 
 .col-content-center {
-	background-color: #565656;
-	color: #fff;
+	background-color: $dark-grey;
+	color: white;
 }
 
 .grid-content {
-	background-color: #dcdcdc;
+	background-color:  $light-grey;
 }
 
 
