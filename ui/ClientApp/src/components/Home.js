@@ -24,7 +24,7 @@ export class Home extends Component {
 						&nbsp;
 					</Col>
 					<Col lg={4} className="col-header-center" >
-						Werkhalle West
+						BÜRO BARTHAUER
 					</Col>
 					<Col lg={4}>
 						&nbsp;
@@ -34,7 +34,7 @@ export class Home extends Component {
 				<Row className="grid-content">
 					<Col lg={4}>
 						<div class="container-main">
-							<p>Gewählte Person:</p>
+							<p>GEWÄHLTE PERSON</p>
 							<p>
 								Ahrens; Andrea
 								Geschäftsführung

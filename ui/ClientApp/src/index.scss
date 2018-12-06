@@ -3,8 +3,14 @@
 
 @charset 'utf-8';
 
-// https://fonts.google.com/selection?category=Sans+Serif&selection.family=Lato
-@import url('https://fonts.googleapis.com/css?family=Lato:700');
+
+// embedded "Berlin Sans FB Regular" http://fontsgeek.com/fonts/Berlin-Sans-FB-Regular
+@font-face {
+	font-family: 'Berlin';
+  src: url('/fonts/BRLNSR.woff') format('woff');
+  font-weight: lighter;
+  font-size: 1.5em;
+}
 
 // km CI color's 
 
@@ -14,14 +20,14 @@ $light-grey: #dcdcdc;
 $primary-color:  #f59c00;
 
 body {
-  font-family: 'Lato', sans-serif;
+  font-family: 'Berlin', sans-serif;
 	padding-top: 0;
 	margin: 0;
 	color: $dark-grey;
 	background-color: $dark-white;
 	height: 100%;
-  width: 100%;  
-  font-size: 2.5em;  
+  width: 100%;
+  letter-spacing: 0.05em; 
 }
 
 header {
@@ -40,14 +46,20 @@ footer {
 .grid-header {
 	background-color: $dark-grey;
   height: 50px;
-  font-size: 1.4em;
+  line-height: 50px;
+  text-align: center;
+  font-size: 1.9em;
+  font-weight: bold; 
+  border: 2px dashed #f655e9;
 }
 
 .col-header-center {
 	background-color: $primary-color;
-	color: white;
-	text-align: center;
-	height: 50px;
+  color: white;
+  display: table-cell;
+  line-height: normal;
+  vertical-align: middle;
+  height: 100%;
 }
 
 .col-content-center {
