@@ -40,7 +40,9 @@ footer {
 }
 
 .grid-image {
-	height: 300px;
+  height: 700px;
+  background-image: url('/images/doors/buero_barthauer_close.png');
+  background-size: 1400px 700px; 
 }
 
 .grid-header {
@@ -50,7 +52,8 @@ footer {
   text-align: center;
   font-size: 1.9em;
   font-weight: bold; 
-  border: 2px dashed #f655e9;
+  // border: 2px dashed #f655e9;
+  text-transform: uppercase;
 }
 
 .col-header-center {

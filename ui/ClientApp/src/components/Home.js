@@ -11,11 +11,11 @@ export class Home extends Component {
 		  	<Grid>
 			  	<Row className="grid-image">
 				  	<Col lg={2}>
-						<img src="Images/lockbase.png" alt="Lockbase"></img>
+						<img src="images/lockbase.png" alt="Lockbase"></img>
 					</Col>
 					<Col lg={7}></Col>
 					<Col lg={2}>
-						<img src="Images/logo.png" width="240" height="66" alt="Logo"></img>
+						<img src="images/km.png" width="240" height="66" alt="Logo"></img>
 					</Col>
 				</Row>
 
@@ -24,7 +24,7 @@ export class Home extends Component {
 						&nbsp;
 					</Col>
 					<Col lg={4} className="col-header-center" >
-						BÜRO BARTHAUER
+						Büro Barthauser
 					</Col>
 					<Col lg={4}>
 						&nbsp;
