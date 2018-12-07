@@ -24,7 +24,8 @@ body {
 	padding-top: 0;
 	margin: 0;
 	color: $dark-grey;
-	background-color: $dark-white;
+  background-color: bisque; 
+  //background-color: $dark-white;
 	height: 100%;
   width: 100%;
   letter-spacing: 0.05em; 
@@ -41,8 +42,8 @@ footer {
 
 .grid-image {
   height: 700px;
-  background-image: url('/images/doors/buero_barthauer_close.png');
-  background-size: 1400px 700px; 
+  background-size: 1170px 700px;   
+  mask-image: url('/images/doors/mask.svg');
 }
 
 .grid-header {
@@ -54,15 +55,14 @@ footer {
   font-weight: bold; 
   // border: 2px dashed #f655e9;
   text-transform: uppercase;
+  align-items: center;
 }
 
 .col-header-center {
 	background-color: $primary-color;
   color: white;
-  display: table-cell;
   line-height: normal;
-  vertical-align: middle;
-  height: 100%;
+  padding: 10px;
 }
 
 .col-content-center {

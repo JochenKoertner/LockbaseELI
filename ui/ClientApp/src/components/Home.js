@@ -6,34 +6,31 @@ export class Home extends Component {
   displayName = Home.name
 
   render() {
+
+	const doorName = 'Büro Barthauer';
+	const doorId = 'buero_barthauer';
+
+	var imgUrl = '/images/doors/' + doorId + '_open.png'
+	// '_close.png';
+	
     return (
       <div>
 		  	<Grid>
-			  	<Row className="grid-image">
-				  	<Col lg={2}>
-						<img src="images/lockbase.png" alt="Lockbase"></img>
-					</Col>
-					<Col lg={7}></Col>
-					<Col lg={2}>
-						<img src="images/km.png" width="240" height="66" alt="Logo"></img>
-					</Col>
+				<Row className="grid-image" style={{backgroundImage: `url(${imgUrl})`}}>
 				</Row>
 
 				<Row className="grid-header">
-					<Col lg={4}>
-						&nbsp;
-					</Col>
+					<Col lg={4} />
+				
 					<Col lg={4} className="col-header-center" >
-						Büro Barthauser
+						{doorName}
 					</Col>
-					<Col lg={4}>
-						&nbsp;
-					</Col>
+					<Col lg={4} />
 				</Row>
 
 				<Row className="grid-content">
 					<Col lg={4}>
-						<div class="container-main">
+						<div className="container-main">
 							<p>GEWÄHLTE PERSON</p>
 							<p>
 								Ahrens; Andrea
@@ -51,7 +48,7 @@ export class Home extends Component {
 						Übersichtsplan Werkhalle West
 					</Col>
 					<Col lg={4}>
-						<div class="container-main">&nbsp;
+						<div className="container-main">&nbsp;
 							<p>Türstatus</p>
 							<p>Geschlossen</p>
 							<p>Schlüssel ID</p>

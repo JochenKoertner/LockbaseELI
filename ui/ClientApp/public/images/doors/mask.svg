@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+    xmlns:xlink="http://www.w3.org/1999/xlink"
+	width="1170" height="700" >
+	<defs>
+		<filter id="filter2">
+			<feGaussianBlur stdDeviation="20"></feGaussianBlur>
+		</filter>
+	</defs>
+  	<ellipse cx="585" cy="400" rx="550" ry="350" fill="black" filter="url(#filter2)"/>
+</svg>
