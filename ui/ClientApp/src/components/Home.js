@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Col, Grid, Row, Button } from 'react-bootstrap';
 
 import { Door } from './Door';
+import { DoorCaption } from './DoorCaption';
 
 export class Home extends Component {
 	displayName = Home.name
@@ -29,14 +30,7 @@ export class Home extends Component {
 
 					<Door doorId={doorId} isOpen={this.state.isOpen}></Door>
 
-					<Row className="grid-header">
-						<Col lg={4} />
-
-						<Col lg={4} className="col-header-center" >
-							{doorName}
-						</Col>
-						<Col lg={4} />
-					</Row>
+					<DoorCaption doorName={doorName}></DoorCaption>
 
 					<Row className="grid-content">
 						<Col lg={4}>

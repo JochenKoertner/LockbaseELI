@@ -40,13 +40,18 @@ footer {
   font-size: 0.8em;
 }
 
+
+// Door.jsx 
+
 .door {
   height: 700px;
   background-size: 1170px 700px;   
   mask-image: url('/images/doors/mask.svg');
 }
 
-.grid-header {
+// DoorCaption.jsx
+
+.door-caption {
 	background-color: $dark-grey;
   height: 50px;
   line-height: 50px;
@@ -58,7 +63,7 @@ footer {
   align-items: center;
 }
 
-.col-header-center {
+.door-caption > div:nth-child(2) {
 	background-color: $primary-color;
   color: white;
   line-height: normal;
