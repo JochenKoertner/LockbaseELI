@@ -1,66 +1,76 @@
 import React, { Component } from 'react';
 import { Col, Grid, Row, Button } from 'react-bootstrap';
 
+import { Door } from './Door';
 
 export class Home extends Component {
-  displayName = Home.name
+	displayName = Home.name
 
-  render() {
+	constructor(props) {
+		super(props);
+		this.state = { isOpen: false };
+		this.toggleDoor = this.toggleDoor.bind(this);
+	}
 
-	const doorName = 'Büro Barthauer';
-	const doorId = 'buero_barthauer';
+	toggleDoor() {
+		this.setState({
+			isOpen: !this.state.isOpen
+		});
+	}
 
-	var imgUrl = '/images/doors/' + doorId + '_open.png'
-	// '_close.png';
-	
-    return (
-      <div>
-		  	<Grid>
-				<Row className="grid-image" style={{backgroundImage: `url(${imgUrl})`}}>
-				</Row>
+	render() {
 
-				<Row className="grid-header">
-					<Col lg={4} />
-				
-					<Col lg={4} className="col-header-center" >
-						{doorName}
-					</Col>
-					<Col lg={4} />
-				</Row>
+		const doorName = 'Büro Barthauer';
+		const doorId = 'buero_barthauer';
 
-				<Row className="grid-content">
-					<Col lg={4}>
-						<div className="container-main">
-							<p>GEWÄHLTE PERSON</p>
-							<p>
-								Ahrens; Andrea
-								Geschäftsführung
-								keine zeitliche Einschränkung
+		return (
+			<div>
+				<Grid>
+
+					<Door doorId={doorId} isOpen={this.state.isOpen}></Door>
+
+					<Row className="grid-header">
+						<Col lg={4} />
+
+						<Col lg={4} className="col-header-center" >
+							{doorName}
+						</Col>
+						<Col lg={4} />
+					</Row>
+
+					<Row className="grid-content">
+						<Col lg={4}>
+							<div className="container-main">
+								<p>GEWÄHLTE PERSON</p>
+								<p>
+									Ahrens; Andrea
+									Geschäftsführung
+									keine zeitliche Einschränkung
 							</p>
-							<p>Personen</p>
-							<p>Wählen Sie</p>
-							<p>Türen/Tore</p>
-							<p>Büro Barthauer</p>
+								<p>Personen</p>
+								<p>Wählen Sie</p>
+								<p>Türen/Tore</p>
+								<p>Büro Barthauer</p>
 
-						</div>
+							</div>
+						</Col>
+						<Col lg={4} className="col-content-center" >
+							Übersichtsplan Werkhalle West
 					</Col>
-					<Col lg={4} className="col-content-center" >
-						Übersichtsplan Werkhalle West
-					</Col>
-					<Col lg={4}>
-						<div className="container-main">&nbsp;
+						<Col lg={4}>
+							<div className="container-main">&nbsp;
 							<p>Türstatus</p>
-							<p>Geschlossen</p>
-							<p>Schlüssel ID</p>
-							<p>900-1</p>
-							<p>Uhrzeit</p>
-							<p>10 : 45</p>
-							<Button bsStyle="warning" bsSize="large">Jetzt testen</Button>
-						</div>
-					</Col>
-				</Row>
-			</Grid>
-       </div>
-    );
-  }
+								<p>{this.state.isOpen ? "Geöffnet" : "Geschlossen" }</p>
+								<p>Schlüssel ID</p>
+								<p>900-1</p>
+								<p>Uhrzeit</p>
+								<p>10 : 45</p>
+								<Button bsStyle="warning" bsSize="large" onClick={this.toggleDoor}>Jetzt testen</Button>
+							</div>
+						</Col>
+					</Row>
+				</Grid>
+			</div>
+		);
+	}
 }

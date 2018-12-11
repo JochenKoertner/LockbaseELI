@@ -15,4 +15,7 @@ tab_width=4
 indent_style=space
 indent_size=2
 
+[*.{js,jsx}]
+tab_width = 2
+
 
