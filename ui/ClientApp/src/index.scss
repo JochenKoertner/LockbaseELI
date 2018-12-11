@@ -53,11 +53,11 @@ footer {
 
 .door-caption {
 	background-color: $dark-grey;
-  height: 50px;
-  line-height: 50px;
+  height: 60px;
+  line-height: 60px;
   text-align: center;
-  font-size: 1.9em;
-  font-weight: bold; 
+  font-size: 2.4em;
+  font-weight: normal; 
   // border: 2px dashed #f655e9;
   text-transform: uppercase;
   align-items: center;
@@ -77,4 +77,40 @@ footer {
 
 .grid-content {
 	background-color:  $light-grey;
+}
+
+.label {
+  background-color: transparent;
+  padding: .2em .8em .2em .8em;
+  font-weight: normal;
+  color: $dark-grey;
+  font-size: 1.4em;
+  text-transform: uppercase;
+}
+
+.Dropdown-root {
+  border: none;
+  background-color: $dark-grey;
+  color: white;
+  margin-bottom: 10px;
+  margin-top: 2px;
+  font-size: 1.4em;
+  font-weight: normal; 
+  text-transform: uppercase;
+}
+
+.Dropdown-control {
+  border: none;
+  background-color: $dark-grey;
+  color: white;
+  padding: .2em .8em .2em .8em;
+}
+
+.info-box {
+  background-color: $dark-grey;
+  color: white;
+  padding: .2em .8em .2em .8em;
+  font-size: 1.4em;
+  font-weight: normal; 
+  text-transform: uppercase;
 }
