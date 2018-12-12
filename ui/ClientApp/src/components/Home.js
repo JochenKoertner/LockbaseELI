@@ -5,6 +5,7 @@ import Dropdown from 'react-dropdown';
 
 import { Door } from './Door';
 import { DoorCaption } from './DoorCaption';
+import { InfoBox } from './InfoBox';
 
 const arrowClosed = (
 	<span className="arrow-closed" />
@@ -14,9 +15,12 @@ const arrowOpen = (
 )
 
 const persons = [
-	{ value: 4711, label: 'Ahrens; Andrea', section: 'Geschäftsleitung', summary: 'keine zeitliche Einschränkung' },
-	{ value: 4712, label: 'Müller; Bernd', section: 'Werkstattsleitung', summary:'keine zeitliche Einschränkung'  },
-	{ value: 4713, label: 'Schmidt; Helga', section: 'Sekretariat', summary: 'normale Öffnungszeiten' }
+	{ value: 4711, label: 'Ahrens; Andrea', section: 'Geschäftsleitung', 
+		summary: 'keine zeitliche Einschränkung', keyId: '900-1' },
+	{ value: 4712, label: 'Müller; Bernd', section: 'Werkstattsleitung', 
+		summary:'keine zeitliche Einschränkung', keyId: '900-7' },
+	{ value: 4713, label: 'Schmidt; Helga', section: 'Sekretariat', 
+		summary: 'normale Öffnungszeiten', keyId: '100-99' }
 ]
 
 const doors = [
@@ -42,18 +46,56 @@ const doors = [
 	}
 ]
 
+function* hoursGenerator() {
+  var index = 0;
+  while(index < 24) {
+    yield index++;
+  }
+}
+
+function* minutesGenerator() {
+  var index = 0;
+  while(index < 4) {
+    yield index * 15;
+    index++;
+  }
+}
+
+let hours = Array
+	.from(hoursGenerator())
+	.map( x => { 
+		return {
+			value : x ,
+			label : x.toString().padStart(2,'0')
+		}; 
+	})
+
+let minutes = Array
+	.from(minutesGenerator())
+	.map( x => { 
+		return {
+			value : x ,
+			label : x.toString().padStart(2,'0')
+		}; 
+	})
 
 export class Home extends Component {
 	displayName = Home.name
 
-	
-
 	constructor(props) {
 		super(props);
-		this.state = { isOpen: false, person: persons[0], door: doors[0] };
+		this.state = { 
+			isOpen: false, 
+			person: persons[0], 
+			door: doors[0], 
+			hour: hours[10], 
+			minute: minutes[3] };
+
 		this.toggleDoor = this.toggleDoor.bind(this);
 		this.onSelectDoor = this.onSelectDoor.bind(this);
 		this.onSelectPerson = this.onSelectPerson.bind(this);
+		this.onSelectHour = this.onSelectHour.bind(this);
+		this.onSelectMinute = this.onSelectMinute.bind(this);
 	}
 
 	toggleDoor() {
@@ -67,29 +109,37 @@ export class Home extends Component {
 	}
 
 	onSelectDoor(selected) {
-		const index = doors.findIndex( x => x.value === selected.value);
-		console.log(selected.value);
-		console.log(index);
-		this.setState({door: selected});
+		const onlyDoors = doors
+			.map( x => {
+					if (x.type === 'group') {
+						return x.items	
+					} 
+					return [x]
+				})
+			.reduce( (a, b) => a.concat(b),[]);
+
+		const index = onlyDoors.findIndex( x => x.value === selected.value);
+		this.setState({door: onlyDoors[index]});
 	}
 
 	onSelectPerson(selected) {
 		const index = persons.findIndex( x => x.value === selected.value);
-
 		this.setState({person: persons[index]});
+	}
+
+	onSelectHour(selected) {
+		const index = hours.findIndex( x => x.value === selected.value);
+		this.setState({hour: hours[index]});
+	}
+
+	onSelectMinute(selected) {
+		const index = minutes.findIndex( x => x.value === selected.value);
+		this.setState({minute: minutes[index]});
 	}
 
 	render() {
 
-		
 		const doorId = 'buero_barthauer';
-
-		
-
-		const minutes = ['00','15','30','45']
-		const hours = ['00','01','02','03','04','05','06','07','08','09','10','11',
-										'12','13','14','15','16','17','18','19','20','21','22','23']
-
 
 		return (
 			<div>
@@ -102,36 +152,42 @@ export class Home extends Component {
 					<Row className="grid-content">
 						<Col lg={1}></Col>
 						<Col lg={3}>
-								<Label>GEWÄHLTE PERSON</Label>
-								<p className="info-box">
+								<InfoBox label="Gewählte Person">
 									{this.state.person.label} 
-									<br></br>
+									<br/>
 									{this.state.person.section}
-									<br></br>
+									<br/>
 									{this.state.person.summary}
-							</p>
+								</InfoBox>
 								<Label>Personen</Label>
 								
-								<Dropdown arrowClosed={arrowClosed} arrowOpen={arrowOpen} options={persons} onChange={this.onSelectPerson} value={this.state.person} placeholder="Wählen Sie" />
+								<Dropdown arrowClosed={arrowClosed} arrowOpen={arrowOpen} 
+								options={persons} onChange={this.onSelectPerson} value={this.state.person} />
 								<Label>Türen/Tore</Label>
-								<Dropdown arrowClosed={arrowClosed} arrowOpen={arrowOpen} options={doors} onChange={this.onSelectDoor} value={this.state.door} placeholder="Wählen Sie" />
+								<Dropdown arrowClosed={arrowClosed} arrowOpen={arrowOpen} 
+								options={doors} onChange={this.onSelectDoor} value={this.state.door} />
+
 						</Col>
 						<Col lg={4} className="col-content-center" >
 							Übersichtsplan Werkhalle West
 					</Col>
 						<Col lg={3}>
-							<Label>Türstatus</Label>
-							<p className="info-box">{this.state.isOpen ? "Geöffnet" : "Geschlossen" }</p>
-							<Label>Schlüssel ID</Label>
-							<p className="info-box">900-1</p>
-						
+							<InfoBox label="Türstatus">
+								{this.state.isOpen ? "Geöffnet" : "Geschlossen" }
+							</InfoBox>
+							<InfoBox label="Schlüssel ID">
+								{this.state.person.keyId}
+							</InfoBox>
+
 							<Label>Uhrzeit</Label>
 							<Row>
 								<Col lg={6}>
-								<Dropdown options={hours} onChange={this._onSelect} value={'10'} placeholder="Wählen Sie" />
+								<Dropdown arrowClosed={arrowClosed} arrowOpen={arrowOpen} 
+									options={hours} onChange={this.onSelectHour} value={this.state.hour}/>
 								</Col>
 								<Col lg={6}>
-								<Dropdown options={minutes} onChange={this._onSelect} value={'45'} placeholder="Wählen Sie" />
+								<Dropdown arrowClosed={arrowClosed} arrowOpen={arrowOpen} 
+									options={minutes} onChange={this.onSelectMinute} value={this.state.minute} />
 								</Col>
 							</Row>
 

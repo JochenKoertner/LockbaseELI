@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { Row } from 'react-bootstrap';
 
 export class Door extends React.Component {
