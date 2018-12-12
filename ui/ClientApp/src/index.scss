@@ -88,6 +88,17 @@ footer {
   text-transform: uppercase;
 }
 
+.info-box {
+  background-color: $dark-grey;
+  color: white;
+  padding: .2em .8em .2em .8em;
+  font-size: 1.4em;
+  font-weight: normal; 
+  text-transform: uppercase;
+}
+
+// react-dropdown Combobox 
+
 .Dropdown-root {
   border: none;
   background-color: $dark-grey;
@@ -106,11 +117,34 @@ footer {
   padding: .2em .8em .2em .8em;
 }
 
-.info-box {
-  background-color: $dark-grey;
+.Dropdown-option.is-selected {
+  background-color: $primary-color;
   color: white;
-  padding: .2em .8em .2em .8em;
-  font-size: 1.4em;
-  font-weight: normal; 
-  text-transform: uppercase;
 }
+
+.Dropdown-option:hover {
+  background-color: lighten($primary-color, 5%);
+  color: white;
+}
+
+.arrow-closed, .arrow-open {
+  border: solid white;
+  border-width: 0 4px 4px 0;
+  display: inline-block;
+  padding: 4px;
+  position: absolute;
+  right: 10px;
+}
+
+.arrow-closed {
+  top: 10px;
+  transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
+}
+
+.arrow-open {
+  top: 14px;
+  transform: rotate(-135deg);
+  -webkit-transform: rotate(-135deg);
+}
+
