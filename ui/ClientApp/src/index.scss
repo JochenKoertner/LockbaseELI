@@ -1,0 +1,150 @@
+
+// https://sass-guidelin.es/de/
+
+@charset 'utf-8';
+
+
+// embedded "Berlin Sans FB Regular" http://fontsgeek.com/fonts/Berlin-Sans-FB-Regular
+@font-face {
+	font-family: 'Berlin';
+  src: url('/fonts/BRLNSR.woff') format('woff');
+  font-weight: lighter;
+  font-size: 1.5em;
+}
+
+// km CI color's 
+
+$dark-white: #f6f6f6;
+$dark-grey: #565656;
+$light-grey: #dcdcdc;
+$primary-color:  #f59c00;
+
+body {
+  font-family: 'Berlin', sans-serif;
+	padding-top: 0;
+	margin: 0;
+	color: $dark-grey;
+  background-color: bisque; 
+  //background-color: $dark-white;
+	height: 100%;
+  width: 100%;
+  letter-spacing: 0.05em; 
+}
+
+header {
+	height: 20px;
+}
+
+footer {
+  text-align: center;
+  font-size: 0.8em;
+}
+
+
+// Door.jsx 
+
+.door {
+  height: 700px;
+  background-size: 1170px 700px;   
+  mask-image: url('/images/doors/mask.svg');
+}
+
+// DoorCaption.jsx
+
+.door-caption {
+	background-color: $dark-grey;
+  height: 60px;
+  line-height: 60px;
+  text-align: center;
+  font-size: 2.4em;
+  font-weight: normal; 
+  // border: 2px dashed #f655e9;
+  text-transform: uppercase;
+  align-items: center;
+}
+
+.door-caption > div:nth-child(2) {
+	background-color: $primary-color;
+  color: white;
+  line-height: normal;
+  padding: 10px;
+}
+
+.col-content-center {
+	background-color: $dark-grey;
+	color: white;
+}
+
+.grid-content {
+	background-color:  $light-grey;
+}
+
+.label {
+  background-color: transparent;
+  padding: .2em .8em .2em .8em;
+  font-weight: normal;
+  color: $dark-grey;
+  font-size: 1.4em;
+  text-transform: uppercase;
+}
+
+.info-box {
+  background-color: $dark-grey;
+  color: white;
+  padding: .2em .8em .2em .8em;
+  font-size: 1.4em;
+  font-weight: normal; 
+  text-transform: uppercase;
+}
+
+// react-dropdown Combobox 
+
+.Dropdown-root {
+  border: none;
+  background-color: $dark-grey;
+  color: white;
+  margin-bottom: 10px;
+  margin-top: 2px;
+  font-size: 1.4em;
+  font-weight: normal; 
+  text-transform: uppercase;
+}
+
+.Dropdown-control {
+  border: none;
+  background-color: $dark-grey;
+  color: white;
+  padding: .2em .8em .2em .8em;
+}
+
+.Dropdown-option.is-selected {
+  background-color: $primary-color;
+  color: white;
+}
+
+.Dropdown-option:hover {
+  background-color: lighten($primary-color, 5%);
+  color: white;
+}
+
+.arrow-closed, .arrow-open {
+  border: solid white;
+  border-width: 0 4px 4px 0;
+  display: inline-block;
+  padding: 4px;
+  position: absolute;
+  right: 10px;
+}
+
+.arrow-closed {
+  top: 10px;
+  transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
+}
+
+.arrow-open {
+  top: 14px;
+  transform: rotate(-135deg);
+  -webkit-transform: rotate(-135deg);
+}
+

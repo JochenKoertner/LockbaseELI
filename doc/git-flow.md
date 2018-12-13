@@ -22,4 +22,37 @@ Hierfür sind folgende Branches mit einer bestimmten Bedeutung hinterlegt.
 * `release`  
     Im Vorwege eines regulären Releases wird unter Umständen ein temporärer Branch mit dem Namen `release/xyz` angelegt. Bei einem größerem Versionssprung sollte dieses gemacht werden.
 * `feature`  
-    Dedizierte Branches um ein Feature zu entwickeln. Wird im Anschluß in `develop` zurückgeführt. Macht eigentlich nur Sinn wenn mit vielen Entwicklern auf einem Repository gearbeitet wird oder ein Versuch gestartet wird, bei dem im Vorwege noch nicht klar ist ob und wann dieses in dem `develop` Branch landen soll.
+    Dedizierte Branches um ein Feature zu entwickeln. Wird im Anschluß in `develop` zurückgeführt. Macht eigentlich nur Sinn wenn mit vielen Entwicklern auf oeinem Repository gearbeitet wird oder ein Versuch gestartet wird, bei dem im Vorwege noch nicht klar ist ob und wann dieses in dem `develop` Branch landen soll.
+
+# Git Workflow's
+
+## Sync mit UpStream
+
+Im regelmäßigen Abständen wird der Fork unter `CaptainFuture/LockbaseELI`mit dem Upstream syncronisiert. Diese Synchronisierung läuft immer im Branch `master`. Für diesen vorgang ist es eine Vorraussetzung das ein Remote Repository unter dem Namen `upstream` bekannt gegeben wird. 
+
+Mit dem folgenden Kommando können die Remotes aufgelistet werden.
+
+`git remote -v`
+
+Ist noch kein Upstream vorhanden wird dieser mit dem folgenden Kommando bekanntgegeben. 
+
+`git remote add upstream git@github.com:JochenKoertner/LockbaseELI.git`
+
+Der eigentliche Vorgang ist dann der folgende Ablauf 
+
+* `git fetch upstream`
+    Das aktuelle Upstream repository wird einmal gefecht und somit auf Stand gebracht. 
+
+* `git checkout master`
+    Es wird auf dem `master` ausgecheckt. 
+
+* `git merge upstream/master`
+    Der eigentliche Sync zwischen upstream und master. Evtl. muß gemergt werden. 
+
+* `git commit` & `git push`
+    Der Fork wird auf Stand gebracht und es kann jetzt ein Pull-Request gestellt werden um den Upstream mit dem Downstreeam zu syncen. 
+
+Im Anschluß kann dann der neue master wieder in einem Development Zweig gemergt werden und der Zyklus geht von vorne los. 
+
+
+

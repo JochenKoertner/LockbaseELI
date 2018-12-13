@@ -1,16 +1,31 @@
-import React from 'react';
-import { Col, Grid, Row } from 'react-bootstrap';
-import NavMenu from './NavMenu';
+import React, { Component } from 'react';
+import { Col, Row } from 'react-bootstrap';
 
-export default props => (
-  <Grid fluid>
-    <Row>
-      <Col sm={3}>
-        <NavMenu />
-      </Col>
-      <Col sm={9}>
-        {props.children}
-      </Col>
-    </Row>
-  </Grid>
-);
+export class Layout extends Component {
+  displayName = Layout.name
+
+  render() {
+    return (
+		<div>
+			
+			<header>
+			  	<Row className="logos">
+				  	<Col lg={2}>
+						<img src="images/lockbase.png" alt="Lockbase"></img>
+					</Col>
+					<Col lg={7}>&nbsp;</Col>
+					<Col lg={2}>
+						<img src="images/km.png" width="240" height="66" alt="Logo"></img>
+					</Col>
+				</Row>
+			</header>
+
+			{this.props.children}
+			
+			<footer>
+				Copyright (c) by km 2018
+			</footer>
+	  </div>
+    );
+  }
+}
