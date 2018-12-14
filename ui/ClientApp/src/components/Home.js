@@ -15,24 +15,24 @@ const arrowOpen = (
 )
 
 const persons = [
-	{ value: 4711, label: 'Ahrens; Andrea', section: 'Geschäftsleitung', 
+	{ value: 4711, label: 'Ahrens, Andrea', section: 'Geschäftsführung', 
 		summary: 'keine zeitliche Einschränkung', keyId: '900-1' },
-	{ value: 4712, label: 'Müller; Bernd', section: 'Werkstattsleitung', 
-		summary:'keine zeitliche Einschränkung', keyId: '900-7' },
-	{ value: 4713, label: 'Schmidt; Helga', section: 'Sekretariat', 
-		summary: 'normale Öffnungszeiten', keyId: '100-99' }
+	{ value: 4712, label: 'Barthauer, Thomas', section: 'Geschäftsführung', 
+		summary:'keine zeitliche Einschränkung', keyId: '901-1' },
+	{ value: 4713, label: 'Fendler, Klaus', section: 'Buchhaltung', 
+		summary: 'Jeden Tag 6-21 Uhr', keyId: '103-1' }
 ]
 
 const doors = [
-	{ value: 'torwest', label: 'Tor West' },
+	{ value: 'torwest', label: 'Tor West', lockId: 'W1' },
 	{ type: 'group', name: 'Verwaltung', items: [
-		 { value: 'konferenzraum', label: 'Konferenzraum' },
-		 { value: 'buero_ahrens', label: 'Büro Ahrens' },
-		 { value: 'buero_barthauer', label: 'Büro Barthauer' },
-		 { value: 'buchhaltung', label: 'Buchhaltung' },
-		 { value: 'buero_vertrieb1', label: 'Büro Vertrieb 1' },
-		 { value: 'buero_vertrieb2', label: 'Büro Vertrieb 2' },
-		 { value: 'eingang_west', label: 'Eingang West' }
+		 { value: 'konferenzraum', label: 'Konferenzraum', lockId: '100' },
+		 { value: 'buero_ahrens', label: 'Büro Ahrens', lockId: '101' },
+		 { value: 'buero_barthauer', label: 'Büro Barthauer', lockId: '102' },
+		 { value: 'buchhaltung', label: 'Buchhaltung', lockId: '103' },
+		 { value: 'buero_vertrieb1', label: 'Büro Vertrieb 1', lockId: '104' },
+		 { value: 'buero_vertrieb2', label: 'Büro Vertrieb 2', lockId: '105' },
+		 { value: 'eingang_west', label: 'Eingang West', lockId: 'Z1' }
 	 ]
 	},
 	{
@@ -163,22 +163,23 @@ export class Home extends Component {
 								
 								<Dropdown arrowClosed={arrowClosed} arrowOpen={arrowOpen} 
 								options={persons} onChange={this.onSelectPerson} value={this.state.person} />
-								<Label>Türen/Tore</Label>
-								<Dropdown arrowClosed={arrowClosed} arrowOpen={arrowOpen} 
-								options={doors} onChange={this.onSelectDoor} value={this.state.door} />
+									<InfoBox label="Schlüssel ID">
+								{this.state.person.keyId}
+							</InfoBox>
 
 						</Col>
 						<Col lg={4} className="col-content-center" >
 							Übersichtsplan Werkhalle West
 					</Col>
 						<Col lg={3}>
+						<Label>Türen/Tore</Label>
+								<Dropdown arrowClosed={arrowClosed} arrowOpen={arrowOpen} 
+								options={doors} onChange={this.onSelectDoor} value={this.state.door} />
+
 							<InfoBox label="Türstatus">
 								{this.state.isOpen ? "Geöffnet" : "Geschlossen" }
 							</InfoBox>
-							<InfoBox label="Schlüssel ID">
-								{this.state.person.keyId}
-							</InfoBox>
-
+						
 							<Label>Uhrzeit</Label>
 							<Row>
 								<Col lg={6}>
