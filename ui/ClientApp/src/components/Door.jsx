@@ -1,17 +1,15 @@
 import React from 'react';
-import { Row } from 'react-bootstrap';
+import Row from 'react-bootstrap';
 
-export class Door extends React.Component {
-	displayName = Door.name
+const Door = ({ doorId, isOpen }) => {
+	let doorState = isOpen ? 'open' : 'close'
 
-	render() {
-		let doorState = this.props.isOpen ? 'open' : 'close'
+	var imgUrl = '/images/doors/' + doorId + '_' + doorState + '.png'
 
-		var imgUrl = '/images/doors/' + this.props.doorId + '_' + doorState + '.png'
+	return (
+		<Row className="door" style={{backgroundImage: `url(${imgUrl})`}}>
+		</Row>
+	);
+}; 
 
-		return (
-			<Row className="door" style={{backgroundImage: `url(${imgUrl})`}}>
-			</Row>
-		);
-	}
-}
+export default Door;
