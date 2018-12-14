@@ -3,8 +3,8 @@ import { Col, Grid, Row, Button, Label } from 'react-bootstrap';
 
 import Dropdown from 'react-dropdown';
 
+import DoorCaption from './DoorCaption';
 import { Door } from './Door';
-import { DoorCaption } from './DoorCaption';
 import { InfoBox } from './InfoBox';
 
 const arrowClosed = (
