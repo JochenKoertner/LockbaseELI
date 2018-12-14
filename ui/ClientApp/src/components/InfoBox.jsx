@@ -1,17 +1,14 @@
 import React from 'react';
 import { Label } from 'react-bootstrap';
 
-export class InfoBox extends React.Component {
-	displayName = InfoBox.name
+const InfoBox = (props) => (
+	<div>
+		<Label>{props.label}</Label>
+		<p className="info-box">
+			{props.children}
+		</p>
+	</div>
+)
 
-	render() {
-		return (
-			<div>
-				<Label>{this.props.label}</Label>
-				<p className="info-box">
-					{this.props.children}
-				</p>
-			</div>
-		);
-	}
-}
+export default InfoBox;
+

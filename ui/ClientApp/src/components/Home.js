@@ -6,7 +6,7 @@ import Dropdown from 'react-dropdown';
 import DoorCaption from './DoorCaption';
 import Door from './Door';
 
-import { InfoBox } from './InfoBox';
+import InfoBox from './InfoBox';
 
 const arrowClosed = (
 	<span className="arrow-closed" />
