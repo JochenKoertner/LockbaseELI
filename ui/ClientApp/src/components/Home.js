@@ -15,68 +15,75 @@ const arrowOpen = (
 )
 
 const persons = [
-	{ value: 4711, label: 'Ahrens, Andrea', section: 'Geschäftsführung', 
-		summary: 'keine zeitliche Einschränkung', keyId: '900-1' },
-	{ value: 4712, label: 'Barthauer, Thomas', section: 'Geschäftsführung', 
-		summary:'keine zeitliche Einschränkung', keyId: '901-1' },
-	{ value: 4713, label: 'Fendler, Klaus', section: 'Buchhaltung', 
-		summary: 'Jeden Tag 6-21 Uhr', keyId: '103-1' }
+	{
+		value: 4711, label: 'Ahrens, Andrea', department: 'Geschäftsführung',
+		summary: 'keine zeitliche Einschränkung', keyId: '900-1'
+	},
+	{
+		value: 4712, label: 'Barthauer, Thomas', department: 'Geschäftsführung',
+		summary: 'keine zeitliche Einschränkung', keyId: '901-1'
+	},
+	{
+		value: 4713, label: 'Fendler, Klaus', department: 'Buchhaltung',
+		summary: 'Jeden Tag 6-21 Uhr', keyId: '103-1'
+	}
 ]
 
 const doors = [
-	{ value: 'torwest', label: 'Tor West', lockId: 'W1' },
-	{ type: 'group', name: 'Verwaltung', items: [
-		 { value: 'konferenzraum', label: 'Konferenzraum', lockId: '100' },
-		 { value: 'buero_ahrens', label: 'Büro Ahrens', lockId: '101' },
-		 { value: 'buero_barthauer', label: 'Büro Barthauer', lockId: '102' },
-		 { value: 'buchhaltung', label: 'Buchhaltung', lockId: '103' },
-		 { value: 'buero_vertrieb1', label: 'Büro Vertrieb 1', lockId: '104' },
-		 { value: 'buero_vertrieb2', label: 'Büro Vertrieb 2', lockId: '105' },
-		 { value: 'eingang_west', label: 'Eingang West', lockId: 'Z1' }
-	 ]
+	{ value: 'W1', label: 'Tor West', image: 'torwest'},
+	{
+		type: 'group', name: 'Verwaltung', items: [
+			{ value: '100', label: 'Konferenzraum', image: 'konferenzraum' },
+			{ value: '101', label: 'Büro Ahrens', image: 'buero_ahrens'},
+			{ value: '102', label: 'Büro Barthauer', image: 'buero_barthauer' },
+			{ value: '103', label: 'Buchhaltung', image: 'buchhaltung' },
+			{ value: '104', label: 'Büro Vertrieb 1', image: 'buero_vertrieb1' },
+			{ value: '105', label: 'Büro Vertrieb 2', image: 'buero_vertrieb2' },
+			{ value: 'Z1', label: 'Eingang West', image: 'eingang_west' }
+		]
 	},
 	{
-	 type: 'group', name: 'Produktion', items: [
-		 { value: 'werkhalle_west', label: 'Werkhalle West' },
-		 { value: 'metalllager', label: 'Metalllager' },
-		 { value: 'buero_montage', label: 'Büro Montage' },
-		 { value: 'warenlager', label: 'Warenlager' },
-		 { value: 'werkhalle_sued', label: 'Werkhalle Süd' }
-	 ]
+		type: 'group', name: 'Produktion', items: [
+			{ value: '204', label: 'Werkhalle West', image: 'werkhalle_west' },
+			{ value: '200', label: 'Metalllager', image: 'metalllager' },
+			{ value: '202', label: 'Büro Montage', image: 'buero_montage' },
+			{ value: '201', label: 'Warenlager', image: 'warenlager' },
+			{ value: '205', label: 'Werkhalle Süd', image: 'werkhalle_sued' }
+		]
 	}
 ]
 
 function* hoursGenerator() {
-  var index = 0;
-  while(index < 24) {
-    yield index++;
-  }
+	var index = 0;
+	while (index < 24) {
+		yield index++;
+	}
 }
 
 function* minutesGenerator() {
-  var index = 0;
-  while(index < 4) {
-    yield index * 15;
-    index++;
-  }
+	var index = 0;
+	while (index < 4) {
+		yield index * 15;
+		index++;
+	}
 }
 
 let hours = Array
 	.from(hoursGenerator())
-	.map( x => { 
+	.map(x => {
 		return {
-			value : x ,
-			label : x.toString().padStart(2,'0')
-		}; 
+			value: x,
+			label: x.toString().padStart(2, '0')
+		};
 	})
 
 let minutes = Array
 	.from(minutesGenerator())
-	.map( x => { 
+	.map(x => {
 		return {
-			value : x ,
-			label : x.toString().padStart(2,'0')
-		}; 
+			value: x,
+			label: x.toString().padStart(2, '0')
+		};
 	})
 
 export class Home extends Component {
@@ -84,12 +91,13 @@ export class Home extends Component {
 
 	constructor(props) {
 		super(props);
-		this.state = { 
-			isOpen: false, 
-			person: persons[0], 
-			door: doors[0], 
-			hour: hours[10], 
-			minute: minutes[3] };
+		this.state = {
+			isOpen: false,
+			person: persons[0],
+			door: doors[0],
+			hour: hours[10],
+			minute: minutes[3]
+		};
 
 		this.toggleDoor = this.toggleDoor.bind(this);
 		this.onSelectDoor = this.onSelectDoor.bind(this);
@@ -106,31 +114,31 @@ export class Home extends Component {
 
 	onSelectDoor(selected) {
 		const onlyDoors = doors
-			.map( x => {
-					if (x.type === 'group') {
-						return x.items	
-					} 
-					return [x]
-				})
-			.reduce( (a, b) => a.concat(b),[]);
+			.map(x => {
+				if (x.type === 'group') {
+					return x.items
+				}
+				return [x]
+			})
+			.reduce((a, b) => a.concat(b), []);
 
-		const index = onlyDoors.findIndex( x => x.value === selected.value);
-		this.setState({door: onlyDoors[index]});
+		const index = onlyDoors.findIndex(x => x.value === selected.value);
+		this.setState({ door: onlyDoors[index] });
 	}
 
 	onSelectPerson(selected) {
-		const index = persons.findIndex( x => x.value === selected.value);
-		this.setState({person: persons[index]});
+		const index = persons.findIndex(x => x.value === selected.value);
+		this.setState({ person: persons[index] });
 	}
 
 	onSelectHour(selected) {
-		const index = hours.findIndex( x => x.value === selected.value);
-		this.setState({hour: hours[index]});
+		const index = hours.findIndex(x => x.value === selected.value);
+		this.setState({ hour: hours[index] });
 	}
 
 	onSelectMinute(selected) {
-		const index = minutes.findIndex( x => x.value === selected.value);
-		this.setState({minute: minutes[index]});
+		const index = minutes.findIndex(x => x.value === selected.value);
+		this.setState({ minute: minutes[index] });
 	}
 
 	render() {
@@ -141,25 +149,24 @@ export class Home extends Component {
 			<div>
 				<Grid>
 
-					<Door doorId={doorId} isOpen={this.state.isOpen}></Door>
+					<Door doorId={this.state.door.image} isOpen={this.state.isOpen}></Door>
 
 					<DoorCaption doorName={this.state.door.label}></DoorCaption>
 
 					<Row className="grid-content">
 						<Col lg={1}></Col>
 						<Col lg={3}>
-								<InfoBox label="Gewählte Person">
-									{this.state.person.label} 
-									<br/>
-									{this.state.person.section}
-									<br/>
-									{this.state.person.summary}
-								</InfoBox>
-								<Label>Personen</Label>
-								
-								<Dropdown arrowClosed={arrowClosed} arrowOpen={arrowOpen} 
-								options={persons} onChange={this.onSelectPerson} value={this.state.person} />
-									<InfoBox label="Schlüssel ID">
+
+							<Label>Person
+							</Label>
+							<Dropdown arrowClosed={arrowClosed} arrowOpen={arrowOpen}
+									options={persons} onChange={this.onSelectPerson} value={this.state.person} />
+							
+							<InfoBox label="Abteilung">
+								{this.state.person.department}
+							</InfoBox>
+
+							<InfoBox label="Schlüssel ID">
 								{this.state.person.keyId}
 							</InfoBox>
 
@@ -168,23 +175,31 @@ export class Home extends Component {
 							Übersichtsplan Werkhalle West
 					</Col>
 						<Col lg={3}>
-						<Label>Türen/Tore</Label>
-								<Dropdown arrowClosed={arrowClosed} arrowOpen={arrowOpen} 
+							<Label>Türen/Tore</Label>
+							<Dropdown arrowClosed={arrowClosed} arrowOpen={arrowOpen}
 								options={doors} onChange={this.onSelectDoor} value={this.state.door} />
 
-							<InfoBox label="Türstatus">
-								{this.state.isOpen ? "Geöffnet" : "Geschlossen" }
+							<InfoBox label="Gebäude">
+								{this.state.door.department}
 							</InfoBox>
-						
+
+							<InfoBox label="Schloss ID">
+								{this.state.door.value}
+							</InfoBox>
+
+							<InfoBox label="Türstatus">
+								{this.state.isOpen ? "Geöffnet" : "Geschlossen"}
+							</InfoBox>
+
 							<Label>Uhrzeit</Label>
 							<Row>
 								<Col lg={6}>
-								<Dropdown arrowClosed={arrowClosed} arrowOpen={arrowOpen} 
-									options={hours} onChange={this.onSelectHour} value={this.state.hour}/>
+									<Dropdown arrowClosed={arrowClosed} arrowOpen={arrowOpen}
+										options={hours} onChange={this.onSelectHour} value={this.state.hour} />
 								</Col>
 								<Col lg={6}>
-								<Dropdown arrowClosed={arrowClosed} arrowOpen={arrowOpen} 
-									options={minutes} onChange={this.onSelectMinute} value={this.state.minute} />
+									<Dropdown arrowClosed={arrowClosed} arrowOpen={arrowOpen}
+										options={minutes} onChange={this.onSelectMinute} value={this.state.minute} />
 								</Col>
 							</Row>
 
