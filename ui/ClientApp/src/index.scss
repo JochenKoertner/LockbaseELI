@@ -21,14 +21,19 @@ $primary-color:  #f59c00;
 
 body {
   font-family: 'Berlin', sans-serif;
-	padding-top: 0;
+  font-size: 0.95em;
+  padding-top: 0;
 	margin: 0;
 	color: $dark-grey;
-  background-color: bisque; 
-  //background-color: $dark-white;
+  //background-color: bisque; 
+  background-color: $dark-white;
 	height: 100%;
   width: 100%;
   letter-spacing: 0.05em; 
+}
+
+.container {
+  width: 768px;
 }
 
 header {
@@ -38,7 +43,7 @@ header {
 }
 
 .logos  {
-  max-width: 120rem;
+  max-width: 70rem;
   margin: 0 auto;
   padding-bottom: 0.5em;
 }
@@ -48,14 +53,6 @@ footer {
   font-size: 0.8em;
 }
 
-
-// Door.jsx 
-
-.door {
-  height: 700px;
-  background-size: 1170px 700px;   
-  mask-image: url('/images/doors/mask.svg');
-}
 
 // DoorCaption.jsx
 
@@ -99,6 +96,11 @@ footer {
 }
 
 @media (min-width: 768px) {
+
+  .container {
+    width: 768px;
+  }
+
   .logos  {
     max-width: 80rem;
   }
@@ -109,19 +111,23 @@ footer {
   }  
 
   .col-content-left {
-    padding-left: 0em;
+    padding-left: 1em;
   }
 
   .col-content-right {
-    padding-right: 0em;
+    padding-right: 1em;
   }
 
   body {
-    background-color: royalblue;
+    font-size: 1.05em;
   }
 }
 
 @media (min-width: 992px) {
+  .container {
+    width: 992px;
+  }
+
   .logos  {
     max-width: 100rem;
   }
@@ -140,11 +146,15 @@ footer {
   }
 
   body {
-    background-color: greenyellow;
+    font-size: 1.20em;
   }
 }
 
 @media (min-width: 1200px) {
+  .container {
+    width: 1200px;
+  }
+
   .logos  {
     max-width: 120rem;
   }
@@ -162,13 +172,17 @@ footer {
     padding-right: 5em;
   }
 
-  body {
-    background-color: lightblue;
-  }
 } 
 
+@media (min-width: 1430px) {
+  .container {
+    width: 1430px
+  }
 
-
+  .logos  {
+    max-width: 140rem;
+  }
+}
 
 
 .label {
