@@ -77,7 +77,7 @@ export class Home extends Component {
 				<DoorCaption doorName={this.state.door.label}></DoorCaption>
 
 				<Row className="grid-content">
-					<Col sm={4} className="col-content-aside col-content-left">
+					<Col xs={4} className="col-content-aside col-content-left">
 
 						<Label>Gewählte Person</Label>
 						<Dropdown arrowClosed={arrowClosed} arrowOpen={arrowOpen}
@@ -92,12 +92,12 @@ export class Home extends Component {
 						</InfoBox>
 
 					</Col>
-					<Col sm={4} className="col-content-center" >
+					<Col xs={4} className="col-content-center" >
 						<p>Verwaltung</p>
 						<p>Produktion</p>
 					</Col>
 
-					<Col sm={4} className="col-content-aside col-content-right">
+					<Col xs={4} className="col-content-aside col-content-right">
 						<Label>Türen/Tore</Label>
 						<Dropdown arrowClosed={arrowClosed} arrowOpen={arrowOpen}
 							options={doors} onChange={this.onSelectDoor} value={this.state.door} />
@@ -116,11 +116,11 @@ export class Home extends Component {
 
 						<Label>Uhrzeit</Label>
 						<Row>
-							<Col sm={6}>
+							<Col xs={6}>
 								<Dropdown arrowClosed={arrowClosed} arrowOpen={arrowOpen}
 									options={hours} onChange={this.onSelectHour} value={this.state.hour} />
 							</Col>
-							<Col sm={6}>
+							<Col xs={6}>
 								<Dropdown arrowClosed={arrowClosed} arrowOpen={arrowOpen}
 									options={minutes} onChange={this.onSelectMinute} value={this.state.minute} />
 							</Col>

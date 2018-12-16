@@ -5,11 +5,11 @@ import { Row, Col } from 'react-bootstrap';
 
 const DoorCaption = ({ doorName }) => (
 	<Row className="door-caption">
-		<Col sm={4} />
-		<Col sm={4} >
+		<Col xs={4} />
+		<Col xs={4} >
 			{doorName}
 		</Col>
-		<Col sm={4} />
+		<Col xs={4} />
 	</Row>
 );
 
