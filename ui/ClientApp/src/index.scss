@@ -46,6 +46,7 @@ header {
   max-width: 70rem;
   margin: 0 auto;
   padding-bottom: 0.5em;
+  font-size: 0.8em;
 }
 
 footer {
@@ -71,8 +72,6 @@ footer {
 .door-caption > div:nth-child(2) {
 	background-color: $primary-color;
   color: white;
-  line-height: normal;
-  padding: 10px;
 }
 
 // Main Content 
@@ -198,6 +197,8 @@ footer {
   width: 100%;
   text-transform: uppercase;
   text-align: center;
+  margin-bottom: 10px;
+  margin-top: 2px;
 }
 
 .info-box {
@@ -241,21 +242,21 @@ footer {
 
 .arrow-closed, .arrow-open {
   border: solid white;
-  border-width: 0 4px 4px 0;
+  border-width: 0 0.25em 0.25em 0;
   display: inline-block;
-  padding: 4px;
+  padding: 0.3em;
   position: absolute;
-  right: 10px;
+  right: .75em;
 }
 
 .arrow-closed {
-  top: 10px;
+  top: 0.3em;
   transform: rotate(45deg);
   -webkit-transform: rotate(45deg);
 }
 
 .arrow-open {
-  top: 14px;
+  top: 0.6em;
   transform: rotate(-135deg);
   -webkit-transform: rotate(-135deg);
 }

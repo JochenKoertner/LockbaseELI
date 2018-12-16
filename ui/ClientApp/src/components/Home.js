@@ -19,7 +19,7 @@ export class Home extends Component {
 		this.state = {
 			isOpen: false,
 			person: persons[0],
-			door: doors[0],
+			door: doors[1].items[2],
 			hour: hours[10],
 			minute: minutes[3]
 		};
@@ -116,11 +116,11 @@ export class Home extends Component {
 
 						<Label>Uhrzeit</Label>
 						<Row>
-							<Col lg={6}>
+							<Col sm={6}>
 								<Dropdown arrowClosed={arrowClosed} arrowOpen={arrowOpen}
 									options={hours} onChange={this.onSelectHour} value={this.state.hour} />
 							</Col>
-							<Col lg={6}>
+							<Col sm={6}>
 								<Dropdown arrowClosed={arrowClosed} arrowOpen={arrowOpen}
 									options={minutes} onChange={this.onSelectMinute} value={this.state.minute} />
 							</Col>

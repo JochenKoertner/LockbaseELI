@@ -11,7 +11,7 @@ import { SvgMask } from './Constants';
 const Door = ({ doorId, isOpen }) => {
 	let doorState = isOpen ? 'open' : 'close'
 
-	var imgUrl = '/images/doors/' + doorId + '_' + doorState + '.png'
+	var imgUrl = '/images/doors/' + doorId + '_' + doorState;
 
 	return (
 		<div>
