@@ -66,10 +66,6 @@ export class Home extends Component {
 		this.setState({ minute: minutes[index] });
 	}
 
-	getBuildingFromDoor(door) {
-		return "-.-";
-	}
-
 	render() {
 
 		return (
@@ -82,7 +78,7 @@ export class Home extends Component {
 
 					<Row className="grid-content">
 						<Col lg={1}></Col>
-						<Col lg={3}>
+						<Col lg={3} className="col-content-aside">
 
 							<Label>Gewählte Person</Label>
 							<Dropdown arrowClosed={arrowClosed} arrowOpen={arrowOpen}
@@ -93,7 +89,7 @@ export class Home extends Component {
 							</InfoBox>
 
 							<InfoBox label="Schlüssel ID">
-								{this.state.person.keyId}
+								{this.state.person.value}
 							</InfoBox>
 
 						</Col>
@@ -101,13 +97,13 @@ export class Home extends Component {
 							Übersichtsplan Werkhalle West
 						</Col>
 
-						<Col lg={3}>
+						<Col lg={3} className="col-content-aside">
 							<Label>Türen/Tore</Label>
 							<Dropdown arrowClosed={arrowClosed} arrowOpen={arrowOpen}
 								options={doors} onChange={this.onSelectDoor} value={this.state.door} />
 
 							<InfoBox label="Gebäude">
-								{this.getBuildingFromDoor(this.state.door)}
+								{this.state.door.building}
 							</InfoBox>
 
 							<InfoBox label="Schloss ID">

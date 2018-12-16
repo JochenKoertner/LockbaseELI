@@ -78,13 +78,17 @@ footer {
   padding: 10px;
 }
 
-.col-content-center {
-	background-color: $dark-grey;
-	color: white;
+.grid-content {
+  background-color:  $light-grey;
 }
 
-.grid-content {
-	background-color:  $light-grey;
+.col-content-center {
+	background-color: $dark-grey;
+  color: white;
+}
+
+.col-content-aside {
+  padding-top: .8em;	
 }
 
 .label {
