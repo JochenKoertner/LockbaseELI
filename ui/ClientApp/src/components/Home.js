@@ -86,6 +86,8 @@ let minutes = Array
 		};
 	})
 
+
+
 export class Home extends Component {
 	displayName = Home.name
 
@@ -141,9 +143,11 @@ export class Home extends Component {
 		this.setState({ minute: minutes[index] });
 	}
 
-	render() {
+	getBuildingFromDoor(door) {
+		return "-.-";
+	}
 
-		const doorId = 'buero_barthauer';
+	render() {
 
 		return (
 			<div>
@@ -157,8 +161,7 @@ export class Home extends Component {
 						<Col lg={1}></Col>
 						<Col lg={3}>
 
-							<Label>Person
-							</Label>
+							<Label>Gewählte Person</Label>
 							<Dropdown arrowClosed={arrowClosed} arrowOpen={arrowOpen}
 									options={persons} onChange={this.onSelectPerson} value={this.state.person} />
 							
@@ -173,14 +176,15 @@ export class Home extends Component {
 						</Col>
 						<Col lg={4} className="col-content-center" >
 							Übersichtsplan Werkhalle West
-					</Col>
+						</Col>
+
 						<Col lg={3}>
 							<Label>Türen/Tore</Label>
 							<Dropdown arrowClosed={arrowClosed} arrowOpen={arrowOpen}
 								options={doors} onChange={this.onSelectDoor} value={this.state.door} />
 
 							<InfoBox label="Gebäude">
-								{this.state.door.department}
+								{this.getBuildingFromDoor(this.state.door)}
 							</InfoBox>
 
 							<InfoBox label="Schloss ID">
