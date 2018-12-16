@@ -10,13 +10,13 @@ const Layout = (props) => (
 	<div>
 		<header>
 			<Row className="logos">
-				<Col lg={2}>
+				<Col sm={2}>
 					<img src="images/lockbase.png" alt="Lockbase" width="85%"></img>
 				</Col>
-				<Col lg={8}>
+				<Col sm={8}>
 				
 				</Col>
-				<Col lg={2}>
+				<Col sm={2}>
 					<img src="images/km.png" width="80%" alt="Logo"></img>
 					<Dropdown arrowClosed={arrowClosed} arrowOpen={arrowOpen}
 									options={languages} />

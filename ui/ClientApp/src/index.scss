@@ -78,18 +78,98 @@ footer {
   padding: 10px;
 }
 
+// Main Content 
+
 .grid-content {
   background-color:  $light-grey;
+  display: flex;
 }
 
 .col-content-center {
+  padding-top: .8em;	
 	background-color: $dark-grey;
   color: white;
+  font-size: 1.4em;
+  text-align: center;
+  text-transform: uppercase;
 }
 
 .col-content-aside {
   padding-top: .8em;	
 }
+
+@media (min-width: 768px) {
+  .logos  {
+    max-width: 80rem;
+  }
+
+  .door {
+    height: 240px;
+    background-size: 320px 240px;   
+  }  
+
+  .col-content-left {
+    padding-left: 0em;
+  }
+
+  .col-content-right {
+    padding-right: 0em;
+  }
+
+  body {
+    background-color: royalblue;
+  }
+}
+
+@media (min-width: 992px) {
+  .logos  {
+    max-width: 100rem;
+  }
+
+  .door {
+    height: 350px;
+    background-size: 585px 350px;   
+  }
+
+  .col-content-left {
+    padding-left: 3em;
+  }
+
+  .col-content-right {
+    padding-right: 3em;
+  }
+
+  body {
+    background-color: greenyellow;
+  }
+}
+
+@media (min-width: 1200px) {
+  .logos  {
+    max-width: 120rem;
+  }
+
+  .door {
+    height: 700px;
+    background-size: 1170px 700px;   
+  }  
+
+  .col-content-left {
+    padding-left: 5em;
+  }
+
+  .col-content-right {
+    padding-right: 5em;
+  }
+
+  body {
+    background-color: lightblue;
+  }
+} 
+
+
+
+
 
 .label {
   background-color: transparent;
@@ -98,6 +178,12 @@ footer {
   color: $dark-grey;
   font-size: 1.4em;
   text-transform: uppercase;
+}
+
+.btn {
+  width: 100%;
+  text-transform: uppercase;
+  text-align: center;
 }
 
 .info-box {
@@ -159,4 +245,3 @@ footer {
   transform: rotate(-135deg);
   -webkit-transform: rotate(-135deg);
 }
-

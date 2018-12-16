@@ -7,8 +7,8 @@ import Door from './Door';
 import DoorCaption from './DoorCaption';
 import InfoBox from './InfoBox';
 
-import {arrowClosed, arrowOpen} from './Constants';
-import {persons, doors, minutes, hours} from './../services/BackendAdapter';
+import { arrowClosed, arrowOpen } from './Constants';
+import { persons, doors, minutes, hours } from './../services/BackendAdapter';
 
 
 export class Home extends Component {
@@ -69,68 +69,68 @@ export class Home extends Component {
 	render() {
 
 		return (
-			
-				<Grid>
 
-					<Door doorId={this.state.door.image} isOpen={this.state.isOpen}></Door>
+			<Grid>
 
-					<DoorCaption doorName={this.state.door.label}></DoorCaption>
+				<Door doorId={this.state.door.image} isOpen={this.state.isOpen}></Door>
 
-					<Row className="grid-content">
-						<Col lg={1}></Col>
-						<Col lg={3} className="col-content-aside">
+				<DoorCaption doorName={this.state.door.label}></DoorCaption>
 
-							<Label>Gewählte Person</Label>
-							<Dropdown arrowClosed={arrowClosed} arrowOpen={arrowOpen}
-									options={persons} onChange={this.onSelectPerson} value={this.state.person} />
-							
-							<InfoBox label="Abteilung">
-								{this.state.person.department}
-							</InfoBox>
+				<Row className="grid-content">
+					<Col sm={4} className="col-content-aside col-content-left">
 
-							<InfoBox label="Schlüssel ID">
-								{this.state.person.value}
-							</InfoBox>
+						<Label>Gewählte Person</Label>
+						<Dropdown arrowClosed={arrowClosed} arrowOpen={arrowOpen}
+							options={persons} onChange={this.onSelectPerson} value={this.state.person} />
 
-						</Col>
-						<Col lg={4} className="col-content-center" >
-							Übersichtsplan Werkhalle West
-						</Col>
+						<InfoBox label="Abteilung">
+							{this.state.person.department}
+						</InfoBox>
 
-						<Col lg={3} className="col-content-aside">
-							<Label>Türen/Tore</Label>
-							<Dropdown arrowClosed={arrowClosed} arrowOpen={arrowOpen}
-								options={doors} onChange={this.onSelectDoor} value={this.state.door} />
+						<InfoBox label="Schlüssel ID">
+							{this.state.person.value}
+						</InfoBox>
 
-							<InfoBox label="Gebäude">
-								{this.state.door.building}
-							</InfoBox>
+					</Col>
+					<Col sm={4} className="col-content-center" >
+						<p>Verwaltung</p>
+						<p>Produktion</p>
+					</Col>
 
-							<InfoBox label="Schloss ID">
-								{this.state.door.value}
-							</InfoBox>
+					<Col sm={4} className="col-content-aside col-content-right">
+						<Label>Türen/Tore</Label>
+						<Dropdown arrowClosed={arrowClosed} arrowOpen={arrowOpen}
+							options={doors} onChange={this.onSelectDoor} value={this.state.door} />
 
-							<InfoBox label="Türstatus">
-								{this.state.isOpen ? "Geöffnet" : "Geschlossen"}
-							</InfoBox>
+						<InfoBox label="Gebäude">
+							{this.state.door.building}
+						</InfoBox>
 
-							<Label>Uhrzeit</Label>
-							<Row>
-								<Col lg={6}>
-									<Dropdown arrowClosed={arrowClosed} arrowOpen={arrowOpen}
-										options={hours} onChange={this.onSelectHour} value={this.state.hour} />
-								</Col>
-								<Col lg={6}>
-									<Dropdown arrowClosed={arrowClosed} arrowOpen={arrowOpen}
-										options={minutes} onChange={this.onSelectMinute} value={this.state.minute} />
-								</Col>
-							</Row>
+						<InfoBox label="Schloss ID">
+							{this.state.door.value}
+						</InfoBox>
 
+						<InfoBox label="Türstatus">
+							{this.state.isOpen ? "Geöffnet" : "Geschlossen"}
+						</InfoBox>
+
+						<Label>Uhrzeit</Label>
+						<Row>
+							<Col lg={6}>
+								<Dropdown arrowClosed={arrowClosed} arrowOpen={arrowOpen}
+									options={hours} onChange={this.onSelectHour} value={this.state.hour} />
+							</Col>
+							<Col lg={6}>
+								<Dropdown arrowClosed={arrowClosed} arrowOpen={arrowOpen}
+									options={minutes} onChange={this.onSelectMinute} value={this.state.minute} />
+							</Col>
+						</Row>
+						<div>
 							<Button bsStyle="warning" bsSize="large" onClick={this.toggleDoor}>Jetzt testen</Button>
-						</Col>
-						<Col lg={1}></Col>
-					</Row>
-				</Grid>
+						</div>
+					</Col>
+				</Row>
+			</Grid>
 		);
 	}
 }
