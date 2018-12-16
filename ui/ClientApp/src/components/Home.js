@@ -2,9 +2,12 @@ import React, { Component } from 'react';
 import { Col, Grid, Row, Button, Label } from 'react-bootstrap';
 import Dropdown from 'react-dropdown';
 
+// https://codepen.io/ecurbelo/pen/GKjAx
+
 
 import Door from './Door';
 import DoorCaption from './DoorCaption';
+import GroundPlan from './GroundPlan';
 import InfoBox from './InfoBox';
 
 import { arrowClosed, arrowOpen } from './Constants';
@@ -92,10 +95,8 @@ export class Home extends Component {
 						</InfoBox>
 
 					</Col>
-					<Col xs={4} className="col-content-center" >
-						<p>Verwaltung</p>
-						<p>Produktion</p>
-					</Col>
+					
+					<GroundPlan/>
 
 					<Col xs={4} className="col-content-aside col-content-right">
 						<Label>Türen/Tore</Label>

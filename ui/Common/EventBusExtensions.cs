@@ -10,7 +10,7 @@ namespace ui.Common
             services.Configure<BrokerConfig>(configuration.GetSection(BrokerConfig.KEY), 
                 options => options.BindNonPublicProperties = true);
             
-            services.AddHostedService<MqttBackgroundService>();
+            // services.AddHostedService<MqttBackgroundService>();
         }
     }
 }
