@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Col, Grid, Row, Button, Label } from 'react-bootstrap';
 import Dropdown from 'react-dropdown';
+import { injectIntl } from 'react-intl';
 
 // https://codepen.io/ecurbelo/pen/GKjAx
 
@@ -13,8 +14,10 @@ import InfoBox from './InfoBox';
 import { arrowClosed, arrowOpen } from './Constants';
 import { persons, doors, minutes, hours } from './../services/BackendAdapter';
 
+import { messages } from './../translations/messages';
 
-export class Home extends Component {
+
+class Home extends Component {
 	displayName = Home.name
 
 	constructor(props) {
@@ -82,15 +85,17 @@ export class Home extends Component {
 				<Row className="grid-content">
 					<Col xs={4} className="col-content-aside col-content-left">
 
-						<Label>Gewählte Person</Label>
+						<Label>
+							{this.props.intl.formatMessage(messages.homeLabelPerson)}
+						</Label>
 						<Dropdown arrowClosed={arrowClosed} arrowOpen={arrowOpen}
 							options={persons} onChange={this.onSelectPerson} value={this.state.person} />
 
-						<InfoBox label="Abteilung">
+						<InfoBox label={this.props.intl.formatMessage(messages.homeLabelDepartment)}>
 							{this.state.person.department}
 						</InfoBox>
 
-						<InfoBox label="Schlüssel ID">
+						<InfoBox label={this.props.intl.formatMessage(messages.homeLabelKeyId)}>
 							{this.state.person.value}
 						</InfoBox>
 
@@ -134,4 +139,7 @@ export class Home extends Component {
 			</Grid>
 		);
 	}
-}
+};
+
+export default injectIntl(Home, {withRef:true});
+

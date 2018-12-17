@@ -5,32 +5,8 @@ import { Col } from 'react-bootstrap';
 
 const GroundPlan = ({ doorName }) => (
 	<Col xs={4} className="col-content-center" >
-		<div id="plan">
-			<p>Verwaltung</p>
-			<div class="room"> 
-
-  			</div>
-			<p>Produktion</p>
-			<div class="room"> 
-
-  			</div>
-			<div class="room"> 
-
-  			</div>
-			<div class="room"> 
-
-  			</div>
-			<div class="room"> 
-
-  			</div>
-			<div class="room"> 
-
-  			</div>
-			<div class="room"> 
-
-  			</div>
-			
-		</div>
+		<p>Verwaltung</p>
+		<p>Produktion</p>
 	</Col>
 );
 
