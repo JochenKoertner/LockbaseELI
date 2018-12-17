@@ -7,44 +7,61 @@ import messages_en from './../translations/en.json';
 // Languages 
 
 export const languages = [
-	{ value: 'DE', label: 'Deutsch' },
-	{ value: 'EN', label: 'English' },
-	{ value: 'FR', label: 'Français' },
-	{ value: 'IT', label: 'Italiano' },
-	{ value: 'ES', label: 'Español' }
+	{ value: 'de', label: 'Deutsch', messages: messages_de },
+	{ value: 'en', label: 'English', messages: messages_en },
+	{ value: 'fr', label: 'Français' },
+	{ value: 'it', label: 'Italiano' },
+	{ value: 'es', label: 'Español' }
 ]
 
-export let i18nConfig = {
-    locale: 'de',
-    messages: messages_de
+export function findLanguage (language) {
+	// console.log("find languagee" + language.locale);
+	const index = languages.findIndex(x => x.value === language.locale);
+	return languages[index];
 };
 
-export const LanguageContext = React.createContext(i18nConfig);
+
+export let i8n_de = {
+	locale: 'de',
+	messages: messages_de
+}
+
+export let i8n_en = {
+	locale: 'en',
+	messages: messages_en
+}
+
+export const LanguageContext = React.createContext(
+	{
+		language: i18nConfig,
+		switchLanguage: (selected) => { },
+	}
+);
 
 // persons and departments 
 
 export const persons = [
-	{ value: '900-1', label: 'Ahrens, Andrea', department: 'Geschäftsführung'},
-	{ value: '901-1', label: 'Barthauer, Thomas', department: 'Geschäftsführung'},
-	{ value: '103-1', label: 'Fendler, Klaus', department: 'Buchhaltung'},
-	{ value: '104-1', label: 'Kistler, Sabine', department: 'Vertrieb'},
-	{ value: '105-1', label: 'Kohl, Ulrich', department: 'Vertrieb'},
-	{ value: '200-1', label: 'Leinkamp, Sebastian', department: 'Lager'},
-	{ value: '201-1', label: 'Mertens, Martina', department: 'Lager'},
-	{ value: '202-1', label: 'Sidow, Janin', department: 'Montage'},
-	{ value: '203-1', label: 'Walter, Jens', department: 'Montage'},
-	{ value: '203-2', label: 'Winter, Sina', department: 'Montage'},
-	{ value: '203-3', label: 'Wondraschek, Volker', department: 'Montage'}
+	{ value: '900-1', label: 'Ahrens, Andrea', department: 'Geschäftsführung' },
+	{ value: '901-1', label: 'Barthauer, Thomas', department: 'Geschäftsführung' },
+	{ value: '103-1', label: 'Fendler, Klaus', department: 'Buchhaltung' },
+	{ value: '104-1', label: 'Kistler, Sabine', department: 'Vertrieb' },
+	{ value: '105-1', label: 'Kohl, Ulrich', department: 'Vertrieb' },
+	{ value: '200-1', label: 'Leinkamp, Sebastian', department: 'Lager' },
+	{ value: '201-1', label: 'Mertens, Martina', department: 'Lager' },
+	{ value: '202-1', label: 'Sidow, Janin', department: 'Montage' },
+	{ value: '203-1', label: 'Walter, Jens', department: 'Montage' },
+	{ value: '203-2', label: 'Winter, Sina', department: 'Montage' },
+	{ value: '203-3', label: 'Wondraschek, Volker', department: 'Montage' }
 ]
 
 // doors and locks 
 
 export const doors = [
-	{ value: 'W1', label: 'Tor West', building: '-.-', image: 'torwest'},
+	{ value: 'W1', label: 'Tor West', building: '-.-', image: 'torwest' },
 	{
 		type: 'group', name: 'Verwaltung', items: [
 			{ value: '100', label: 'Konferenzraum', building: 'Verwaltung', image: 'konferenzraum' },
-			{ value: '101', label: 'Büro Ahrens', building: 'Verwaltung', image: 'buero_ahrens'},
+			{ value: '101', label: 'Büro Ahrens', building: 'Verwaltung', image: 'buero_ahrens' },
 			{ value: '102', label: 'Büro Barthauer', building: 'Verwaltung', image: 'buero_barthauer' },
 			{ value: '103', label: 'Buchhaltung', building: 'Verwaltung', image: 'buchhaltung' },
 			{ value: '104', label: 'Büro Vertrieb 1', building: 'Verwaltung', image: 'buero_vertrieb1' },

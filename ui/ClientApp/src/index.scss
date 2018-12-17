@@ -19,10 +19,6 @@ $dark-grey: #565656;
 $light-grey: #dcdcdc;
 $primary-color:  #f59c00;
 
-$room-left: 1.5em;
-$room-top: 0.5em;
-$room-width: 4em;
-$room-height: 6em;
 
 body {
   font-family: 'Berlin', sans-serif;
@@ -30,8 +26,8 @@ body {
   padding-top: 0;
 	margin: 0;
 	color: $dark-grey;
-  //background-color: bisque; 
-  background-color: $dark-white;
+  background-color: bisque; 
+  //background-color: $dark-white;
 	height: 100%;
   width: 100%;
   letter-spacing: 0.05em; 

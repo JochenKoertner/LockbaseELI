@@ -5,8 +5,6 @@ import MediaQuery from 'react-responsive';
 
 import { SvgMask } from './Constants';
 
-// <Row className="door" style={{backgroundImage: `url(${imgUrl})`}}>
-// </Row> 
 
 const Door = ({ doorId, isOpen }) => {
 	let doorState = isOpen ? 'open' : 'close'

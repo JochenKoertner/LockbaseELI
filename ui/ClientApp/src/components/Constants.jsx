@@ -9,7 +9,6 @@ export const arrowOpen = (
 
 // Constructs a Svg Mask depending of media query size 
 
-// 
 export const SvgMask = ({ size, imgUrl }) => {
 	var width = 1400;
 	var height = 700;
