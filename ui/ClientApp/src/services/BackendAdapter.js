@@ -3,37 +3,30 @@ import React from 'react';
 
 import messages_de from './../translations/de.json';
 import messages_en from './../translations/en.json';
+import messages_es from './../translations/es.json';
+import messages_fr from './../translations/fr.json';
+import messages_it from './../translations/it.json';
 
 // Languages 
 
 export const languages = [
 	{ value: 'de', label: 'Deutsch', messages: messages_de },
 	{ value: 'en', label: 'English', messages: messages_en },
-	{ value: 'fr', label: 'Français' },
-	{ value: 'it', label: 'Italiano' },
-	{ value: 'es', label: 'Español' }
+	{ value: 'fr', label: 'Français', messages: messages_fr  },
+	{ value: 'it', label: 'Italiano', messages: messages_it  },
+	{ value: 'es', label: 'Español', messages: messages_es }
 ]
 
+const defaultLanguage = 'de';
+
 export function findLanguage (language) {
-	// console.log("find languagee" + language.locale);
-	const index = languages.findIndex(x => x.value === language.locale);
+	const index = languages.findIndex(x => x.value === language);
 	return languages[index];
 };
 
-
-export let i8n_de = {
-	locale: 'de',
-	messages: messages_de
-}
-
-export let i8n_en = {
-	locale: 'en',
-	messages: messages_en
-}
-
 export const LanguageContext = React.createContext(
 	{
-		language: i18nConfig,
+		language: findLanguage(defaultLanguage),
 		switchLanguage: (selected) => { },
 	}
 );

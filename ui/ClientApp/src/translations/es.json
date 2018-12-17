@@ -1,0 +1,13 @@
+{
+    "home.labelPerson": "Persona elegida",
+    "home.labelDepartment": "departamento",
+    "home.labelKeyId" : "ID de clave",
+    "home.labelDoor" : "Puertas",
+    "home.labelBuilding": "edificio",
+    "home.labelLockId" : "ID de bloquear",
+    "home.labelDoorState": "estado de la puerta",
+    "home.labelTime": "hora del día",
+    "home.buttonCheck": "prueba ahora",
+    "home.doorOpenState": "abierto",
+    "home.doorCloseState": "cerrado"
+}

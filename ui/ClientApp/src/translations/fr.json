@@ -1,0 +1,13 @@
+{
+    "home.labelPerson": "Personne choisie",
+    "home.labelDepartment": "[**]",
+    "home.labelKeyId" : "[**]",
+    "home.labelDoor" : "[**]",
+    "home.labelBuilding": "[**]",
+    "home.labelLockId" : "[**]",
+    "home.labelDoorState": "[**]",
+    "home.labelTime": "[**]",
+    "home.buttonCheck": "[**]",
+    "home.doorOpenState": "[**]",
+    "home.doorCloseState": "[**]"
+}

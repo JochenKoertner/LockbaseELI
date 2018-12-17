@@ -11,7 +11,7 @@ import it from 'react-intl/locale-data/it';
 import Layout from './components/Layout';
 import Home from './components/Home';
 
-import { LanguageContext, i8n_de, i8n_en } from './services/BackendAdapter';
+import { LanguageContext, findLanguage, languages } from './services/BackendAdapter';
 
 addLocaleData([...de, ...en, ...es, ...fr, ...it]);
 
@@ -22,26 +22,21 @@ class App extends Component {
 		super(props);
 
 		this.switchLanguage = (selected) => {
-			console.log("language : " + selected.value);
 			this.setState(state => ({
-			  language:
-				state.language === i8n_de
-				  ? i8n_en
-				  : i8n_de,
+			  language: findLanguage(selected.value)
 			}));
 		  };
 
 		this.state = {
-			language: i8n_de,
+			language: findLanguage('de'),
 			switchLanguage: this.switchLanguage,
 		};
 	}
 
 	render() {
-		let language = this.state.language;
 		return (
 			<LanguageContext.Provider value={this.state}>
-				<IntlProvider key={language.locale} locale={language.locale} messages={language.messages}>
+				<IntlProvider key={this.state.language.value} locale={this.state.language.value} messages={this.state.language.messages}>
 					<Layout>
 						<Route exact path='/' component={Home} />
 					</Layout>

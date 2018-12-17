@@ -21,7 +21,7 @@ const Layout = (props) => (
 					<LanguageContext.Consumer>
 						{({ language, switchLanguage }) => (
 							<Dropdown arrowClosed={arrowClosed} arrowOpen={arrowOpen} onChange={switchLanguage}
-								value={findLanguage(language)} options={languages} />
+								value={findLanguage(language.value)} options={languages} />
 					)}
 					</LanguageContext.Consumer>
 				</Col>
