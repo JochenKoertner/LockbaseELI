@@ -1,5 +1,13 @@
 {
     "home.labelPerson": "Gewählte Person",
     "home.labelDepartment": "Abteilung",
-    "home.labelKeyId" : "Schlüssel ID"
+    "home.labelKeyId" : "Schlüssel ID",
+    "home.labelDoor" : "Türen/Tore",
+    "home.labelBuilding": "Gebäude",
+    "home.labelLockId" : "Schloss ID",
+    "home.labelDoorState": "Türstatus",
+    "home.labelTime": "Uhrzeit",
+    "home.buttonCheck": "Jetzt testen",
+    "home.doorOpenState": "Geöffnet",
+    "home.doorCloseState": "Geschlossen"
 }

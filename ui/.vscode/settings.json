@@ -5,6 +5,13 @@
 		"**/obj": true,
 		"**/.idea": true
 	},
+	"files.watcherExclude": {
+		"**": true
+	},
+	"typescript.validate.enable": false,
+	"javascript.validate.enable": false,
+	"files.useExperimentalFileWatcher": false,
 	"files.autoSave": "afterDelay",
+	"files.autoSaveDelay": 5000,
 	"editor.renderWhitespace": "boundary"
 }

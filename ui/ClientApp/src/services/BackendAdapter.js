@@ -1,4 +1,8 @@
 // fetch all the data from the backend or mock it 
+import React from 'react';
+
+import messages_de from './../translations/de.json';
+import messages_en from './../translations/en.json';
 
 // Languages 
 
@@ -9,6 +13,13 @@ export const languages = [
 	{ value: 'IT', label: 'Italiano' },
 	{ value: 'ES', label: 'Español' }
 ]
+
+export let i18nConfig = {
+    locale: 'de',
+    messages: messages_de
+};
+
+export const LanguageContext = React.createContext(i18nConfig);
 
 // persons and departments 
 

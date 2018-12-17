@@ -104,23 +104,25 @@ class Home extends Component {
 					<GroundPlan/>
 
 					<Col xs={4} className="col-content-aside col-content-right">
-						<Label>Türen/Tore</Label>
+						<Label>{this.props.intl.formatMessage(messages.homeLabelDoor)}</Label>
 						<Dropdown arrowClosed={arrowClosed} arrowOpen={arrowOpen}
 							options={doors} onChange={this.onSelectDoor} value={this.state.door} />
 
-						<InfoBox label="Gebäude">
+						<InfoBox label={this.props.intl.formatMessage(messages.homeLabelBuilding)}>
 							{this.state.door.building}
 						</InfoBox>
 
-						<InfoBox label="Schloss ID">
+						<InfoBox label={this.props.intl.formatMessage(messages.homeLabelLockId)}>
 							{this.state.door.value}
 						</InfoBox>
 
-						<InfoBox label="Türstatus">
-							{this.state.isOpen ? "Geöffnet" : "Geschlossen"}
+						<InfoBox label={this.props.intl.formatMessage(messages.homeLabelDoorState)}>
+							{this.state.isOpen ? 
+								this.props.intl.formatMessage(messages.homeDoorOpenState): 
+								this.props.intl.formatMessage(messages.homeDoorCloseState)}
 						</InfoBox>
 
-						<Label>Uhrzeit</Label>
+						<Label>{this.props.intl.formatMessage(messages.homeLabelTime)}</Label>
 						<Row>
 							<Col xs={6}>
 								<Dropdown arrowClosed={arrowClosed} arrowOpen={arrowOpen}
@@ -132,7 +134,9 @@ class Home extends Component {
 							</Col>
 						</Row>
 						<div>
-							<Button bsStyle="warning" bsSize="large" onClick={this.toggleDoor}>Jetzt testen</Button>
+							<Button bsStyle="warning" bsSize="large" onClick={this.toggleDoor}>
+								{this.props.intl.formatMessage(messages.homeButtonCheck)}
+							</Button>
 						</div>
 					</Col>
 				</Row>
