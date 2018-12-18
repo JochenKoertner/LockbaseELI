@@ -77,7 +77,6 @@ class Home extends Component {
 		return (
 
 			<Grid>
-
 				<Door doorId={this.state.door.image} isOpen={this.state.isOpen}></Door>
 
 				<DoorCaption doorName={this.state.door.label}></DoorCaption>
@@ -95,7 +94,8 @@ class Home extends Component {
 							{this.state.person.department}
 						</InfoBox>
 
-						<InfoBox label={this.props.intl.formatMessage(messages.homeLabelKeyId)}>
+						<InfoBox label={this.props.intl.formatMessage(messages.homeLabelKeyId)}
+						icon="square" iconColor="Tomato">
 							{this.state.person.value}
 						</InfoBox>
 
@@ -116,7 +116,8 @@ class Home extends Component {
 							{this.state.door.value}
 						</InfoBox>
 
-						<InfoBox label={this.props.intl.formatMessage(messages.homeLabelDoorState)}>
+						<InfoBox label={this.props.intl.formatMessage(messages.homeLabelDoorState)}
+							icon={this.state.isOpen ? "lock-open" : "lock"} >
 							{this.state.isOpen ? 
 								this.props.intl.formatMessage(messages.homeDoorOpenState): 
 								this.props.intl.formatMessage(messages.homeDoorCloseState)}

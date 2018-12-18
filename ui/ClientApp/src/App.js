@@ -8,12 +8,17 @@ import es from 'react-intl/locale-data/es';
 import fr from 'react-intl/locale-data/fr';
 import it from 'react-intl/locale-data/it';
 
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faSquare, faLockOpen, faLock } from '@fortawesome/free-solid-svg-icons';
+
 import Layout from './components/Layout';
 import Home from './components/Home';
 
-import { LanguageContext, findLanguage, languages } from './services/BackendAdapter';
+import { LanguageContext, findLanguage } from './services/BackendAdapter';
 
 addLocaleData([...de, ...en, ...es, ...fr, ...it]);
+
+library.add(faSquare, faLockOpen, faLock);
 
 class App extends Component {
 	displayName = App.name
