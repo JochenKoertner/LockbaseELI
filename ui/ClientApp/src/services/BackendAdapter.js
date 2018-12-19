@@ -94,7 +94,7 @@ function* minutesGenerator() {
 function* yearsGenerator() {
 	let year = 2018;
 	var index = year - 4;
-	while (year < year + 4) {
+	while (index < year + 4) {
 		yield index++;
 	}
 }
