@@ -6,13 +6,7 @@ const InfoBox = (props) => {
 
 	let icon;
 	if (props.icon !== undefined) {
-		let iconStyle;
-		if (props.iconColor !== undefined) {
-			iconStyle = {
-				color: props.iconColor
-			};
-		}
-		icon = <FontAwesomeIcon icon={props.icon} style={iconStyle}/>
+		icon = <FontAwesomeIcon icon={props.icon}/>
 	};
 
 	return (<div>

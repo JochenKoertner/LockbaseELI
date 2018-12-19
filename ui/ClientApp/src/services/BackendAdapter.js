@@ -34,8 +34,8 @@ export const LanguageContext = React.createContext(
 // persons and departments 
 
 export const persons = [
-	{ value: '900-1', label: 'Ahrens, Andrea', department: 'Geschäftsführung' },
-	{ value: '901-1', label: 'Barthauer, Thomas', department: 'Geschäftsführung' },
+	{ value: '900-1', label: 'Ahrens, Andrea', department: 'Geschäftsführung', color: 'OliveDrab' },
+	{ value: '901-1', label: 'Barthauer, Thomas', department: 'Geschäftsführung', color: 'SandyBrown'  },
 	{ value: '103-1', label: 'Fendler, Klaus', department: 'Buchhaltung' },
 	{ value: '104-1', label: 'Kistler, Sabine', department: 'Vertrieb' },
 	{ value: '105-1', label: 'Kohl, Ulrich', department: 'Vertrieb' },
@@ -50,25 +50,25 @@ export const persons = [
 // doors and locks 
 
 export const doors = [
-	{ value: 'W1', label: 'Tor West', building: '-.-', image: 'torwest' },
+	{ value: 'W1', label: 'Tor West', building: '-.-', image: 'torwest', color: 'LightSlateGray' },
 	{
 		type: 'group', name: 'Verwaltung', items: [
 			{ value: '100', label: 'Konferenzraum', building: 'Verwaltung', image: 'konferenzraum' },
 			{ value: '101', label: 'Büro Ahrens', building: 'Verwaltung', image: 'buero_ahrens' },
 			{ value: '102', label: 'Büro Barthauer', building: 'Verwaltung', image: 'buero_barthauer' },
-			{ value: '103', label: 'Buchhaltung', building: 'Verwaltung', image: 'buchhaltung' },
-			{ value: '104', label: 'Büro Vertrieb 1', building: 'Verwaltung', image: 'buero_vertrieb1' },
-			{ value: '105', label: 'Büro Vertrieb 2', building: 'Verwaltung', image: 'buero_vertrieb2' },
+			{ value: '103', label: 'Buchhaltung', building: 'Verwaltung', image: 'buchhaltung', color: 'Yellow'   },
+			{ value: '104', label: 'Büro Vertrieb 1', building: 'Verwaltung', image: 'buero_vertrieb1', color: 'Yellow'   },
+			{ value: '105', label: 'Büro Vertrieb 2', building: 'Verwaltung', image: 'buero_vertrieb2', color: 'Yellow'   },
 			{ value: 'Z1', label: 'Eingang West', building: 'Verwaltung', image: 'eingang_west' }
 		]
 	},
 	{
 		type: 'group', name: 'Produktion', items: [
-			{ value: '204', label: 'Werkhalle West', building: 'Produktion', image: 'werkhalle_west' },
-			{ value: '200', label: 'Metalllager', building: 'Produktion', image: 'metalllager' },
-			{ value: '202', label: 'Büro Montage', building: 'Produktion', image: 'buero_montage' },
-			{ value: '201', label: 'Warenlager', building: 'Produktion', image: 'warenlager' },
-			{ value: '205', label: 'Werkhalle Süd', building: 'Produktion', image: 'werkhalle_sued' }
+			{ value: '204', label: 'Werkhalle West', building: 'Produktion', image: 'werkhalle_west', color: 'DeepSkyBlue'  },
+			{ value: '200', label: 'Metalllager', building: 'Produktion', image: 'metalllager', color: 'DeepSkyBlue'  },
+			{ value: '202', label: 'Büro Montage', building: 'Produktion', image: 'buero_montage', color: 'DeepSkyBlue'  },
+			{ value: '201', label: 'Warenlager', building: 'Produktion', image: 'warenlager', color: 'DeepSkyBlue'  },
+			{ value: '205', label: 'Werkhalle Süd', building: 'Produktion', image: 'werkhalle_sued', color: 'DeepSkyBlue'  }
 		]
 	}
 ]
@@ -91,12 +91,29 @@ function* minutesGenerator() {
 	}
 }
 
+function* yearsGenerator() {
+	let year = 2018;
+	var index = year - 4;
+	while (year < year + 4) {
+		yield index++;
+	}
+}
+
 export let hours = Array
 	.from(hoursGenerator())
 	.map(x => {
 		return {
 			value: x,
 			label: x.toString().padStart(2, '0')
+		};
+	})
+
+export let years = Array
+	.from(yearsGenerator())
+	.map(x => {
+		return {
+			value: x,
+			label: x.toString()
 		};
 	})
 

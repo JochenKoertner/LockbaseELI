@@ -10,6 +10,7 @@ import Door from './Door';
 import DoorCaption from './DoorCaption';
 import GroundPlan from './GroundPlan';
 import InfoBox from './InfoBox';
+import ColorInfoBox from './ColorInfoBox';
 
 import { arrowClosed, arrowOpen } from './Constants';
 import { persons, doors, minutes, hours } from './../services/BackendAdapter';
@@ -94,16 +95,11 @@ class Home extends Component {
 							{this.state.person.department}
 						</InfoBox>
 
-						<InfoBox label={this.props.intl.formatMessage(messages.homeLabelKeyId)}
-						icon="square" iconColor="Tomato">
+						<ColorInfoBox label={this.props.intl.formatMessage(messages.homeLabelKeyId)}
+							color={this.state.person.color}>
 							{this.state.person.value}
-						</InfoBox>
+						</ColorInfoBox>
 
-					</Col>
-					
-					<GroundPlan/>
-
-					<Col xs={4} className="col-content-aside col-content-right">
 						<Label>{this.props.intl.formatMessage(messages.homeLabelDoor)}</Label>
 						<Dropdown arrowClosed={arrowClosed} arrowOpen={arrowOpen}
 							options={doors} onChange={this.onSelectDoor} value={this.state.door} />
@@ -112,9 +108,15 @@ class Home extends Component {
 							{this.state.door.building}
 						</InfoBox>
 
-						<InfoBox label={this.props.intl.formatMessage(messages.homeLabelLockId)}>
+						<ColorInfoBox label={this.props.intl.formatMessage(messages.homeLabelLockId)}
+							color={this.state.door.color} >
 							{this.state.door.value}
-						</InfoBox>
+						</ColorInfoBox>
+					</Col>
+					
+					<GroundPlan/>
+
+					<Col xs={4} className="col-content-aside col-content-right">
 
 						<InfoBox label={this.props.intl.formatMessage(messages.homeLabelDoorState)}
 							icon={this.state.isOpen ? "lock-open" : "lock"} >
