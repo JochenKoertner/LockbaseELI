@@ -1,6 +1,18 @@
 import React, { Component } from 'react';
 import { Col, Grid, Row, Button, Label } from 'react-bootstrap';
 import Dropdown from 'react-dropdown';
+
+import DateFnsUtils from '@date-io/date-fns';
+import { MuiPickersUtilsProvider } from 'material-ui-pickers';
+import { TimePicker } from 'material-ui-pickers';
+import { DatePicker } from 'material-ui-pickers';
+
+import frLocale from 'date-fns/locale/fr';
+import deLocale from 'date-fns/locale/de';
+import esLocale from 'date-fns/locale/es';
+import itLocale from 'date-fns/locale/it';
+import enLocale from 'date-fns/locale/en-US';
+
 import { injectIntl } from 'react-intl';
 
 // https://codepen.io/ecurbelo/pen/GKjAx
@@ -17,6 +29,13 @@ import { persons, doors, minutes, hours } from './../services/BackendAdapter';
 
 import { messages } from './../translations/messages';
 
+const localeMap = {
+	de: deLocale,
+	es: esLocale,
+	en: enLocale,
+	fr: frLocale,
+	it: itLocale,
+};
 
 class Home extends Component {
 	displayName = Home.name
@@ -28,7 +47,8 @@ class Home extends Component {
 			person: persons[0],
 			door: doors[1].items[2],
 			hour: hours[10],
-			minute: minutes[3]
+			minute: minutes[3],
+			selectedDate: new Date()
 		};
 
 		this.toggleDoor = this.toggleDoor.bind(this);
@@ -42,6 +62,10 @@ class Home extends Component {
 		this.setState({
 			isOpen: !this.state.isOpen
 		});
+	}
+
+	handleDateChange = date => {
+		this.setState({selectedDate: date});
 	}
 
 	onSelectDoor(selected) {
@@ -75,6 +99,10 @@ class Home extends Component {
 
 	render() {
 
+		const { selectedDate } = this.state;
+
+		const locale = localeMap['de'];
+
 		return (
 
 			<Grid>
@@ -84,6 +112,7 @@ class Home extends Component {
 
 				<Row className="grid-content">
 					<Col xs={4} className="col-content-aside col-content-left">
+
 
 						<Label>
 							{this.props.intl.formatMessage(messages.homeLabelPerson)}
@@ -124,18 +153,22 @@ class Home extends Component {
 								this.props.intl.formatMessage(messages.homeDoorOpenState): 
 								this.props.intl.formatMessage(messages.homeDoorCloseState)}
 						</InfoBox>
-
-						<Label>{this.props.intl.formatMessage(messages.homeLabelTime)}</Label>
-						<Row>
-							<Col xs={6}>
-								<Dropdown arrowClosed={arrowClosed} arrowOpen={arrowOpen}
-									options={hours} onChange={this.onSelectHour} value={this.state.hour} />
-							</Col>
-							<Col xs={6}>
-								<Dropdown arrowClosed={arrowClosed} arrowOpen={arrowOpen}
-									options={minutes} onChange={this.onSelectMinute} value={this.state.minute} />
-							</Col>
-						</Row>
+						<MuiPickersUtilsProvider utils={DateFnsUtils} locale={locale}>
+							<Row>
+							
+								<Col xs={6}>
+									<Label>{this.props.intl.formatMessage(messages.homeLabelTime)}</Label>
+						
+									<DatePicker value={selectedDate} onChange={this.handleDateChange} />
+								</Col>
+								<Col xs={6}>
+									<Label>{this.props.intl.formatMessage(messages.homeLabelTime)}</Label>
+						
+									<TimePicker value={selectedDate} onChange={this.handleDateChange} />
+		
+								</Col>
+							</Row>
+						</MuiPickersUtilsProvider>
 						<div>
 							<Button bsStyle="warning" bsSize="large" onClick={this.toggleDoor}>
 								{this.props.intl.formatMessage(messages.homeButtonCheck)}
