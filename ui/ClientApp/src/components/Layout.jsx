@@ -12,18 +12,18 @@ const Layout = (props) => (
 			<Row className="logos">
 				<Col xs={2}>
 					<img src="images/lockbase.png" alt="Lockbase" width="85%"></img>
-				</Col>
-				<Col xs={8}>
-
-				</Col>
-				<Col xs={2}>
-					<img src="images/km.png" width="80%" alt="Logo"></img>
 					<LanguageContext.Consumer>
 						{({ language, switchLanguage }) => (
 							<Dropdown arrowClosed={arrowClosed} arrowOpen={arrowOpen} onChange={switchLanguage}
 								value={findLanguage(language.value)} options={languages} />
 					)}
 					</LanguageContext.Consumer>
+				</Col>
+				<Col xs={8}>
+
+				</Col>
+				<Col xs={2}>
+					<img src="images/km.png" width="80%" alt="Logo"></img>
 				</Col>
 			</Row>
 		</header>

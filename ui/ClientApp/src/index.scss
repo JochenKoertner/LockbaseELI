@@ -39,15 +39,19 @@ body {
 
 header {
   display: block;
-  border-bottom: .0625rem solid $dark-grey;
-  // background: #fff;
+  position: relative;
+  z-index: 2;
 }
 
 .logos  {
   max-width: 70rem;
   margin: 0 auto;
   padding-bottom: 0.5em;
-  font-size: 0.8em;
+  //font-size: 0.8em;
+}
+
+main {
+  margin-top: -15rem;
 }
 
 footer {
@@ -57,6 +61,9 @@ footer {
 
 
 // DoorCaption.jsx
+.door {
+  text-align: center;
+}
 
 .door-caption {
 	background-color: $dark-grey;
@@ -105,11 +112,6 @@ footer {
     max-width: 80rem;
   }
 
-  .door {
-    height: 240px;
-    background-size: 320px 240px;   
-  }  
-
   .col-content-left {
     padding-left: 1em;
   }
@@ -130,11 +132,6 @@ footer {
 
   .logos  {
     max-width: 100rem;
-  }
-
-  .door {
-    height: 350px;
-    background-size: 585px 350px;   
   }
 
   .col-content-left {
@@ -159,11 +156,6 @@ footer {
     max-width: 120rem;
   }
 
-  .door {
-    height: 700px;
-    background-size: 1170px 700px;   
-  }  
-
   .col-content-left {
     padding-left: 5em;
   }
@@ -171,7 +163,6 @@ footer {
   .col-content-right {
     padding-right: 5em;
   }
-
 } 
 
 @media (min-width: 1430px) {

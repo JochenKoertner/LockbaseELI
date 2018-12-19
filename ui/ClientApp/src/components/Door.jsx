@@ -12,7 +12,7 @@ const Door = ({ doorId, isOpen }) => {
 	var imgUrl = '/images/doors/' + doorId + '_' + doorState;
 
 	return (
-		<div>
+		<Row className="door">
 			<MediaQuery minWidth={1430}>
 				<SvgMask size="xl" imgUrl={imgUrl} />
 			</MediaQuery>
@@ -25,7 +25,7 @@ const Door = ({ doorId, isOpen }) => {
 			<MediaQuery maxWidth={991}>
 				<SvgMask size="s" imgUrl={imgUrl} />
 			</MediaQuery>
-		</div>
+		</Row>
 
 	);
 };
