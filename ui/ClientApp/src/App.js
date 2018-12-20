@@ -11,6 +11,8 @@ import it from 'react-intl/locale-data/it';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faSquare, faLockOpen, faLock, faCalendarAlt, faClock } from '@fortawesome/free-solid-svg-icons';
 
+import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
+
 import Layout from './components/Layout';
 import Home from './components/Home';
 
@@ -39,14 +41,37 @@ class App extends Component {
 	}
 
 	render() {
+		const THEME = createMuiTheme({
+			typography: {
+				useNextVariants: true, 
+				fontFamily: 'Berlin, sans-serif',
+				fontSize: 30,
+				fontWeightLight: 300,
+				fontWeightRegular: 400,
+				fontWeightMedium: 500
+			},
+			palette: {
+				primary: {
+				  main: '#f59c00',
+				  contrastText: '#fff',
+				},
+				secondary: {
+				  main: '#565656',
+				  contrastText: '#000',
+				},
+			  }
+		 });
+
 		return (
-			<LanguageContext.Provider value={this.state}>
-				<IntlProvider key={this.state.language.value} locale={this.state.language.value} messages={this.state.language.messages}>
-					<Layout>
-						<Route exact path='/' component={Home} />
-					</Layout>
-				</IntlProvider>
-			</LanguageContext.Provider>
+			<MuiThemeProvider theme={THEME}>
+				<LanguageContext.Provider value={this.state}>
+					<IntlProvider key={this.state.language.value} locale={this.state.language.value} messages={this.state.language.messages}>
+						<Layout>
+							<Route exact path='/' component={Home} />
+						</Layout>
+					</IntlProvider>
+				</LanguageContext.Provider>
+			</MuiThemeProvider>
 		);
 	}
 }

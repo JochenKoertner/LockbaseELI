@@ -1,4 +1,7 @@
 {
+    "cancelLabel" : "Abbrechen",
+    "okLabel": "Ok",
+
     "home.labelPerson": "Gewählte Person",
     "home.labelDepartment": "Abteilung",
     "home.labelKeyId" : "Schlüssel ID",
@@ -6,6 +9,7 @@
     "home.labelBuilding": "Gebäude",
     "home.labelLockId" : "Schloss ID",
     "home.labelDoorState": "Türstatus",
+    "home.labelDate": "Datum",
     "home.labelTime": "Uhrzeit",
     "home.buttonCheck": "Jetzt testen",
     "home.doorOpenState": "Geöffnet",
