@@ -45,7 +45,7 @@ class App extends Component {
 			typography: {
 				useNextVariants: true, 
 				fontFamily: 'Berlin, sans-serif',
-				fontSize: 30,
+				fontSize: 28,
 				fontWeightLight: 300,
 				fontWeightRegular: 400,
 				fontWeightMedium: 500
