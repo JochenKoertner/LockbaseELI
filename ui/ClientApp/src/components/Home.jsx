@@ -3,7 +3,14 @@ import { Col, Grid, Row, Label } from 'react-bootstrap';
 import Dropdown from 'react-dropdown';
 
 import DateFnsUtils from '@date-io/date-fns';
+import { withStyles } from '@material-ui/core/styles';
+
 import Button from '@material-ui/core/Button';
+import Snackbar from '@material-ui/core/Snackbar';
+import IconButton from '@material-ui/core/IconButton';
+import CloseIcon from '@material-ui/icons/Close';
+import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import green from '@material-ui/core/colors/green';
 
 import { MuiPickersUtilsProvider } from 'material-ui-pickers';
 import { TimePicker } from 'material-ui-pickers';
@@ -59,7 +66,8 @@ class Home extends Component {
 			isOpen: false,
 			person: persons[0],
 			door: doors[1].items[2],
-			selectedDate: date
+			selectedDate: date,
+			open: false
 		};
 
 		this.toggleDoor = this.toggleDoor.bind(this);
@@ -67,10 +75,19 @@ class Home extends Component {
 		this.onSelectPerson = this.onSelectPerson.bind(this);
 		this.handleDateChange = this.handleDateChange.bind(this);
 	}
+	
+	handleClose = (event, reason) => {
+		if (reason === 'clickaway') {
+			return;
+		}
+
+		this.setState({ open: false });
+	};
 
 	toggleDoor() {
 		this.setState({
-			isOpen: !this.state.isOpen
+			isOpen: !this.state.isOpen,
+			open: true
 		});
 	}
 
@@ -104,11 +121,34 @@ class Home extends Component {
 		return (
 			<LanguageContext.Consumer>
 				{ language => (
-					
 					<Grid>
+						<Snackbar
+							anchorOrigin={{
+							vertical: 'bottom',
+							horizontal: 'center',
+							}}
+							open={this.state.open}
+							autoHideDuration={2000}
+							onClose={this.handleClose}
+							ContentProps={{
+							'aria-describedby': 'message-id',
+							}}
+							message={<span id="message-id">{this.state.door.label} kann geöffnet werden!</span>}
+							action={[
+								<IconButton
+									key="close"
+									aria-label="Close"
+									color="inherit"
+									onClick={this.handleClose}
+								>
+								<CloseIcon />
+							</IconButton>,
+							]}
+						/>
+
 						<Door doorId={this.state.door.image} isOpen={this.state.isOpen}></Door>
 
-					<DoorCaption doorName={this.state.door.label}></DoorCaption>
+						<DoorCaption doorName={this.state.door.label}></DoorCaption>
 
 					<Row className="grid-content">
 						<Col xs={4} className="col-content-aside col-content-left">
