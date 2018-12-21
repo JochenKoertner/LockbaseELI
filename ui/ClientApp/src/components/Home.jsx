@@ -194,12 +194,22 @@ class Home extends Component {
 									this.props.intl.formatMessage(messages.homeDoorCloseState)}
 							</InfoBox>
 							<MuiPickersUtilsProvider utils={DateFnsUtils} locale={localeMap[language.language.value]}>
-								<Row>
+							<Row>
 								
 									<Col xs={6}>
 										
 										<Label>{this.props.intl.formatMessage(messages.homeLabelDate)}</Label>
 							
+								
+									</Col>
+									<Col xs={6}>
+										<Label>{this.props.intl.formatMessage(messages.homeLabelTime)}</Label>
+							
+									
+									</Col>
+								</Row>
+								<Row>
+									<Col xs={6}>
 										<DatePicker className="datePicker"
 										format="dd MMM yy"
 										cancelLabel={this.props.intl.formatMessage(messages.cancelLabel)} 
@@ -207,13 +217,10 @@ class Home extends Component {
 										value={selectedDate} onChange={this.handleDateChange} />
 									</Col>
 									<Col xs={6}>
-										<Label>{this.props.intl.formatMessage(messages.homeLabelTime)}</Label>
-							
 										<TimePicker className="timePicker"
 										cancelLabel={this.props.intl.formatMessage(messages.cancelLabel)} 
 										okLabel={this.props.intl.formatMessage(messages.okLabel)}
 										ampm={false} value={selectedDate} onChange={this.handleDateChange} />
-			
 									</Col>
 								</Row>
 							</MuiPickersUtilsProvider>
