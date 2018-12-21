@@ -33,7 +33,7 @@ import GroundPlan from './GroundPlan';
 import InfoBox from './InfoBox';
 import ColorInfoBox from './ColorInfoBox';
 
-import { arrowClosed, arrowOpen } from './Constants';
+import { arrowClosed, arrowOpen, DateSelection, TimeSelection } from './Constants';
 import { LanguageContext, persons, doors } from './../services/BackendAdapter';
 
 import { messages } from './../translations/messages';
@@ -195,32 +195,21 @@ class Home extends Component {
 							</InfoBox>
 							<MuiPickersUtilsProvider utils={DateFnsUtils} locale={localeMap[language.language.value]}>
 							<Row>
-								
 									<Col xs={6}>
-										
 										<Label>{this.props.intl.formatMessage(messages.homeLabelDate)}</Label>
-							
-								
 									</Col>
 									<Col xs={6}>
 										<Label>{this.props.intl.formatMessage(messages.homeLabelTime)}</Label>
-							
-									
 									</Col>
 								</Row>
 								<Row>
 									<Col xs={6}>
-										<DatePicker className="datePicker"
-										format="dd MMM yy"
-										cancelLabel={this.props.intl.formatMessage(messages.cancelLabel)} 
-										okLabel={this.props.intl.formatMessage(messages.okLabel)}
-										value={selectedDate} onChange={this.handleDateChange} />
+										<DateSelection intl={this.props.intl} selectedDate={selectedDate} 
+										handleDateChange={this.handleDateChange} />
 									</Col>
 									<Col xs={6}>
-										<TimePicker className="timePicker"
-										cancelLabel={this.props.intl.formatMessage(messages.cancelLabel)} 
-										okLabel={this.props.intl.formatMessage(messages.okLabel)}
-										ampm={false} value={selectedDate} onChange={this.handleDateChange} />
+										<TimeSelection intl={this.props.intl} selectedDate={selectedDate} 
+											handleDateChange={this.handleDateChange} />
 									</Col>
 								</Row>
 							</MuiPickersUtilsProvider>
