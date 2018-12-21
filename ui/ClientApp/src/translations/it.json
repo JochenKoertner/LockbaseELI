@@ -1,13 +1,18 @@
 {
-    "home.labelPerson": "Persona scelta",
-    "home.labelDepartment": "[**]",
-    "home.labelKeyId" : "[**]",
-    "home.labelDoor" : "[**]",
-    "home.labelBuilding": "[**]",
-    "home.labelLockId" : "[**]",
-    "home.labelDoorState": "[**]",
-    "home.labelTime": "[**]",
-    "home.buttonCheck": "[**]",
-    "home.doorOpenState": "[**]",
-    "home.doorCloseState": "[**]"
+	"cancelLabel" : "[cancelLabel]",
+	"okLabel": "[okLabel]",
+	"home.labelDate": "[labelDate]",
+
+
+	"home.labelPerson": "Persona selezionata",
+	"home.labelDepartment": "Reparto",
+	"home.labelKeyId" : "ID chiave",
+	"home.labelDoor" : "Porte",
+	"home.labelBuilding": "Edificio",
+	"home.labelLockId" : "ID cilindro",
+	"home.labelDoorState": "Stato porta",
+	"home.labelTime": "Tempo",
+	"home.buttonCheck": "Testare ora",
+	"home.doorOpenState": "Aperto",
+	"home.doorCloseState": "Chiuso"
 }
