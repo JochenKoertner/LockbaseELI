@@ -33,7 +33,8 @@ import GroundPlan from './GroundPlan';
 import InfoBox from './InfoBox';
 import ColorInfoBox from './ColorInfoBox';
 
-import { arrowClosed, arrowOpen, DateSelection, TimeSelection } from './Constants';
+import { arrowClosed, arrowOpen } from './Constants';
+import { DateSelection, TimeSelection } from './DateTimeSelection';
 import { LanguageContext, persons, doors } from './../services/BackendAdapter';
 
 import { messages } from './../translations/messages';
@@ -152,8 +153,6 @@ class Home extends Component {
 
 					<Row className="grid-content">
 						<Col xs={4} className="col-content-aside col-content-left">
-
-
 							<Label>
 								{this.props.intl.formatMessage(messages.homeLabelPerson)}
 							</Label>
@@ -194,7 +193,7 @@ class Home extends Component {
 									this.props.intl.formatMessage(messages.homeDoorCloseState)}
 							</InfoBox>
 							<MuiPickersUtilsProvider utils={DateFnsUtils} locale={localeMap[language.language.value]}>
-							<Row>
+								<Row>
 									<Col xs={6}>
 										<Label>{this.props.intl.formatMessage(messages.homeLabelDate)}</Label>
 									</Col>
@@ -213,11 +212,10 @@ class Home extends Component {
 									</Col>
 								</Row>
 							</MuiPickersUtilsProvider>
-							<div>
+							
 								<Button variant="contained" color="primary" onClick={this.toggleDoor}>
 									{this.props.intl.formatMessage(messages.homeButtonCheck)}
 								</Button>
-							</div>
 						</Col>
 					</Row>
 				</Grid>

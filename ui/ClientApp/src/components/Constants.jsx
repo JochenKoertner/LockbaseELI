@@ -1,10 +1,5 @@
 import React, { Component } from 'react';
 
-import { DatePicker } from 'material-ui-pickers';
-import { TimePicker } from 'material-ui-pickers';
-
-import { messages } from './../translations/messages';
-
 export const arrowClosed = (
 	<span className="arrow-closed" />
 )
@@ -66,29 +61,3 @@ export const SvgMask = ({ size, imgUrl }) => {
 		</svg>
 	);
 };
-
-export const DateSelection = ({ intl, selectedDate, handleDateChange }) => {
-	return (
-		<DatePicker className="datePicker"
-			format="dd MMM yy"
-			cancelLabel={intl.formatMessage(messages.cancelLabel)} 
-			okLabel={intl.formatMessage(messages.okLabel)}
-			value={selectedDate} onChange={handleDateChange} />
-	);
-};
-
-export const TimeSelection = ({ intl, selectedDate, handleDateChange }) => {
-	return (
-		<TimePicker className="timePicker"
-			ampm={false} 
-			cancelLabel={intl.formatMessage(messages.cancelLabel)} 
-			okLabel={intl.formatMessage(messages.okLabel)}
-			value={selectedDate} onChange={handleDateChange} />
-	);
-};
-
-
-
-
-
-
