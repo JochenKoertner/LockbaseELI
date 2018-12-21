@@ -3,18 +3,13 @@ import { Col, Grid, Row, Label } from 'react-bootstrap';
 import Dropdown from 'react-dropdown';
 
 import DateFnsUtils from '@date-io/date-fns';
-import { withStyles } from '@material-ui/core/styles';
 
 import Button from '@material-ui/core/Button';
 import Snackbar from '@material-ui/core/Snackbar';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
-import CheckCircleIcon from '@material-ui/icons/CheckCircle';
-import green from '@material-ui/core/colors/green';
 
 import { MuiPickersUtilsProvider } from 'material-ui-pickers';
-import { TimePicker } from 'material-ui-pickers';
-import { DatePicker } from 'material-ui-pickers';
 
 import frLocale from 'date-fns/locale/fr';
 import deLocale from 'date-fns/locale/de';
@@ -75,6 +70,8 @@ class Home extends Component {
 		this.onSelectDoor = this.onSelectDoor.bind(this);
 		this.onSelectPerson = this.onSelectPerson.bind(this);
 		this.handleDateChange = this.handleDateChange.bind(this);
+		this.onSelectRoom = this.onSelectRoom.bind(this);
+
 	}
 	
 	handleClose = (event, reason) => {
@@ -113,6 +110,11 @@ class Home extends Component {
 	onSelectPerson(selected) {
 		const index = persons.findIndex(x => x.value === selected.value);
 		this.setState({ person: persons[index] });
+	}
+
+	onSelectRoom(e) {
+		let roomId = e.target.id;
+		this.onSelectDoor({value: roomId});
 	}
 
 	render() {
@@ -182,7 +184,7 @@ class Home extends Component {
 							</ColorInfoBox>
 						</Col>
 						
-						<GroundPlan/>
+						<GroundPlan selectedRoom={this.state.door.value} onClick={this.onSelectRoom}/>
 
 						<Col xs={4} className="col-content-aside col-content-right">
 

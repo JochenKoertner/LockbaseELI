@@ -266,3 +266,30 @@ footer {
   transform: rotate(-135deg);
   -webkit-transform: rotate(-135deg);
 }
+
+.room {
+  fill: white;
+  fill-opacity: 1;
+  stroke: 'black';
+	stroke-opacity: 1;
+	stroke-width: 8;
+	stroke-linecap: 'butt';
+	stroke-linejoin: 'miter';
+	stroke-dasharray: 'none';
+}
+
+.on {
+  fill: $primary-color;
+}
+
+.off {
+  fill: white;
+}
+
+.room.off:hover {
+  cursor: pointer; 
+}
+
+
+
+
