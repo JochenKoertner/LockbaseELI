@@ -112,8 +112,7 @@ class Home extends Component {
 		this.setState({ person: persons[index] });
 	}
 
-	onSelectRoom(e) {
-		let roomId = e.target.id;
+	onSelectRoom(roomId) {
 		this.onSelectDoor({value: roomId});
 	}
 
@@ -184,7 +183,9 @@ class Home extends Component {
 							</ColorInfoBox>
 						</Col>
 						
-						<GroundPlan selectedRoom={this.state.door.value} onClick={this.onSelectRoom}/>
+						<Col xs={4} className="col-content-center" >
+							<GroundPlan selectedRoom={this.state.door.value} onClick={this.onSelectRoom}/>
+						</Col>
 
 						<Col xs={4} className="col-content-aside col-content-right">
 
