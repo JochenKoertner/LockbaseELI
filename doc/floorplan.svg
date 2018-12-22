@@ -1,0 +1,69 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<svg width="100%" height="100%" version="1.1" viewBox="25.34646 -3 1083.241 686.5708" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg">
+  <defs />
+  <g id="layer1">
+    <rect x="28.42258" y="14.4291" width="1077.165" height="666.1417" opacity="1" stroke="#000000" stroke-opacity="1" stroke-width="5" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="none" fill="#999998" fill-opacity="1" />
+    <text x="501.8247" y="647.396" font-size="36" fill="#000000" fill-opacity="1" font-family="Arial" font-weight="normal" font-style="normal">Tor West</text>
+    <line x1="680.3149" y1="680.3149" x2="453.5433" y2="680.3149" opacity="1" stroke="#E6E6E5" stroke-opacity="1" stroke-width="10" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="none" />
+  </g>
+  <g id="layer2">
+    <text x="733.3679" y="45.03385" font-size="36" fill="#000000" fill-opacity="1" font-family="Arial" font-weight="normal" font-style="normal">Production</text>
+    <rect x="566.9291" y="70.86614" width="170.0787" height="155.9055" opacity="1" stroke="#000000" stroke-opacity="1" stroke-width="10" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="none" fill="#FFFFFF" fill-opacity="1" />
+    <rect x="566.9291" y="226.7717" width="170.0787" height="141.7323" opacity="1" stroke="#000000" stroke-opacity="1" stroke-width="10" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="none" fill="#FFFFFF" fill-opacity="1" />
+    <rect x="566.9291" y="368.5039" width="170.0787" height="155.9055" opacity="1" stroke="#000000" stroke-opacity="1" stroke-width="10" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="none" fill="#FFFFFF" fill-opacity="1" />
+    <rect x="737.0079" y="368.5039" width="325.9843" height="155.9055" opacity="1" stroke="#000000" stroke-opacity="1" stroke-width="10" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="none" fill="#FFFFFF" fill-opacity="1" />
+    <rect x="737.0079" y="70.86614" width="325.9843" height="155.9055" opacity="1" stroke="#000000" stroke-opacity="1" stroke-width="10" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="none" fill="#FFFFFF" fill-opacity="1" />
+    <g>
+      <line x1="566.9291" y1="113.3858" x2="566.9291" y2="170.0787" opacity="1" stroke="#E6E6E5" stroke-opacity="1" stroke-width="10" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="none" />
+      <line x1="566.9291" y1="136.063" x2="566.9291" y2="138.8976" opacity="1" stroke="#999998" stroke-opacity="1" stroke-width="10" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="none" />
+    </g>
+    <g>
+      <line x1="566.9291" y1="269.2914" x2="566.9291" y2="325.9843" opacity="1" stroke="#E6E6E5" stroke-opacity="1" stroke-width="10" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="none" />
+      <line x1="566.9291" y1="291.9685" x2="566.9291" y2="294.8031" opacity="1" stroke="#999998" stroke-opacity="1" stroke-width="10" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="none" />
+    </g>
+    <g>
+      <line x1="566.9291" y1="425.1968" x2="566.9291" y2="481.8898" opacity="1" stroke="#E6E6E5" stroke-opacity="1" stroke-width="10" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="none" />
+      <line x1="566.9291" y1="447.874" x2="566.9291" y2="450.7086" opacity="1" stroke="#999998" stroke-opacity="1" stroke-width="10" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="none" />
+    </g>
+    <g>
+      <line x1="1062.992" y1="99.2126" x2="1062.992" y2="198.4252" opacity="1" stroke="#E6E6E5" stroke-opacity="1" stroke-width="10" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="none" />
+      <line x1="1062.992" y1="138.8976" x2="1062.992" y2="143.8583" opacity="1" stroke="#999998" stroke-opacity="1" stroke-width="10" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="none" />
+    </g>
+    <line x1="1062.992" y1="396.8504" x2="1062.992" y2="496.063" opacity="1" stroke="#E6E6E5" stroke-opacity="1" stroke-width="10" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="none" />
+  </g>
+  <g id="layer3">
+    <rect x="85.03937" y="269.2914" width="127.5591" height="340.1575" opacity="1" stroke="#000000" stroke-opacity="1" stroke-width="10" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="none" fill="#FFFFFF" fill-opacity="1" />
+    <rect x="212.5984" y="70.86614" width="99.2126" height="481.8898" opacity="1" stroke="#000000" stroke-opacity="1" stroke-width="10" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="none" fill="#FFFFFF" fill-opacity="1" />
+    <rect x="311.811" y="70.86614" width="155.9055" height="184.252" opacity="1" stroke="#000000" stroke-opacity="1" stroke-width="10" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="none" fill="#FFFFFF" fill-opacity="1" />
+    <rect x="311.811" y="255.1181" width="155.9055" height="155.9055" opacity="1" stroke="#000000" stroke-opacity="1" stroke-width="10" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="none" fill="#FFFFFF" fill-opacity="1" />
+    <path d="M311.811 496.063 L467.7165 496.063 L467.7165 595.2756 L311.811 609.4488 Z " opacity="1" stroke="#000000" stroke-opacity="1" stroke-width="10" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="none" fill="#FFFFFF" fill-opacity="1" />
+    <text x="191.8672" y="45.03385" font-size="36" fill="#000000" fill-opacity="1" font-family="Arial" font-weight="normal" font-style="normal">Verwaltung</text>
+    <rect x="85.03937" y="70.86614" width="127.5591" height="198.4252" opacity="1" stroke="#000000" stroke-opacity="1" stroke-width="10" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="none" fill="#FFFFFF" fill-opacity="1" />
+    <g>
+      <line x1="212.5984" y1="99.2126" x2="212.5984" y2="155.9055" opacity="1" stroke="#E6E6E5" stroke-opacity="1" stroke-width="10" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="none" />
+      <line x1="212.5984" y1="121.8897" x2="212.5984" y2="124.7244" opacity="1" stroke="#999998" stroke-opacity="1" stroke-width="10" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="none" />
+    </g>
+    <g>
+      <line x1="311.8813" y1="99.28291" x2="311.8813" y2="155.9758" opacity="1" stroke="#E6E6E5" stroke-opacity="1" stroke-width="10" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="none" />
+      <line x1="311.8813" y1="121.9601" x2="311.8813" y2="124.7947" opacity="1" stroke="#999998" stroke-opacity="1" stroke-width="10" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="none" />
+    </g>
+    <g>
+      <line x1="212.5984" y1="311.811" x2="212.5984" y2="368.5039" opacity="1" stroke="#E6E6E5" stroke-opacity="1" stroke-width="10" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="none" />
+      <line x1="212.5984" y1="334.4882" x2="212.5984" y2="337.3228" opacity="1" stroke="#999998" stroke-opacity="1" stroke-width="10" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="none" />
+    </g>
+    <g>
+      <line x1="311.811" y1="311.811" x2="311.811" y2="368.5039" opacity="1" stroke="#E6E6E5" stroke-opacity="1" stroke-width="10" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="none" />
+      <line x1="311.811" y1="334.4882" x2="311.811" y2="337.3228" opacity="1" stroke="#999998" stroke-opacity="1" stroke-width="10" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="none" />
+    </g>
+    <rect x="311.811" y="411.0236" width="155.9055" height="85.03937" opacity="1" stroke="#000000" stroke-opacity="1" stroke-width="10" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="none" fill="#FFFFFF" fill-opacity="1" />
+    <g>
+      <line x1="311.811" y1="425.1968" x2="311.811" y2="481.8898" opacity="1" stroke="#E6E6E5" stroke-opacity="1" stroke-width="10" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="none" />
+      <line x1="311.811" y1="447.874" x2="311.811" y2="450.7086" opacity="1" stroke="#999998" stroke-opacity="1" stroke-width="10" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="none" />
+    </g>
+    <line x1="311.7993" y1="508.8788" x2="311.7993" y2="537.2252" opacity="1" stroke="#E6E6E5" stroke-opacity="1" stroke-width="10" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="none" />
+    <g transform="rotate(90 262.2685 552.5645)">
+      <line x1="262.2685" y1="519.9661" x2="262.2685" y2="585.1629" opacity="1" stroke="#E6E6E5" stroke-opacity="1" stroke-width="10" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="none" />
+      <line x1="262.2685" y1="546.0449" x2="262.2685" y2="549.3046" opacity="1" stroke="#999998" stroke-opacity="1" stroke-width="10" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="none" />
+    </g>
+  </g>
+</svg>

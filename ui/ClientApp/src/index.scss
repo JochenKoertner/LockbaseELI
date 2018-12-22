@@ -267,24 +267,58 @@ footer {
   -webkit-transform: rotate(-135deg);
 }
 
-.room {
+svg text {
+  font-size: 3.5rem;
+  fill:$dark-grey;
+}
+
+.property.on {
+  fill: lighten($primary-color, 30%);
+}
+
+.property.off {
+  fill: $light-grey;
+}
+
+.property.off:hover {
+  cursor: pointer; 
+}
+
+.room.on {
+  fill: lighten($primary-color, 30%);
+}
+
+.room.off {
   fill: white;
-  fill-opacity: 1;
+  cursor: pointer;
+}
+
+.room.off:hover {
+  cursor: pointer; 
+}
+
+#property > rect {
   stroke: black;
-	stroke-opacity: 1;
-	stroke-width: 7px;
+  stroke-width: 5px;
+  stroke-linecap: butt;
+  stroke-linejoin: miter;
+	stroke-dasharray: none;
+}
+
+
+#administration > rect, #administration > path, #production > rect {
+  stroke: $dark-grey;
+	stroke-width: 10px;
 	stroke-linecap: butt;
 	stroke-linejoin: miter;
 	stroke-dasharray: none;
 }
 
-.on {
-  fill: $primary-color;
-}
 
-.off {
-  fill: white;
-}
+// opacity="1" stroke="#000000" strokeOpacity="1" strokeWidth="5" strokeLinecap="butt" strokeLinejoin="miter" strokeDasharray="none" fill="#999998" fillOpacity="1"
+
+
+
 
 .room.off:hover {
   cursor: pointer; 
