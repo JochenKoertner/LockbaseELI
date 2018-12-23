@@ -125,3 +125,18 @@ export let minutes = Array
 			label: x.toString().padStart(2, '0')
 		};
 	})
+
+export const findLabel = (roomId) => {
+		const onlyDoors = doors
+			.map(x => {
+				if (x.type === 'group') {
+					return x.items
+				}
+				return [x]
+			})
+			.reduce((a, b) => a.concat(b), []);
+	
+		const index = onlyDoors.findIndex(x => x.value === roomId);
+	
+		return onlyDoors[index].label;
+	};

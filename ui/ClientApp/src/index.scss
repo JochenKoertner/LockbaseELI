@@ -336,6 +336,15 @@ svg text {
 	stroke-dasharray: none;
 }
 
+div[role=tooltip] {
+  opacity: 1.0;
+}
+div[role=tooltip] > div {
+  background-color: $primary-color;
+  color: $dark-grey;
+  font-size: 1.8rem;
+} 
+
 
 
 
