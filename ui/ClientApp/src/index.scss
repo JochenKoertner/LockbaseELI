@@ -267,9 +267,12 @@ footer {
   -webkit-transform: rotate(-135deg);
 }
 
+// GroundPlan SVG Styling
+
 svg text {
   font-size: 3.5rem;
   fill:$dark-grey;
+  pointer-events: none;
 }
 
 .property.on {
@@ -282,6 +285,14 @@ svg text {
 
 .property.off:hover {
   cursor: pointer; 
+}
+
+#property > rect {
+  stroke: black;
+  stroke-width: 5px;
+  stroke-linecap: butt;
+  stroke-linejoin: miter;
+  stroke-dasharray: none;
 }
 
 .room.on {
@@ -316,14 +327,6 @@ svg text {
   stroke: $dark-grey;
 }
 
-#property > rect {
-  stroke: black;
-  stroke-width: 5px;
-  stroke-linecap: butt;
-  stroke-linejoin: miter;
-	stroke-dasharray: none;
-}
-
 
 #administration > rect, #administration > path, #production > rect {
   stroke: $dark-grey;
@@ -333,15 +336,6 @@ svg text {
 	stroke-dasharray: none;
 }
 
-
-// opacity="1" stroke="#000000" strokeOpacity="1" strokeWidth="5" strokeLinecap="butt" strokeLinejoin="miter" strokeDasharray="none" fill="#999998" fillOpacity="1"
-
-
-
-
-.room.off:hover {
-  cursor: pointer; 
-}
 
 
 
