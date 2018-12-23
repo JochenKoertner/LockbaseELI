@@ -15,6 +15,7 @@ import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 
 import Layout from './components/Layout';
 import Home from './components/Home';
+import Sankey from './components/Sankey';
 
 import { LanguageContext, findLanguage } from './services/BackendAdapter';
 
@@ -68,6 +69,7 @@ class App extends Component {
 					<IntlProvider key={this.state.language.value} locale={this.state.language.value} messages={this.state.language.messages}>
 						<Layout>
 							<Route exact path='/' component={Home} />
+							<Route exact path='/sankey' component={Sankey} />
 						</Layout>
 					</IntlProvider>
 				</LanguageContext.Provider>
