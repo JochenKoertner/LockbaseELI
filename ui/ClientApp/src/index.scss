@@ -297,6 +297,25 @@ svg text {
   cursor: pointer; 
 }
 
+.roomdoor {
+  stroke-width: 10px;
+	stroke-linecap: butt;
+	stroke-linejoin: miter;
+	stroke-dasharray: none;
+}
+
+.roomdoor.on {
+  stroke: $primary-color;
+}
+
+.roomdoor.off {
+  stroke: $light-grey;
+}
+
+.roomdoor.center {
+  stroke: $dark-grey;
+}
+
 #property > rect {
   stroke: black;
   stroke-width: 5px;
