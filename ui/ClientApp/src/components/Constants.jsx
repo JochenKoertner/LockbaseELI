@@ -40,7 +40,7 @@ export const SvgMask = ({ size, imgUrl, isOpen, transition }) => {
 	sign_width = sign_width * factor;
 
 	console.log("Transition " + transition );
-	
+
 	let getDoorOpenClassName = () => {
 		if (transition == 0) 
 			return "door-hidden"
@@ -76,7 +76,7 @@ export const SvgMask = ({ size, imgUrl, isOpen, transition }) => {
 			</mask>
 			
 			<image className={getDoorOpenClassName()} x={0} y={0} width={width} height={height} xlinkHref={imgUrl+"_open_" + size + ".png"} mask="url(#myMask)" />
-			<image className={getDoorCloseClassName()} x={0} y={0} width={width} height={height} xlinkHref={imgUrl+"_close_" + size + ".png"} mask="url(#myMask)" />
+			<image className={getDoorCloseClassName()} x={0} y={0} width={width} height={height} xlinkHref={imgUrl+"_closed_" + size + ".png"} mask="url(#myMask)" />
 			<rect x={sign_x} y={sign_y} width={sign_width} height={sign_height} opacity="1" stroke="#FFFFFF" strokeOpacity="1" 
 			strokeWidth="4" strokeLinecap="butt" strokeLinejoin="miter" 
 			strokeDasharray="none" fill="#000000" fillOpacity=".3" />

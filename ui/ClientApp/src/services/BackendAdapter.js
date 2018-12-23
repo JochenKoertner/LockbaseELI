@@ -50,15 +50,15 @@ export const persons = [
 // doors and locks 
 
 export const doors = [
-	{ value: 'W1', label: 'Tor West', building: '-.-', image: 'torwest', color: 'LightSlateGray' },
+	{ value: 'W1', label: 'Tor West', building: '-.-', image: 'tor_west', color: 'LightSlateGray' },
 	{
 		type: 'group', name: 'Verwaltung', items: [
 			{ value: '100', label: 'Konferenzraum', building: 'Verwaltung', image: 'konferenzraum' },
 			{ value: '101', label: 'Büro Ahrens', building: 'Verwaltung', image: 'buero_ahrens' },
 			{ value: '102', label: 'Büro Barthauer', building: 'Verwaltung', image: 'buero_barthauer' },
 			{ value: '103', label: 'Buchhaltung', building: 'Verwaltung', image: 'buchhaltung', color: 'Yellow'   },
-			{ value: '104', label: 'Büro Vertrieb 1', building: 'Verwaltung', image: 'buero_vertrieb1', color: 'Yellow'   },
-			{ value: '105', label: 'Büro Vertrieb 2', building: 'Verwaltung', image: 'buero_vertrieb2', color: 'Yellow'   },
+			{ value: '104', label: 'Büro Vertrieb 1', building: 'Verwaltung', image: 'buero_vertrieb_1', color: 'Yellow'   },
+			{ value: '105', label: 'Büro Vertrieb 2', building: 'Verwaltung', image: 'buero_vertrieb_2', color: 'Yellow'   },
 			{ value: 'Z1', label: 'Eingang West', building: 'Verwaltung', image: 'eingang_west' }
 		]
 	},
