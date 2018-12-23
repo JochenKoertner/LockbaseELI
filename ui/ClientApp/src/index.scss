@@ -12,6 +12,7 @@
   font-size: 1.5em;
 }
 
+
 // km CI color's 
 
 $dark-white: #f6f6f6;
@@ -345,7 +346,32 @@ div[role=tooltip] > div {
   font-size: 1.8rem;
 } 
 
+// Transition door 
 
+@keyframes hidedoor {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+} 
 
+@keyframes showdoor {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
 
+.door-hidden {
+  opacity: 0;
+}
 
+.door-visible {
+  opacity: 1;
+}
+
+.door-hide {
+  opacity: 1;
+  animation: hidedoor 2s linear 0;
+}
+
+.door-show {
+  opacity: 0;
+  animation: showdoor 2s linear 0;
+}

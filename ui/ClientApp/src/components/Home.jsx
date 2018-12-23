@@ -63,7 +63,8 @@ class Home extends Component {
 			person: persons[0],
 			door: doors[1].items[2],
 			selectedDate: date,
-			open: false
+			open: false,
+			transition: 0
 		};
 
 		this.toggleDoor = this.toggleDoor.bind(this);
@@ -83,10 +84,29 @@ class Home extends Component {
 	};
 
 	toggleDoor() {
-		this.setState({
-			isOpen: !this.state.isOpen,
-			open: true
+		this.setState(function(state) {
+			let transition;
+			if (typeof state.isOpen !== 'undefined') {
+				if (state.isOpen) {
+					transition = 1;
+				} else
+				{
+					transition = 2;
+				}
+			}
+			else
+			{
+				transition = 0;
+			}
+			return {
+				isOpen: !state.isOpen,
+				open: true,
+				transition: transition,
+			}
 		});
+
+		var audio = document.getElementById('door-sound');
+		audio.play();
 	}
 
 	handleDateChange = date => {
@@ -148,8 +168,8 @@ class Home extends Component {
 							]}
 						/>
 
-						<Door doorId={this.state.door.image} isOpen={this.state.isOpen}></Door>
-
+						<Door doorId={this.state.door.image} isOpen={this.state.isOpen} transition={this.state.transition}/>
+						
 						<DoorCaption doorName={this.state.door.label}></DoorCaption>
 
 					<Row className="grid-content">
