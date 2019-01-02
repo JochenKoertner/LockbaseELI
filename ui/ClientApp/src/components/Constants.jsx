@@ -9,14 +9,33 @@ export const arrowOpen = (
 
 // Constructs a Svg Mask depending of media query size 
 
-export const SvgMask = ({ size, imgUrl, isOpen, transition }) => {
+export const SvgMask = ({ size, imgUrl, isOpen, transition, doorId }) => {
 	var width = 1400;
 	var height = 700;
 
-	var sign_x = 230;
-	var sign_y = 205; 
-	var sign_width = 200; 
-	var sign_height = 170;
+	var sign_x = 387;
+	var sign_y = 268; 
+	var sign_width = 140; 
+	var sign_height = 124;
+
+	if (doorId === 'buchhaltung') {
+		sign_x = 387;
+		sign_y = 268; 
+		sign_width = 140; 
+		sign_height = 124;
+	} else if (doorId === 'eingang_west') {
+		sign_x = 260;
+		sign_y = 273; 
+		sign_width = 140; 
+		sign_height = 124;
+	}	else if (doorId === 'tor_west') {
+		sign_x = 100;
+		sign_y = 230; 
+		sign_width = 310; 
+		sign_height = 250;
+		// Perspektive 
+		// https://stackoverflow.com/questions/12919398/perspective-transform-of-svg-paths-four-corner-distort
+	}
 
 	var factor = 1.0;
 
@@ -78,8 +97,10 @@ export const SvgMask = ({ size, imgUrl, isOpen, transition }) => {
 			<image className={getDoorOpenClassName()} x={0} y={0} width={width} height={height} xlinkHref={imgUrl+"_open_" + size + ".png"} mask="url(#myMask)" />
 			<image className={getDoorCloseClassName()} x={0} y={0} width={width} height={height} xlinkHref={imgUrl+"_closed_" + size + ".png"} mask="url(#myMask)" />
 			<rect x={sign_x} y={sign_y} width={sign_width} height={sign_height} opacity="1" stroke="#FFFFFF" strokeOpacity="1" 
-			strokeWidth="4" strokeLinecap="butt" strokeLinejoin="miter" 
+			strokeWidth="0" strokeLinecap="butt" strokeLinejoin="miter" 
 			strokeDasharray="none" fill="#000000" fillOpacity=".3" />
+
+			<text x={sign_x+5} y={sign_y+5} width={sign_width-10} height={sign_height-10}>{doorId}</text>
     
 		</svg>
 	);

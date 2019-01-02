@@ -13,16 +13,16 @@ const Door = ({ doorId, isOpen, transition }) => {
 	return (
 		<Row className="door">
 			<MediaQuery minWidth={1430}>
-				<SvgMask size="xl" imgUrl={imgUrl} isOpen={isOpen} transition={transition} />
+				<SvgMask size="xl" imgUrl={imgUrl} isOpen={isOpen} transition={transition} doorId={doorId} />
 			</MediaQuery>
 			<MediaQuery minWidth={1200} maxWidth={1429}>
-				<SvgMask size="l" imgUrl={imgUrl} isOpen={isOpen} transition={transition}/>
+				<SvgMask size="l" imgUrl={imgUrl} isOpen={isOpen} transition={transition} doorId={doorId}/>
 			</MediaQuery>
 			<MediaQuery minWidth={992} maxWidth={1199}>
-				<SvgMask size="m" imgUrl={imgUrl} isOpen={isOpen} transition={transition} />
+				<SvgMask size="m" imgUrl={imgUrl} isOpen={isOpen} transition={transition} doorId={doorId}/>
 			</MediaQuery>
 			<MediaQuery maxWidth={991}>
-				<SvgMask size="s" imgUrl={imgUrl} isOpen={isOpen} transition={transition}/>
+				<SvgMask size="s" imgUrl={imgUrl} isOpen={isOpen} transition={transition} doorId={doorId}/>
 			</MediaQuery>
 		</Row>
 
