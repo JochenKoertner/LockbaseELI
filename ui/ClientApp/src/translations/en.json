@@ -1,0 +1,17 @@
+{
+    "cancelLabel" : "Cancel",
+    "okLabel": "Ok",
+
+    "home.labelPerson": "Person",
+    "home.labelDepartment": "Department",
+    "home.labelKeyId" : "Key ID",
+    "home.labelDoor" : "Doors",
+    "home.labelBuilding": "Building",
+    "home.labelLockId" : "Lock ID",
+    "home.labelDoorState": "Doorstate",
+    "home.labelDate": "Date",
+    "home.labelTime": "Time",
+    "home.buttonCheck": "Now check",
+    "home.doorOpenState": "Opened",
+    "home.doorCloseState": "Closed"
+}

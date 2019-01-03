@@ -1,0 +1,17 @@
+{
+	"cancelLabel" : "[cancelLabel]",
+	"okLabel": "[okLabel]",
+	"home.labelDate": "[labelDate]",
+
+	"home.labelPerson": "Personne sélectionnée",
+	"home.labelDepartment": "Département",
+	"home.labelKeyId" : "ID clé",
+	"home.labelDoor" : "Portes",
+	"home.labelBuilding": "Bâtiment",
+	"home.labelLockId" : "ID cylindre",
+	"home.labelDoorState": "Statut de porte",
+	"home.labelTime": "Heure",
+	"home.buttonCheck": "Tester maintenant",
+	"home.doorOpenState": "Ouvert",
+	"home.doorCloseState": "Fermé"
+}

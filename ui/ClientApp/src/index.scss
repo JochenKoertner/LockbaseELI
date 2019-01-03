@@ -12,6 +12,7 @@
   font-size: 1.5em;
 }
 
+
 // km CI color's 
 
 $dark-white: #f6f6f6;
@@ -19,20 +20,39 @@ $dark-grey: #565656;
 $light-grey: #dcdcdc;
 $primary-color:  #f59c00;
 
+
 body {
   font-family: 'Berlin', sans-serif;
-	padding-top: 0;
+  font-size: 0.95em;
+  padding-top: 0;
 	margin: 0;
 	color: $dark-grey;
-  background-color: bisque; 
-  //background-color: $dark-white;
+  //background-color: bisque; 
+  background-color: $dark-white;
 	height: 100%;
   width: 100%;
   letter-spacing: 0.05em; 
 }
 
+.container {
+  width: 768px;
+}
+
 header {
-	height: 20px;
+  display: block;
+  position: relative;
+  z-index: 2;
+}
+
+.logos  {
+  max-width: 70rem;
+  margin: 0 auto;
+  padding-bottom: 0.5em;
+  //font-size: 0.8em;
+}
+
+main {
+  margin-top: -15rem;
 }
 
 footer {
@@ -41,15 +61,10 @@ footer {
 }
 
 
-// Door.jsx 
-
-.door {
-  height: 700px;
-  background-size: 1170px 700px;   
-  mask-image: url('/images/doors/mask.svg');
-}
-
 // DoorCaption.jsx
+.door {
+  text-align: center;
+}
 
 .door-caption {
 	background-color: $dark-grey;
@@ -66,18 +81,102 @@ footer {
 .door-caption > div:nth-child(2) {
 	background-color: $primary-color;
   color: white;
-  line-height: normal;
-  padding: 10px;
+}
+
+// Main Content 
+
+.grid-content {
+  background-color:  $light-grey;
+  display: flex;
 }
 
 .col-content-center {
+  padding-top: .8em;	
 	background-color: $dark-grey;
-	color: white;
+  color: white;
+  font-size: 1.4em;
+  text-align: center;
+  text-transform: uppercase;
 }
 
-.grid-content {
-	background-color:  $light-grey;
+.col-content-aside {
+  padding-top: .8em;
+  padding-bottom: 1.5em;
 }
+
+@media (min-width: 768px) {
+
+  .container {
+    width: 768px;
+  }
+
+  .logos  {
+    max-width: 80rem;
+  }
+
+  .col-content-left {
+    padding-left: 1em;
+  }
+
+  .col-content-right {
+    padding-right: 1em;
+  }
+
+  body {
+    font-size: 1.05em;
+  }
+}
+
+@media (min-width: 992px) {
+  .container {
+    width: 992px;
+  }
+
+  .logos  {
+    max-width: 100rem;
+  }
+
+  .col-content-left {
+    padding-left: 3em;
+  }
+
+  .col-content-right {
+    padding-right: 3em;
+  }
+
+  body {
+    font-size: 1.20em;
+  }
+}
+
+@media (min-width: 1200px) {
+  .container {
+    width: 1200px;
+  }
+
+  .logos  {
+    max-width: 120rem;
+  }
+
+  .col-content-left {
+    padding-left: 5em;
+  }
+
+  .col-content-right {
+    padding-right: 5em;
+  }
+} 
+
+@media (min-width: 1430px) {
+  .container {
+    width: 1430px
+  }
+
+  .logos  {
+    max-width: 140rem;
+  }
+}
+
 
 .label {
   background-color: transparent;
@@ -88,13 +187,34 @@ footer {
   text-transform: uppercase;
 }
 
-.info-box {
+.col-content-aside button {
+  width: 100%;
+  text-transform: uppercase;
+  text-align: center;
+  margin-top: .8em;
+  margin-bottom: .2em;
+}
+
+.info-box, .datePicker, .timePicker {
   background-color: $dark-grey;
   color: white;
   padding: .2em .8em .2em .8em;
   font-size: 1.4em;
   font-weight: normal; 
   text-transform: uppercase;
+  display: flex;
+  justify-content: space-between;
+}
+
+.datePicker > div, .timePicker > div {
+  padding-left: .8em; 
+  color: white;
+  font-size: unset;
+}
+
+.datePicker > div > input {
+  text-transform: uppercase;
+
 }
 
 // react-dropdown Combobox 
@@ -129,22 +249,129 @@ footer {
 
 .arrow-closed, .arrow-open {
   border: solid white;
-  border-width: 0 4px 4px 0;
+  border-width: 0 0.25em 0.25em 0;
   display: inline-block;
-  padding: 4px;
+  padding: 0.3em;
   position: absolute;
-  right: 10px;
+  right: .75em;
 }
 
 .arrow-closed {
-  top: 10px;
+  top: 0.3em;
   transform: rotate(45deg);
   -webkit-transform: rotate(45deg);
 }
 
 .arrow-open {
-  top: 14px;
+  top: 0.6em;
   transform: rotate(-135deg);
   -webkit-transform: rotate(-135deg);
 }
 
+// GroundPlan SVG Styling
+
+svg text {
+  font-size: 3.5rem;
+  fill:$dark-grey;
+  pointer-events: none;
+}
+
+.property.on {
+  fill: lighten($primary-color, 30%);
+}
+
+.property.off {
+  fill: $light-grey;
+}
+
+.property.off:hover {
+  cursor: pointer; 
+}
+
+#property > rect {
+  stroke: black;
+  stroke-width: 5px;
+  stroke-linecap: butt;
+  stroke-linejoin: miter;
+  stroke-dasharray: none;
+}
+
+.room.on {
+  fill: lighten($primary-color, 30%);
+}
+
+.room.off {
+  fill: white;
+  cursor: pointer;
+}
+
+.room.off:hover {
+  cursor: pointer; 
+}
+
+.roomdoor {
+  stroke-width: 10px;
+	stroke-linecap: butt;
+	stroke-linejoin: miter;
+	stroke-dasharray: none;
+}
+
+.roomdoor.on {
+  stroke: $primary-color;
+}
+
+.roomdoor.off {
+  stroke: $light-grey;
+}
+
+.roomdoor.center {
+  stroke: $dark-grey;
+}
+
+
+#administration > rect, #administration > path, #production > rect {
+  stroke: $dark-grey;
+	stroke-width: 10px;
+	stroke-linecap: butt;
+	stroke-linejoin: miter;
+	stroke-dasharray: none;
+}
+
+div[role=tooltip] {
+  opacity: 1.0;
+}
+div[role=tooltip] > div {
+  background-color: $primary-color;
+  color: $dark-grey;
+  font-size: 1.8rem;
+} 
+
+// Transition door 
+
+@keyframes hidedoor {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+} 
+
+@keyframes showdoor {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+.door-hidden {
+  opacity: 0;
+}
+
+.door-visible {
+  opacity: 1;
+}
+
+.door-hide {
+  opacity: 1;
+  animation: hidedoor 2s linear 0;
+}
+
+.door-show {
+  opacity: 0;
+  animation: showdoor 2s linear 0;
+}

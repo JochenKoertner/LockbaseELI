@@ -1,17 +1,21 @@
 import React from 'react';
 import { Label } from 'react-bootstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-export class InfoBox extends React.Component {
-	displayName = InfoBox.name
+const InfoBox = (props) => {
 
-	render() {
-		return (
-			<div>
-				<Label>{this.props.label}</Label>
-				<p className="info-box">
-					{this.props.children}
-				</p>
-			</div>
-		);
-	}
-}
+	let icon;
+	if (props.icon !== undefined) {
+		icon = <FontAwesomeIcon icon={props.icon}/>
+	};
+
+	return (<div>
+		<Label>{props.label}</Label>
+		<p className="info-box">
+			{props.children}
+			{icon}
+		</p>
+	</div>)
+};
+
+export default InfoBox;

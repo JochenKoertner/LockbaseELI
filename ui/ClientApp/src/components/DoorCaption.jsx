@@ -1,19 +1,16 @@
 import React from 'react';
 import { Row, Col } from 'react-bootstrap';
 
-export class DoorCaption extends React.Component {
-	displayName = DoorCaption.name
+// https://hackernoon.com/react-js-a-better-introduction-to-the-most-powerful-ui-library-ever-created-ecd96e8f4621
 
-	render() {
-		return (
-			<Row className="door-caption">
-				<Col lg={4} />
+const DoorCaption = ({ doorName }) => (
+	<Row className="door-caption">
+		<Col xs={4} />
+		<Col xs={4} >
+			{doorName}
+		</Col>
+		<Col xs={4} />
+	</Row>
+);
 
-				<Col lg={4} >
-					{this.props.doorName}
-				</Col>
-				<Col lg={4} />
-			</Row>
-		);
-	}
-}
+export default DoorCaption;
