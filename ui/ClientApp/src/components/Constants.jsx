@@ -58,7 +58,7 @@ export const SvgMask = ({ size, imgUrl, isOpen, transition, doorId }) => {
 	sign_height = sign_height * factor;
 	sign_width = sign_width * factor;
 
-	console.log("Transition " + transition );
+	// console.log("Transition " + transition );
 
 	let getDoorOpenClassName = () => {
 		if (transition == 0) 
