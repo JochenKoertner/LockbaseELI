@@ -30,7 +30,7 @@ import ColorInfoBox from './ColorInfoBox';
 
 import { arrowClosed, arrowOpen } from './Constants';
 import { DateSelection, TimeSelection } from './DateTimeSelection';
-import { LanguageContext, persons, doors } from './../services/BackendAdapter';
+import { LanguageContext, doors } from './../services/BackendAdapter';
 
 import { messages } from './../translations/messages';
 
@@ -60,10 +60,11 @@ class Home extends Component {
 		date = dfns.setMinutes(date, (Math.round(dfns.getMinutes(date) / 15)) * 15);
 
 		this.state = {
-			personList: persons,
-			doors: null,
+			isLoading: false,
+			personList: null,
+			doorList: null,
 			isOpen: false,
-			person: persons[0],
+			person: null,
 			door: doors[1].items[2],
 			selectedDate: date,
 			open: false,
@@ -79,17 +80,21 @@ class Home extends Component {
 	}
 
 	componentDidMount() {
-		console.log("didmount");
+		this.setState({isLoading: true})
 		fetch('api/data/persons')
 			.then(response => response.json())
-			.then(data => {
-				console.log(data);
-				return this.setState({ 
-					person: persons[0]
-				 });
-				}
-			 )
-			.then( () => console.log("done"));
+			.then(data => this.setState({
+					personList: data,
+					person: data[0]
+				 }))
+			.then( () => fetch('api/data/doors')
+				 .then(response => response.json())
+				 .then(data => this.setState({
+					 isLoading: false,
+					 doorList: doors,
+					 door: doors[1].items[2]
+				 }))
+			);
 	}
 	
 	handleClose = (event, reason) => {
@@ -131,7 +136,7 @@ class Home extends Component {
 	}
 
 	onSelectDoor(selected) {
-		const onlyDoors = doors
+		const onlyDoors = this.state.doorList
 			.map(x => {
 				if (x.type === 'group') {
 					return x.items
@@ -155,6 +160,10 @@ class Home extends Component {
 	}
 
 	render() {
+
+		if (this.state.isLoading) {
+			return <p>Loading ...</p>;
+		}
 
 		const { selectedDate } = this.state;
 
@@ -196,28 +205,28 @@ class Home extends Component {
 								{this.props.intl.formatMessage(messages.homeLabelPerson)}
 							</Label>
 							<Dropdown arrowClosed={arrowClosed} arrowOpen={arrowOpen}
-								options={persons} onChange={this.onSelectPerson} value={this.state.person} />
+								options={this.state.personList} onChange={this.onSelectPerson} value={this.state.person} />
 
 							<InfoBox label={this.props.intl.formatMessage(messages.homeLabelDepartment)}>
-								{this.state.person.department}
+								{(this.state.person) ? this.state.person.department : "nothing"}
 							</InfoBox>
 
 							<ColorInfoBox label={this.props.intl.formatMessage(messages.homeLabelKeyId)}
-								color={this.state.person.color}>
-								{this.state.person.value}
+								color={(this.state.person) && (this.state.person.color) ? this.state.person.color : undefined}>
+								{(this.state.person) ? this.state.person.value : null} 
 							</ColorInfoBox>
 
 							<Label>{this.props.intl.formatMessage(messages.homeLabelDoor)}</Label>
 							<Dropdown arrowClosed={arrowClosed} arrowOpen={arrowOpen}
-								options={doors} onChange={this.onSelectDoor} value={this.state.door} />
+								options={this.state.doorList} onChange={this.onSelectDoor} value={this.state.door} />
 
 							<InfoBox label={this.props.intl.formatMessage(messages.homeLabelBuilding)}>
-								{this.state.door.building}
+								{(this.state.door) ? this.state.door.building : null}
 							</InfoBox>
 
 							<ColorInfoBox label={this.props.intl.formatMessage(messages.homeLabelLockId)}
-								color={this.state.door.color} >
-								{this.state.door.value}
+								color={(this.state.door) && (this.state.door.color) ? this.state.door.color : undefined}>
+								{(this.state.door) ? this.state.door.value : null}
 							</ColorInfoBox>
 						</Col>
 						
