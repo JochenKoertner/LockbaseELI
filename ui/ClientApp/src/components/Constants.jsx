@@ -61,21 +61,21 @@ export const SvgMask = ({ size, imgUrl, isOpen, transition, doorId }) => {
 	// console.log("Transition " + transition );
 
 	let getDoorOpenClassName = () => {
-		if (transition == 0) 
+		if (transition === 0) 
 			return "door-hidden"
-		else if (transition == 1)
+		else if (transition === 1)
 			return "door-show"
-		else if (transition == 2)
+		else if (transition === 2)
 			return "door-hide"
 		return "door-visible"
 	};
 
 	let getDoorCloseClassName = () => {
-		if (transition == 0) 
+		if (transition === 0) 
 			return "door-visible"
-		else if (transition == 1)
+		else if (transition === 1)
 			return "door-hide"
-		else if (transition == 2)
+		else if (transition === 2)
 			return "door-show"
 		return "door-hidden"
 	};

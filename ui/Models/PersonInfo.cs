@@ -3,9 +3,9 @@ using System;
 namespace ui.Models {
 	public class PersonInfo
 	{
-		public int Id { get; set; }
-		public string Name { get; set; }
-		public string Section { get; set; }
-		public string Summary { get; set; }
+		public string value { get; set; }
+		public string label { get; set; }
+		public string department { get; set; }
+		public string color { get; set; }
 	}
 }

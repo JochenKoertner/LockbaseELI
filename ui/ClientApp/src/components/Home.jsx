@@ -52,13 +52,16 @@ class Home extends Component {
 	constructor(props) {
 		super(props);
 
-		
+		// https://www.robinwieruch.de/react-fetching-data/
+
 
 		// Zeit auf 15 Minuten Intervall abrunden
 		var date = new Date();
 		date = dfns.setMinutes(date, (Math.round(dfns.getMinutes(date) / 15)) * 15);
 
 		this.state = {
+			personList: persons,
+			doors: null,
 			isOpen: false,
 			person: persons[0],
 			door: doors[1].items[2],
@@ -73,6 +76,20 @@ class Home extends Component {
 		this.handleDateChange = this.handleDateChange.bind(this);
 		this.onSelectRoom = this.onSelectRoom.bind(this);
 
+	}
+
+	componentDidMount() {
+		console.log("didmount");
+		fetch('api/data/persons')
+			.then(response => response.json())
+			.then(data => {
+				console.log(data);
+				return this.setState({ 
+					person: persons[0]
+				 });
+				}
+			 )
+			.then( () => console.log("done"));
 	}
 	
 	handleClose = (event, reason) => {
@@ -128,8 +145,9 @@ class Home extends Component {
 	}
 
 	onSelectPerson(selected) {
-		const index = persons.findIndex(x => x.value === selected.value);
-		this.setState({ person: persons[index] });
+		console.log("onSelectPerson")
+		const index = this.state.personList.findIndex(x => x.value === selected.value);
+		this.setState({ person: this.state.personList[index] });
 	}
 
 	onSelectRoom(roomId) {
