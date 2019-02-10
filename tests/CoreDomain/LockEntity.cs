@@ -15,5 +15,11 @@ namespace Lockbase.ui.UnitTest.CoreDomain {
 			Assert.Null(entity.AppId);
 			Assert.Equal("Tor West", entity.ExtData);
 		}
+
+		[Fact]
+		public void TestLockIdMandatory() {
+			Assert.Throws<ArgumentNullException>(() => new Lock(string.Empty,"W1",null,"Tor West"));
+			Assert.Throws<ArgumentNullException>(() => new Lock(null,"W1",null,"Tor West"));
+		}
 	}
 }
