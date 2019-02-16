@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Text.RegularExpressions; 
 
@@ -36,33 +37,58 @@ namespace Lockbase.CoreDomain.ValueObjects  {
             return new RecurrenceRule(multiplier, frequency, GetWeekOfDaySet(values) );
         }
 
-        private static ISet<DayOfWeek> GetWeekOfDaySet(string values) {
-             
-            var weekDays = values.Substring(1, values.Length - 2)
-                .Split(',')
-                .ToList<string>()
-                .Select( WeekOfDayFromAlias );
+        enum Operator {
+            Add,
+            Range 
+        }
 
-            return new HashSet<DayOfWeek>(weekDays);
+        class DayOfWeekAccu {
+            
+            public ImmutableHashSet<DayOfWeek> Weekdays { get; private set; }
+            public Operator Op { get; private set; }
+
+            public DayOfWeekAccu(ImmutableHashSet<DayOfWeek> weekdays, Operator op) {
+                this.Weekdays = weekdays;
+                this.Op = op;
+            }
+        }
+
+        private static ISet<DayOfWeek> GetWeekOfDaySet(string values) {
+            
+            
+            if (string.IsNullOrEmpty(values))
+                return ImmutableHashSet<DayOfWeek>.Empty;
+            
+            var seed = new DayOfWeekAccu( ImmutableHashSet<DayOfWeek>.Empty, Operator.Add );
+
+            return Regex.Split(values.Substring(1, values.Length - 2), @"([.+-])")
+                .Aggregate(seed, (accu,current) => 
+                    {
+                        if (current == "+" || current == "-")
+                        {
+                            return new DayOfWeekAccu( accu.Weekdays, current == "+" ? Operator.Add : Operator.Range );
+                        }
+                        var operand = WeekOfDayFromAlias(current);
+
+                        if (accu.Op == Operator.Add)
+                            return new DayOfWeekAccu( accu.Weekdays.Add(operand), accu.Op);
+
+                        var lastOperand = accu.Weekdays.Last();
+
+                        var range = Enum.GetValues(typeof(DayOfWeek))
+                            .Cast<DayOfWeek>()
+                            .SkipWhile( day => day == lastOperand)
+                            .TakeWhile( day => day == operand);
+                            
+                        return new DayOfWeekAccu ( range.Aggregate( accu.Weekdays, (a,c) => a.Add(c)), Operator.Add );  
+                    })
+                .Weekdays;
         }
 
         private static DayOfWeek WeekOfDayFromAlias(string alias) {
-            if (alias.Substring(0,2).Equals("Mo", StringComparison.OrdinalIgnoreCase)) 
-                return DayOfWeek.Monday;
-            else if (alias.Substring(0,2).Equals("Tu", StringComparison.OrdinalIgnoreCase))
-                return DayOfWeek.Tuesday;
-            else if(alias.Substring(0,2).Equals("We", StringComparison.OrdinalIgnoreCase))
-                return DayOfWeek.Wednesday;
-            else if(alias.Substring(0,2).Equals("Th", StringComparison.OrdinalIgnoreCase))
-                return DayOfWeek.Thursday;
-            else if(alias.Substring(0,2).Equals("Fr", StringComparison.OrdinalIgnoreCase))
-                return DayOfWeek.Friday;
-            else if(alias.Substring(0,2).Equals("Sa", StringComparison.OrdinalIgnoreCase))
-                return DayOfWeek.Saturday;
-            else if(alias.Substring(0,2).Equals("Su", StringComparison.OrdinalIgnoreCase))
-                return DayOfWeek.Sunday;
-            throw new ArgumentException(nameof(alias), alias);
-            
+            return Enum.GetValues(typeof(DayOfWeek))
+                .Cast<DayOfWeek>()
+                .Single( day => alias.Equals(Enum.GetName(typeof(DayOfWeek), day).Substring(0,alias.Length)));
         }
 
         public RecurrenceRule(int multiplier, TimeInterval frequency, ISet<DayOfWeek> weekdays) 
