@@ -14,9 +14,10 @@ namespace Lockbase.ui.UnitTest.CoreDomain {
 		public void TestEveryFriday() 
 		{
 			RecurrenceRule rule = "DW(Fr)";
-			Assert.Equal(rule.Multiplier, 0); 
+			Assert.Equal(rule.Multiplier, 1); 
 			Assert.Equal(rule.Frequency, TimeInterval.DayOfWeek);
-			// Assert.Equal(rule.WeekDayConstraint.Contains(DayOfWeek.Friday));
+			Assert.True(rule.WeekDays.Contains(DayOfWeek.Friday));
+			Assert.Equal(rule.WeekDays.Count, 1);
 		}
 	}
 }

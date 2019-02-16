@@ -25,7 +25,7 @@
             },
             "args": [
                 "test",
-                "${workspaceFolder}/ui/ui.csproj"
+                "${workspaceFolder}/tests/UnitTest.csproj"
             ],
             "problemMatcher": "$msCompile"
         }
