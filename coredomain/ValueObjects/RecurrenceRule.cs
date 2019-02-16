@@ -75,10 +75,7 @@ namespace Lockbase.CoreDomain.ValueObjects  {
 
                         var lastOperand = accu.Weekdays.Last();
 
-                        var range = Enum.GetValues(typeof(DayOfWeek))
-                            .Cast<DayOfWeek>()
-                            .SkipWhile( day => day == lastOperand)
-                            .TakeWhile( day => day == operand);
+                        var range = GetRange(lastOperand, operand);
                             
                         return new DayOfWeekAccu ( range.Aggregate( accu.Weekdays, (a,c) => a.Add(c)), Operator.Add );  
                     })
@@ -103,6 +100,18 @@ namespace Lockbase.CoreDomain.ValueObjects  {
         public TimeInterval Frequency { get; private set; }
 
         public HashSet<DayOfWeek> WeekDays { get; private set; }
+
+        public static IEnumerable<DayOfWeek> GetRange(DayOfWeek start, DayOfWeek end) {
+            // In Germany the week start on Monday so we must handle a Range Friday..Sunday correctly
+            var totalWeek = Enum.GetValues(typeof(DayOfWeek))
+                            .Cast<DayOfWeek>();
+            var range = totalWeek
+                            .Concat(totalWeek)
+                            .SkipWhile( day => day != start)
+                            .TakeWhile( day => day != end)
+                            .Concat(new []{end});
+            return range;
+        }
 
     }
 }

@@ -4,6 +4,7 @@ using Xunit;
 using Lockbase.CoreDomain.Entities;
 using Lockbase.CoreDomain.Enumerations;
 using Lockbase.CoreDomain.ValueObjects;
+using System.Linq;
 
 namespace Lockbase.ui.UnitTest.CoreDomain {
 
@@ -36,5 +37,28 @@ namespace Lockbase.ui.UnitTest.CoreDomain {
 			Assert.Equal(7, rule.WeekDays.Count);
 		}
 
+		[Fact]
+		public void TestWeekDayValueRange() 
+		{
+			RecurrenceRule rule = "DW(Mo-We+Fr-Su)";
+			Assert.Equal(6, rule.WeekDays.Count);
+			Assert.False(rule.WeekDays.Contains(DayOfWeek.Thursday));
+		}
+
+		[Fact]
+		public void TestDayOfWeekRange() {
+
+			var range = RecurrenceRule.GetRange(DayOfWeek.Monday, DayOfWeek.Wednesday);
+			                
+			Assert.Equal(3, range.Count());
+		}
+
+		[Fact]
+		public void TestDayOfWeekRangeCircle() {
+
+			var range = RecurrenceRule.GetRange(DayOfWeek.Friday, DayOfWeek.Sunday);
+			                
+			Assert.Equal(3, range.Count());
+		}
 	}
 }
