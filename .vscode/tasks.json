@@ -9,6 +9,24 @@
                 "build",
                 "${workspaceFolder}/ui/ui.csproj"
             ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "test",
+            "command": "dotnet",
+            "type": "process",
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+            "args": [
+                "test",
+                "${workspaceFolder}/ui/ui.csproj"
+            ],
             "problemMatcher": "$msCompile"
         }
     ]

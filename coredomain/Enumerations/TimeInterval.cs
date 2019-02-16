@@ -2,16 +2,7 @@ using System;
 
 namespace Lockbase.CoreDomain.Enumerations {
 
-    public enum WeekDay
-    {
-        Mo,
-        Tu,
-        We,
-        Th,
-        Fr,
-        Sa,
-        Su
-    }
+   
     public class IntRange {
         public int Start { get; }
         public int End { get; }
@@ -47,7 +38,6 @@ namespace Lockbase.CoreDomain.Enumerations {
 		public static readonly TimeInterval WeekOfYear = new TimeInterval(8, "Week of Year", "W");
 		public static readonly TimeInterval Month = new TimeInterval(9, "Month", "M");
 		public static readonly TimeInterval Year = new TimeInterval(10, "Year", "Y");
-
 	}
 
 
