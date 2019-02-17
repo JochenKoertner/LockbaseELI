@@ -16,6 +16,7 @@ namespace Lockbase.ui.UnitTest.CoreDomain {
 		[InlineData("h", 24)]
 		[InlineData("WY", 52)]
 		[InlineData("M", 12)]
+		[InlineData("DM", 31)]
 		[InlineData("Y", 100)]
 		public void TestSimpleRule(string alias, int count) 
 		{
@@ -52,6 +53,16 @@ namespace Lockbase.ui.UnitTest.CoreDomain {
 			Assert.Equal(TimeInterval.WeekOfYear, rule.Frequency);
 			Assert.Contains(23, rule.Times);
 			Assert.Contains(35, rule.Times);
+			Assert.Equal(2,rule.Times.Count);
+		}
+
+		[Fact]
+		public void TestDayOfMonth()
+		{
+			RecurrenceRuleTime rule = "DM(5,15)";
+			Assert.Equal(TimeInterval.DayOfMonth, rule.Frequency);
+			Assert.Contains(5, rule.Times);
+			Assert.Contains(15, rule.Times);
 			Assert.Equal(2,rule.Times.Count);
 		}
 	}

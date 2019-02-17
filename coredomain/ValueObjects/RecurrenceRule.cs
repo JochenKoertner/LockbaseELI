@@ -19,7 +19,7 @@ namespace Lockbase.CoreDomain.ValueObjects  {
         {
             // https://regex101.com/r/vln7Wv/2/
 
-            const string pattern = @"(?'multiplier'\d*)(?'frequency's|m|h|DWY|DWM|DW|WY|M|Y)(?'values'\(.+\))*";
+            const string pattern = @"(?'multiplier'\d*)(?'frequency's|m|h|DWY|DWM|DW|DM|WY|M|Y)(?'values'\(.+\))*";
 
             RegexOptions options = RegexOptions.IgnoreCase;
 

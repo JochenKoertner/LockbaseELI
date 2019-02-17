@@ -29,7 +29,7 @@ namespace Lockbase.CoreDomain.Enumerations {
 
 		public bool IsTimesRange => (
 			this == Second || this == Minute || this == Hour || 
-			this == Month || this == WeekOfYear || this == Year
+			this == Month || this == DayOfMonth || this == WeekOfYear || this == Year
 		);
 
 		public static readonly TimeInterval Second = new TimeInterval(0, "Second", "s");
