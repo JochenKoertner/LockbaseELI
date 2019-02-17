@@ -40,7 +40,7 @@ namespace Lockbase.CoreDomain.Enumerations {
 		public static readonly TimeInterval DayOfYear = new TimeInterval(5, "Day of Year", "DY");
 		public static readonly TimeInterval DayOfWeekPerMonth = new TimeInterval(6, "Day of Week per Month", "DWM");
 		public static readonly TimeInterval DayOfWeekPerYear = new TimeInterval(7, "Day of Week per Year", "DWY");
-		public static readonly TimeInterval WeekOfYear = new TimeInterval(8, "Week of Year", "W");
+		public static readonly TimeInterval WeekOfYear = new TimeInterval(8, "Week of Year", "WY");
 		public static readonly TimeInterval Month = new TimeInterval(9, "Month", "M");
 		public static readonly TimeInterval Year = new TimeInterval(10, "Year", "Y");
 	}
