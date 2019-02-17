@@ -27,6 +27,11 @@ namespace Lockbase.CoreDomain.Enumerations {
             this.Alias = alias;
 		}
 
+		public bool IsTimesRange => (
+			this == Second || this == Minute || this == Hour || 
+			this == Month || this == WeekOfYear || this == Year
+		);
+
 		public static readonly TimeInterval Second = new TimeInterval(0, "Second", "s");
 		public static readonly TimeInterval Minute = new TimeInterval(1, "Minute", "m");
 		public static readonly TimeInterval Hour = new TimeInterval(2, "Hour", "h");
