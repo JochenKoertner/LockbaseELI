@@ -37,6 +37,10 @@ namespace Lockbase.CoreDomain.ValueObjects  {
 
             if (frequency == TimeInterval.DayOfWeek)
                 return new RecurrenceRuleDayOfWeek(multiplier, frequency, values);
+            else if (frequency == TimeInterval.DayOfWeekPerMonth)
+                return new RecurrenceRuleDayOfMonth(multiplier, frequency, values); 
+            else if (frequency == TimeInterval.DayOfWeekPerYear)
+                return new RecurrenceRuleDayOfYear(multiplier, frequency, values); 
             else if (frequency.IsTimesRange)
                 return new RecurrenceRuleTime(multiplier, frequency, values);
 
@@ -57,6 +61,12 @@ namespace Lockbase.CoreDomain.ValueObjects  {
         protected static IEnumerable<T> GetAllEnums<T>()  {
             return Enum.GetValues(typeof(T))
                             .Cast<T>();
+        }
+
+        protected static DayOfWeek GetDayOfWeekFrom(string shortname) {
+            return GetAllEnums<DayOfWeek>()
+                .Single( day => shortname.Equals(Enum.GetName(typeof(DayOfWeek), day).Substring(0,shortname.Length),
+                    StringComparison.OrdinalIgnoreCase));
         }
 
         protected enum Operator {

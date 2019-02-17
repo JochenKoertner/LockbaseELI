@@ -44,7 +44,7 @@ namespace Lockbase.CoreDomain.ValueObjects  {
                         {
                             return new ReductionState<DayOfWeek>( accu.Reduction, (current == "+" || current == ",") ? Operator.Add : Operator.Range );
                         }
-                        var operand = WeekOfDayFromAlias(current);
+                        var operand = GetDayOfWeekFrom(current);
 
                         if (accu.Op == Operator.Add)
                             return new ReductionState<DayOfWeek>( accu.Reduction.Add(operand), accu.Op);
@@ -58,14 +58,6 @@ namespace Lockbase.CoreDomain.ValueObjects  {
                 .Reduction;
         }
 
-        private static DayOfWeek WeekOfDayFromAlias(string alias) {
-            return Enum.GetValues(typeof(DayOfWeek))
-                .Cast<DayOfWeek>()
-                .Single( day => alias.Equals(Enum.GetName(typeof(DayOfWeek), day).Substring(0,alias.Length),
-                    StringComparison.OrdinalIgnoreCase));
-        }
-
-
         private static IEnumerable<DayOfWeek> GetRange(DayOfWeek start, DayOfWeek end) {
             // In Germany the week start on Monday so we must handle a Range Friday..Sunday correctly
             var totalWeek = GetAllEnums<DayOfWeek>();
@@ -75,8 +67,6 @@ namespace Lockbase.CoreDomain.ValueObjects  {
                             .TakeWhile( day => day != end)
                             .Concat(new []{end});
             return range;
-        }
-
-        
+        }        
     }
 }
