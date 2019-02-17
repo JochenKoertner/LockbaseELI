@@ -10,14 +10,15 @@ namespace Lockbase.CoreDomain.ValueObjects  {
 
 
     // seealos  RFC 5545 !! 
-    // https://regex101.com/r/vln7Wv/1/
-
+    
     public class RecurrenceRule {
 
 
         /// implizite Konvertierung vom String
         public static implicit operator RecurrenceRule(string value)
         {
+            // https://regex101.com/r/vln7Wv/2/
+
             const string pattern = @"(?'multiplier'\d*)(?'frequency'DWY|DWM|DW|WY|M|Y)(?'values'\(.+\))*";
 
             RegexOptions options = RegexOptions.IgnoreCase;
@@ -61,12 +62,18 @@ namespace Lockbase.CoreDomain.ValueObjects  {
             
             var seed = new DayOfWeekAccu( ImmutableHashSet<DayOfWeek>.Empty, Operator.Add );
 
-            return Regex.Split(values.Substring(1, values.Length - 2), @"([.+-])")
+            // https://regex101.com/r/4NRHND/2
+            RegexOptions options = RegexOptions.IgnoreCase;
+            string input = values.Substring(1, values.Length - 2);
+            string pattern = @"([+\-,])|(Mo|Tu|We|Th|Fr|Sa|Su)";
+            
+            return Regex.Matches(input, pattern, options)
+                .Select(  match => match.Value )
                 .Aggregate(seed, (accu,current) => 
                     {
-                        if (current == "+" || current == "-")
+                        if (current == "+" || current == "-" || current == ",")
                         {
-                            return new DayOfWeekAccu( accu.Weekdays, current == "+" ? Operator.Add : Operator.Range );
+                            return new DayOfWeekAccu( accu.Weekdays, (current == "+" || current == ",") ? Operator.Add : Operator.Range );
                         }
                         var operand = WeekOfDayFromAlias(current);
 
@@ -85,7 +92,8 @@ namespace Lockbase.CoreDomain.ValueObjects  {
         private static DayOfWeek WeekOfDayFromAlias(string alias) {
             return Enum.GetValues(typeof(DayOfWeek))
                 .Cast<DayOfWeek>()
-                .Single( day => alias.Equals(Enum.GetName(typeof(DayOfWeek), day).Substring(0,alias.Length)));
+                .Single( day => alias.Equals(Enum.GetName(typeof(DayOfWeek), day).Substring(0,alias.Length),
+                    StringComparison.OrdinalIgnoreCase));
         }
 
         public RecurrenceRule(int multiplier, TimeInterval frequency, ISet<DayOfWeek> weekdays) 
@@ -112,6 +120,5 @@ namespace Lockbase.CoreDomain.ValueObjects  {
                             .Concat(new []{end});
             return range;
         }
-
     }
 }

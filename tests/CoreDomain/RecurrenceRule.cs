@@ -31,18 +31,45 @@ namespace Lockbase.ui.UnitTest.CoreDomain {
 		}
 
 		[Fact]
-		public void TestWeekDayValues() 
+		public void TestWeekDayValuesPlusSeparated() 
 		{
 			RecurrenceRule rule = "DW(Mo+Tu+We+Th+Fr+Sa+Su)";
 			Assert.Equal(7, rule.WeekDays.Count);
 		}
 
 		[Fact]
-		public void TestWeekDayValueRange() 
+		public void TestWeekDaySetCommaSeparated() 
+		{
+			RecurrenceRule rule = "DW(Mo,Tu,We,Th,Fr)";
+			Assert.Equal(5, rule.WeekDays.Count);
+			Assert.DoesNotContain(DayOfWeek.Saturday, rule.WeekDays);
+			Assert.DoesNotContain(DayOfWeek.Sunday, rule.WeekDays);
+		}
+
+		[Fact]
+		public void TestWeekDaySetRange() 
+		{
+			RecurrenceRule rule = "DW(Mo-Fr)";
+			Assert.Equal(5, rule.WeekDays.Count);
+			Assert.DoesNotContain(DayOfWeek.Saturday, rule.WeekDays);
+			Assert.DoesNotContain(DayOfWeek.Sunday, rule.WeekDays);
+		}
+
+		[Fact]
+		public void TestWeekDaySetRangeCaseInsensive()
+		{
+			RecurrenceRule rule = "DW(mo-FR)";
+			Assert.Equal(5, rule.WeekDays.Count);
+			Assert.DoesNotContain(DayOfWeek.Saturday, rule.WeekDays);
+			Assert.DoesNotContain(DayOfWeek.Sunday, rule.WeekDays);
+		}
+
+		[Fact]
+		public void TestWeekDayValueSetRangeCombined() 
 		{
 			RecurrenceRule rule = "DW(Mo-We+Fr-Su)";
 			Assert.Equal(6, rule.WeekDays.Count);
-			Assert.False(rule.WeekDays.Contains(DayOfWeek.Thursday));
+			Assert.DoesNotContain(DayOfWeek.Thursday,rule.WeekDays);
 		}
 
 		[Fact]
