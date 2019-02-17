@@ -54,6 +54,30 @@ namespace Lockbase.CoreDomain.ValueObjects  {
 
         public TimeInterval Frequency { get; private set; }
 
-       
+        protected static IEnumerable<T> GetAllEnums<T>()  {
+            return Enum.GetValues(typeof(T))
+                            .Cast<T>();
+        }
+
+        protected enum Operator {
+            Add,
+            Range 
+        }
+
+        protected class ReductionState<T> {
+            
+            public IImmutableSet<T> Reduction { get; private set; }
+            public Operator Op { get; private set; }
+
+            public ReductionState(IImmutableSet<T> reduction, Operator op) {
+                this.Reduction = reduction;
+                this.Op = op;
+            }
+
+            public ReductionState() {
+                this.Reduction = ImmutableHashSet<T>.Empty;
+                this.Op = Operator.Add;
+            }
+        }
     }
 }

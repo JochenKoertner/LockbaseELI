@@ -10,13 +10,29 @@ namespace Lockbase.ui.UnitTest.CoreDomain {
 
 	public class RecurrenceRuleTimeTest {
 
-		[Fact]
-		public void TestSimpleSecond() 
+		[Theory]
+		[InlineData("s", 60)]
+		[InlineData("m", 60)]
+		[InlineData("h", 24)]
+		[InlineData("W", 52)]
+		[InlineData("M", 12)]
+		[InlineData("Y", 100)]
+		public void TestSimpleRule(string alias, int count) 
 		{
-			RecurrenceRuleTime rule = "s";
+			RecurrenceRuleTime rule = alias;
 			Assert.Equal(1, rule.Multiplier); 
-			Assert.Equal(TimeInterval.Second, rule.Frequency);
-			Assert.Equal(60, rule.Times.Count);
+			Assert.Equal(alias, rule.Frequency.Alias);
+			Assert.Equal(count, rule.Times.Count);
+		}
+
+		[Fact]
+		public void TestYearRange() 
+		{
+			RecurrenceRuleTime rule = "Y(2012-2014)";
+			Assert.Contains(2012, rule.Times );
+			Assert.Contains(2013, rule.Times );
+			Assert.Contains(2014, rule.Times );
+			Assert.Equal(3, rule.Times.Count);
 		}
 	}
 }

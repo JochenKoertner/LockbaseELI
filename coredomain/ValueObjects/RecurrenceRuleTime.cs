@@ -33,36 +33,44 @@ namespace Lockbase.CoreDomain.ValueObjects  {
 
         public IImmutableSet<int> Times { get; private set; }
 
-        enum Operator {
-            Add,
-            Range 
-        }
-
-        class DayOfWeekAccu {
-            
-            public ImmutableHashSet<DayOfWeek> Weekdays { get; private set; }
-            public Operator Op { get; private set; }
-
-            public DayOfWeekAccu(ImmutableHashSet<DayOfWeek> weekdays, Operator op) {
-                this.Weekdays = weekdays;
-                this.Op = op;
-            }
-        }
+        
 
         private static IImmutableSet<int> GetTimesSet(string values, int start, int end) {
             
             if (string.IsNullOrEmpty(values))
-                return AddRange<int>(ImmutableHashSet<int>.Empty, Enumerable.Range(start, end-start+1));
+                return ImmutableHashSet<int>.Empty.AddRange(Enumerable.Range(start, end-start+1));
             
-            return ImmutableHashSet<int>.Empty;
+            var seed = new ReductionState<int>();
+
+            // https://regex101.com/r/P8yGDm/2
+            RegexOptions options = RegexOptions.IgnoreCase;
+            string input = values.Substring(1, values.Length - 2);
+            string pattern = @"([+\-,])|(\d{1,4})";
+            
+            return Regex.Matches(input, pattern, options)
+                .Select(  match => match.Value )
+                .Aggregate(seed, (accu,current) => 
+                    {
+                        if (current == "+" || current == "-" || current == ",")
+                        {
+                            return new ReductionState<int>( accu.Reduction, (current == "+" || current == ",") ? Operator.Add : Operator.Range );
+                        }
+                        var operand = Convert.ToInt32(current);
+
+                        if (accu.Op == Operator.Add)
+                            return new ReductionState<int>( accu.Reduction.Add(operand), accu.Op);
+
+                        var lastOperand = accu.Reduction.Last();
+
+                        var range = GetRange(lastOperand, operand);
+                            
+                        return new ReductionState<int>( accu.Reduction.AddRange(range), Operator.Add );  
+                    })
+                .Reduction;
         }
 
-        private static IImmutableSet<T> AddRange<T>(IImmutableSet<T> immutableSet, IEnumerable<T> range) 
-            => range.Aggregate(immutableSet, (accu, current) => accu.Add(current));
-
-        private static IEnumerable<T> GetAllEnums<T>()  {
-            return Enum.GetValues(typeof(T))
-                            .Cast<T>();
+        private static IEnumerable<int> GetRange(int start, int end) {
+            return Enumerable.Range(start, end-start+1);
         }
     }
 }
