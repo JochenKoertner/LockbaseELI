@@ -1,7 +1,7 @@
 using System;
 using Xunit; 
 
-using Lockbase.CoreDomain.Entities; 
+using Lockbase.CoreDomain.ValueObjects; 
 
 namespace Lockbase.ui.UnitTest.CoreDomain {
 
@@ -18,12 +18,11 @@ namespace Lockbase.ui.UnitTest.CoreDomain {
 
 		[Fact]
 		public void TimePeriodDefinitionAssignment() {
-			// TimePeriodDefinition definition = "20190211T080000Z/28800/DW(Mo,Tu,We,Th,Fr)/20190329T160000Z";
+			TimePeriodDefinition definition = "20190211T080000Z/28800/DW(Mo,Tu,We,Th,Fr)/20190329T160000Z";
 			
-			// Assert.Equal(new DateTime(2019,02,11,8,0,0)), definition.Start);
-			// Assert.Equal(new DateTime(2019,03,29,16,0,0)), definition.End);
-			// Assert.Equal(28800, definition.Duration);
-			// 
+			Assert.Equal(28800, definition.Duration); 
+			Assert.Equal(new DateTime(2019,02,11,8,0,0), definition.StartTime);
+			Assert.Equal(new DateTime(2019,03,29,16,0,0), definition.EndTime);
 		}
 
 	}
