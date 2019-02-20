@@ -29,22 +29,19 @@ namespace Lockbase.CoreDomain.ValueObjects  {
             // https://regex101.com/r/lbGStS/2
             RegexOptions options = RegexOptions.IgnoreCase;
             string input = values.Substring(1, values.Length - 2);
-            string pattern = $"([+,])|([Mo|Tu|We|Th|Fr|Sa|Su]+{GetSpecifierRegexPattern(isMonth)})";
+            string pattern = $"([+])|([Mo|Tu|We|Th|Fr|Sa|Su]+{GetSpecifierRegexPattern(isMonth)})";
             
             return Regex.Matches(input, pattern, options)
                 .Select(  match => match.Value )
                 .Aggregate(seed, (accu,current) => 
                     {
-                        if (current == "+" || current == ",")
+                        if (current == "+")
                         {
-                            return new ReductionState<DayOfWeekSpecified>( accu.Reduction, (current == "+" || current == ",") ? Operator.Add : Operator.Range );
+                            return new ReductionState<DayOfWeekSpecified>(accu.Reduction, Operator.Add);
                         }
                         var operand = DayOfWeekSpecifiedFromValue(current, isMonth);
 
-                        if (accu.Op == Operator.Add)
-                            return new ReductionState<DayOfWeekSpecified>( accu.Reduction.Add(operand), accu.Op);
-                            
-                        return new ReductionState<DayOfWeekSpecified>( accu.Reduction, accu.Op );  
+                        return new ReductionState<DayOfWeekSpecified>( accu.Reduction.Add(operand), accu.Op);
                     })
                 .Reduction;  
         }

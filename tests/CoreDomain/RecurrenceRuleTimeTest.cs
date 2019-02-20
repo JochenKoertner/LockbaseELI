@@ -59,7 +59,7 @@ namespace Lockbase.ui.UnitTest.CoreDomain {
 		[Fact]
 		public void TestDayOfMonth()
 		{
-			RecurrenceRuleTime rule = "DM(5,15)";
+			RecurrenceRuleTime rule = "DM(5+15)";
 			Assert.Equal(TimeInterval.DayOfMonth, rule.Frequency);
 			Assert.Contains(5, rule.Times);
 			Assert.Contains(15, rule.Times);

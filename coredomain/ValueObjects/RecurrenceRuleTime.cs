@@ -47,15 +47,15 @@ namespace Lockbase.CoreDomain.ValueObjects  {
             // https://regex101.com/r/P8yGDm/2
             RegexOptions options = RegexOptions.IgnoreCase;
             string input = values.Substring(1, values.Length - 2);
-            string pattern = @"([+\-,])|(\d{1,4})";
+            string pattern = @"([+\-])|(\d{1,4})";
             
             return Regex.Matches(input, pattern, options)
                 .Select(  match => match.Value )
                 .Aggregate(seed, (accu,current) => 
                     {
-                        if (current == "+" || current == "-" || current == ",")
+                        if (current == "+" || current == "-")
                         {
-                            return new ReductionState<int>( accu.Reduction, (current == "+" || current == ",") ? Operator.Add : Operator.Range );
+                            return new ReductionState<int>( accu.Reduction, (current == "+") ? Operator.Add : Operator.Range );
                         }
                         var operand = Convert.ToInt32(current);
 

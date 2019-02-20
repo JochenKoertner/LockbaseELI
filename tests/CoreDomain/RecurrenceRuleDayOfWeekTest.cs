@@ -47,15 +47,6 @@ namespace Lockbase.ui.UnitTest.CoreDomain {
 		}
 
 		[Fact]
-		public void TestWeekDaySetCommaSeparated() 
-		{
-			RecurrenceRuleDayOfWeek rule = "DW(Mo,Tu,We,Th,Fr)";
-			Assert.Equal(5, rule.WeekDays.Count);
-			Assert.DoesNotContain(DayOfWeek.Saturday, rule.WeekDays);
-			Assert.DoesNotContain(DayOfWeek.Sunday, rule.WeekDays);
-		}
-
-		[Fact]
 		public void TestWeekDaySetRange() 
 		{
 			RecurrenceRuleDayOfWeek rule = "DW(Mo-Fr)";

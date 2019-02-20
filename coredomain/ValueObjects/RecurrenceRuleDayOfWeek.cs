@@ -34,15 +34,15 @@ namespace Lockbase.CoreDomain.ValueObjects  {
             // https://regex101.com/r/4NRHND/2
             RegexOptions options = RegexOptions.IgnoreCase;
             string input = values.Substring(1, values.Length - 2);
-            string pattern = @"([+\-,])|(Mo|Tu|We|Th|Fr|Sa|Su)";
+            string pattern = @"([+\-])|(Mo|Tu|We|Th|Fr|Sa|Su)";
             
             return Regex.Matches(input, pattern, options)
                 .Select(  match => match.Value )
                 .Aggregate(seed, (accu,current) => 
                     {
-                        if (current == "+" || current == "-" || current == ",")
+                        if (current == "+" || current == "-")
                         {
-                            return new ReductionState<DayOfWeek>( accu.Reduction, (current == "+" || current == ",") ? Operator.Add : Operator.Range );
+                            return new ReductionState<DayOfWeek>( accu.Reduction, (current == "+") ? Operator.Add : Operator.Range );
                         }
                         var operand = GetDayOfWeekFrom(current);
 
