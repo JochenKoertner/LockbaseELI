@@ -24,40 +24,46 @@ namespace Lockbase.CoreDomain.ValueObjects  {
 
             Match match = Regex.Matches(value, pattern, options).First();
 
-
-            Group starttimeGroup = match.Groups["starttime"];
-            Group endtimeGroup = match.Groups["endtime"];
+            Group startTimeGroup = match.Groups["starttime"];
+            Group endTimeGroup = match.Groups["endtime"];
             Group durationGroup = match.Groups["duration"];
-            Group recurenceGroup = match.Groups["recurrence"];
+            Group recurrenceGroup = match.Groups["recurrence"];
+
+            bool hasStartTime = !String.IsNullOrEmpty(startTimeGroup.Value);
+            bool hasEndTime = !String.IsNullOrEmpty(endTimeGroup.Value);
+            bool hasDuration = !String.IsNullOrEmpty(durationGroup.Value);
+            bool hasRecurrence = !String.IsNullOrEmpty(recurrenceGroup.Value);
+
+            // Wiederholungsregel und Endedatum setzen eine Startzeit und Dauer voraus
+            if ((hasRecurrence || hasEndTime) && (!(hasStartTime && hasDuration)))
+                throw new ArgumentNullException("starttime & duration", "Reccurency Rule or endtime needs startime and duration");
+
+            var startTime = hasStartTime ? StringToDateTime(startTimeGroup.Value) : default(DateTime?);
+
+            var duration = hasDuration ? Convert.ToInt32(durationGroup.Value) : default(int?);
 
 
-            var startTime = String.IsNullOrEmpty(starttimeGroup.Value) ?
-                default(DateTime?) : StringToDateTime(starttimeGroup.Value);
-            
-            var rule = String.IsNullOrEmpty(recurenceGroup.Value) ?
-                default(RecurrenceRule) : (RecurrenceRule)recurenceGroup.Value;
+            var rules = ImmutableArray<RecurrenceRule>.Empty;
+            if (hasRecurrence) {
+                rules = recurrenceGroup.Value.Split(';').Aggregate(rules, (accu,current) => accu.Add(current));
+            }
 
-            var endTime = String.IsNullOrEmpty(endtimeGroup.Value) ?
-                default(DateTime?) : StringToDateTime(endtimeGroup.Value);
-
-
-            return new TimePeriodDefinition(startTime, string.IsNullOrEmpty(durationGroup.Value) ?
-                default(int?) : Convert.ToInt32(durationGroup.Value), rule, endTime);
+            var endTime = hasEndTime ? StringToDateTime(endTimeGroup.Value) : default(DateTime?);
+            return new TimePeriodDefinition(startTime, duration, endTime, rules);
         }
 
-        public TimePeriodDefinition(DateTime? startTime, int? duration, RecurrenceRule recurrenceRule, DateTime? endTime) 
+        public TimePeriodDefinition(DateTime? startTime, int? duration, DateTime? endTime, IImmutableList<RecurrenceRule> recurrenceRules) 
         {
             this.StartTime = startTime;
             this.EndTime = endTime;
             this.Duration = duration;
-            this.RecurrenceRule = recurrenceRule; 
+            this.RecurrenceRules = recurrenceRules; 
         }
-
 
         public int? Duration { get; private set; }
 
         public DateTime? StartTime { get; private set; }
-        public RecurrenceRule RecurrenceRule { get; private set; }
+        public IImmutableList<RecurrenceRule> RecurrenceRules { get; private set; }
         public DateTime? EndTime { get; private set; }
 
         public static DateTime StringToDateTime(string value) {
@@ -67,5 +73,4 @@ namespace Lockbase.CoreDomain.ValueObjects  {
                 DateTimeStyles.None).ToUniversalTime();
         }
     }
-
 }

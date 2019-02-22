@@ -4,6 +4,7 @@ using Xunit;
 using Lockbase.CoreDomain.ValueObjects;
 using System.Globalization;
 using Lockbase.CoreDomain.Enumerations;
+using System.Linq;
 
 namespace Lockbase.ui.UnitTest.CoreDomain {
 
@@ -16,28 +17,21 @@ namespace Lockbase.ui.UnitTest.CoreDomain {
 			Assert.Equal(28800, definition.Duration); 
 			Assert.Equal(new DateTime(2019,02,11,8,0,0), definition.StartTime);
 			Assert.Equal(new DateTime(2019,03,29,16,0,0), definition.EndTime);
-			Assert.Equal(TimeInterval.DayOfWeek, definition.RecurrenceRule.Frequency);
+			Assert.Equal(TimeInterval.DayOfWeek, definition.RecurrenceRules.First().Frequency);
 		}
 
-		[Fact]
-		public void TimePeriodDefinitionAssignmentStartEnd() {
-			TimePeriodDefinition definition = "20190211T080000Z///20190329T160000Z";
-			
-			Assert.Null(definition.Duration); 
-			Assert.Equal(new DateTime(2019,02,11,8,0,0), definition.StartTime);
-			Assert.Equal(new DateTime(2019,03,29,16,0,0), definition.EndTime);
-			Assert.Null(definition.RecurrenceRule);
-		}
 
 		[Fact]
-		public void TimePeriodDefinitionAssignmentDurationRecurence() {
-			TimePeriodDefinition definition = "/28800/DW";
+		public void TimePeriodDefinitionAssignmentMultiRecurence() {
+			TimePeriodDefinition definition = "20190211T080000Z/28800/DWM(Su1+Su3);M(1)/20190329T160000Z";
 			
-			Assert.Equal(28800, definition.Duration); 
-			Assert.Null(definition.StartTime);
-			Assert.Null(definition.EndTime);
-			Assert.Equal(TimeInterval.DayOfWeek, definition.RecurrenceRule.Frequency);
+			Assert.NotNull(definition.Duration); 
+			Assert.NotNull(definition.StartTime);
+			Assert.NotNull(definition.EndTime);
+			Assert.Equal(TimeInterval.DayOfWeekPerMonth, definition.RecurrenceRules.First().Frequency);
+			Assert.Equal(TimeInterval.Month, definition.RecurrenceRules.Last().Frequency);
 		}
+
 
 		[Fact]
 		public void TimePeriodDefinitionAssignmentNothing() {
@@ -46,7 +40,19 @@ namespace Lockbase.ui.UnitTest.CoreDomain {
 			Assert.Null(definition.Duration); 
 			Assert.Null(definition.StartTime);
 			Assert.Null(definition.EndTime);
-			Assert.Null(definition.RecurrenceRule);
+			Assert.Empty(definition.RecurrenceRules);
+		}
+
+		[Theory]
+		[InlineData("//DW")]
+		[InlineData("///20190329T160000Z")]
+		[InlineData("20190211T080000Z//DW")]
+		[InlineData("20190211T080000Z///20190329T160000Z")]
+		[InlineData("/28800/DW")]
+		[InlineData("/28800//20190329T160000Z")]
+		public void TimePeriodDefinitionInvalid(string invalid) {
+			// Wiederholung und Endedatum setzen Startzeit und Dauer vorraus
+			Assert.Throws<ArgumentNullException>( () => { TimePeriodDefinition definition = invalid;} );
 		}
 
 		[Theory]
