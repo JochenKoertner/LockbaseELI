@@ -16,19 +16,21 @@ namespace Lockbase.CoreDomain.ValueObjects  {
         /// implizite Konvertierung vom String
         public static implicit operator TimePeriodDefinition(string value)
         {
-            // https://regex101.com/r/UJhaaC/2
+            // https://regex101.com/r/UJhaaC/3
 
-            const string pattern = @"((?'starttime'\d{8}T\d{6}Z)?(\/(?'duration'\d*)?(\/(?'recurrence'(\d*)(s|m|h|DWY|DWM|DW|DM|WY|M|Y)(\(.+\))*)?(\/(?'endtime'\d{8}T\d{6}Z))?)?)?)?";
+            const string pattern = @"((?'negation'!)?(?'starttime'\d{8}T\d{6}Z)?(\/(?'duration'\d*)?(\/(?'recurrence'(\d*)(s|m|h|DWY|DWM|DW|DM|WY|M|Y)(\(.+\))*)?(\/(?'endtime'\d{8}T\d{6}Z))?)?)?)?";
 
             RegexOptions options = RegexOptions.IgnoreCase;
 
             Match match = Regex.Matches(value, pattern, options).First();
 
+            Group negationGroup = match.Groups["negation"];
             Group startTimeGroup = match.Groups["starttime"];
             Group endTimeGroup = match.Groups["endtime"];
             Group durationGroup = match.Groups["duration"];
             Group recurrenceGroup = match.Groups["recurrence"];
 
+            bool hasNegation = !String.IsNullOrEmpty(negationGroup.Value);
             bool hasStartTime = !String.IsNullOrEmpty(startTimeGroup.Value);
             bool hasEndTime = !String.IsNullOrEmpty(endTimeGroup.Value);
             bool hasDuration = !String.IsNullOrEmpty(durationGroup.Value);
@@ -49,15 +51,17 @@ namespace Lockbase.CoreDomain.ValueObjects  {
             }
 
             var endTime = hasEndTime ? StringToDateTime(endTimeGroup.Value) : default(DateTime?);
-            return new TimePeriodDefinition(startTime, duration, endTime, rules);
+
+            return new TimePeriodDefinition(hasNegation, startTime, duration, endTime, rules);
         }
 
-        public TimePeriodDefinition(DateTime? startTime, int? duration, DateTime? endTime, IImmutableList<RecurrenceRule> recurrenceRules) 
+        public TimePeriodDefinition(bool negation, DateTime? startTime, int? duration, DateTime? endTime, IImmutableList<RecurrenceRule> recurrenceRules) 
         {
             this.StartTime = startTime;
             this.EndTime = endTime;
             this.Duration = duration;
             this.RecurrenceRules = recurrenceRules; 
+            this.Negation = negation;
         }
 
         public int? Duration { get; private set; }
@@ -65,6 +69,7 @@ namespace Lockbase.CoreDomain.ValueObjects  {
         public DateTime? StartTime { get; private set; }
         public IImmutableList<RecurrenceRule> RecurrenceRules { get; private set; }
         public DateTime? EndTime { get; private set; }
+        public bool Negation { get; private set; }
 
         public static DateTime StringToDateTime(string value) {
             return DateTime.ParseExact(value,

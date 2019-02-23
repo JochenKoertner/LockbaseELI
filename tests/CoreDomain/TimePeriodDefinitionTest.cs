@@ -18,6 +18,18 @@ namespace Lockbase.ui.UnitTest.CoreDomain {
 			Assert.Equal(new DateTime(2019,02,11,8,0,0), definition.StartTime);
 			Assert.Equal(new DateTime(2019,03,29,16,0,0), definition.EndTime);
 			Assert.Equal(TimeInterval.DayOfWeek, definition.RecurrenceRules.First().Frequency);
+			Assert.False(definition.Negation);
+		}
+
+		[Fact]
+		public void TimePeriodDefinitionAssignmentNegation() {
+			TimePeriodDefinition definition = "!20190211T080000Z/28800/DW/20190329T160000Z";
+			
+			Assert.Equal(28800, definition.Duration); 
+			Assert.Equal(new DateTime(2019,02,11,8,0,0), definition.StartTime);
+			Assert.Equal(new DateTime(2019,03,29,16,0,0), definition.EndTime);
+			Assert.Equal(TimeInterval.DayOfWeek, definition.RecurrenceRules.First().Frequency);
+			Assert.True(definition.Negation);
 		}
 
 
