@@ -54,5 +54,10 @@ Der eigentliche Vorgang ist dann der folgende Ablauf
 
 Im Anschluß kann dann der neue master wieder in einem Development Zweig gemergt werden und der Zyklus geht von vorne los. 
 
+Merge Message mit vi 
 
+press 'i'
+press esc
+write ':wq'
+press enter  
 
