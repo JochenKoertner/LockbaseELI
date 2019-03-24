@@ -38,7 +38,7 @@ namespace Lockbase.ui.UnitTest.CoreDomain {
         [Fact]
         public void TestAssignLockToKey() {
 
-            var torwest = system.Locks.SingleOrDefault( l=> l.Id == TorWestId);
+            var torwest = system.Locks.SingleOrDefault( l=> l == TorWestId);
             var klaus = system.Keys.SingleOrDefault( k => k.Id == KlausFenderId);
             var werktags = system.Policies.SingleOrDefault( p => p.Id == WerktagPolicyId);
 

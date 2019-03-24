@@ -21,7 +21,7 @@ namespace Lockbase.CoreDomain.Entities {
 
 		public bool Equals(Lock other)
         {
-            if (other == null)
+            if (other.Equals(null))
                 return false;
 
             return (this.Id == other.Id);
@@ -41,5 +41,9 @@ namespace Lockbase.CoreDomain.Entities {
 		public override int GetHashCode() {
 			return this.Id.GetHashCode();
 		}
-	}
+
+        public static bool operator ==(Lock a, String b) => Object.Equals(a, b);
+
+        public static bool operator !=(Lock a, String b) => !Object.Equals(a, b);
+    }
 }
