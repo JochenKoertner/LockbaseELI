@@ -21,7 +21,7 @@ namespace Lockbase.CoreDomain.Entities {
 
 		public bool Equals(Lock other)
         {
-            if (other.Equals(null))
+            if (null == other)
                 return false;
 
             return (this.Id == other.Id);

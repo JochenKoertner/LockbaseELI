@@ -30,7 +30,7 @@ namespace Lockbase.ui.UnitTest.CoreDomain {
 		[Fact]
 		public void TestFoundEntities() {
 
-            Assert.Single(system.Locks, _ => _.Id == TorWestId );
+            Assert.Single(system.Locks, _ => _ == TorWestId );
             Assert.Single(system.Keys, _ => _.Id == KlausFenderId );
             Assert.Single(system.Policies, _ => _.Id == WerktagPolicyId );
 		}
