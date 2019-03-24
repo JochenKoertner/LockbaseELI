@@ -11,12 +11,13 @@ namespace Lockbase.CoreDomain
 
         public Entity(string id)
         {
+            if (string.IsNullOrWhiteSpace(id)) throw new ArgumentNullException(nameof(id));
             Id = id;            
         }
 
         public bool Equals(Entity other)
         {
-            if (other.Equals(null))
+            if (null == other)
                 return false;
 
             return (this.Id == other.Id);
@@ -59,5 +60,9 @@ namespace Lockbase.CoreDomain
         {
             return !(left == right);
         }
+
+        public static bool operator ==(Entity a, String b) => Object.Equals(a, b);
+
+        public static bool operator !=(Entity a, String b) => !Object.Equals(a, b);
     }
 }
