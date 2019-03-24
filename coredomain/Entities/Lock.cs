@@ -3,7 +3,7 @@ using System;
 namespace Lockbase.CoreDomain.Entities {
 
 	// Repräsentert eine 'Schloss' Entität
-	public class Lock {
+	public class Lock : IEquatable<Lock> {
 
 		public Lock(string id, string name, string appId, string extData) {
 
@@ -18,5 +18,13 @@ namespace Lockbase.CoreDomain.Entities {
 		public string Name { get; private set;  } 
 		public string AppId { get; private set;  } 
 		public string ExtData { get; private set;  } 
+
+		public bool Equals(Lock other)
+        {
+            if (other == null)
+                return false;
+
+            return (this.Id == other.Id);
+        }
 	}
 }

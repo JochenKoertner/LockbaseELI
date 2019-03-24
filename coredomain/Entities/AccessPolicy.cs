@@ -7,7 +7,7 @@ using Lockbase.CoreDomain.ValueObjects;
 namespace Lockbase.CoreDomain.Entities {
 
 	// Repräsentert eine 'Zugriffsrichtlinie' Entität für Schlüsselmedien
-	public class AccessPolicy {
+	public class AccessPolicy : IEquatable<AccessPolicy> {
 
 		public AccessPolicy(string id, NumberOfLockings numberOfLockings, IEnumerable<TimePeriodDefinition> timePeriodDefinitions) {
 
@@ -23,5 +23,13 @@ namespace Lockbase.CoreDomain.Entities {
 		public string Id { get; private set;  } 
 		public NumberOfLockings NumberOfLockings { get; private set;  } 
 		public IEnumerable<TimePeriodDefinition> TimePeriodDefinitions { get; private set;  } 
+
+		public bool Equals(AccessPolicy other)
+        {
+            if (other == null)
+                return false;
+
+            return (this.Id == other.Id);
+        }
 	}
 }
