@@ -3,7 +3,7 @@ using System;
 namespace Lockbase.CoreDomain.Entities {
 
 	// Repräsentert eine 'Schloss' Entität
-	public class Lock : Entity , IEquatable<Lock> {
+	public class Lock: Entity, IEquatable<Lock> {
 
 		public Lock(string id, string name, string appId, string extData):base(id) 
 		{

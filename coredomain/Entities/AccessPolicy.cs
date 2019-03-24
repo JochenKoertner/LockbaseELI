@@ -7,43 +7,21 @@ using Lockbase.CoreDomain.ValueObjects;
 namespace Lockbase.CoreDomain.Entities {
 
 	// Repräsentert eine 'Zugriffsrichtlinie' Entität für Schlüsselmedien
-	public class AccessPolicy : IEquatable<AccessPolicy> {
+	public class AccessPolicy:Entity, IEquatable<AccessPolicy> {
 
-		public AccessPolicy(string id, NumberOfLockings numberOfLockings, IEnumerable<TimePeriodDefinition> timePeriodDefinitions) {
-
-			if (string.IsNullOrWhiteSpace(id)) throw new ArgumentNullException(nameof(id));
-
-			Id = id;
+		public AccessPolicy(string id, NumberOfLockings numberOfLockings, IEnumerable<TimePeriodDefinition> timePeriodDefinitions)
+			:base(id) 
+		{
 			NumberOfLockings = numberOfLockings;
 			TimePeriodDefinitions = timePeriodDefinitions
 				.Aggregate( 
 					ImmutableArray<TimePeriodDefinition>.Empty, (accu, current) => accu.Add(current) );
 		}
-
-		public string Id { get; private set;  } 
+		
 		public NumberOfLockings NumberOfLockings { get; private set;  } 
 		public IEnumerable<TimePeriodDefinition> TimePeriodDefinitions { get; private set;  } 
 
-		public bool Equals(AccessPolicy other)
-        {
-            if (other == null)
-                return false;
+		public bool Equals(AccessPolicy other) => base.Equals(other);
 
-            return (this.Id == other.Id);
-        }
-
-		public override bool Equals(object other) {
-			if (other == null)
-				return false;
-			if (other is AccessPolicy)
-				return this.Equals((AccessPolicy)other);
-			if (other is String) 
-				return this.Id.Equals((String)other);
-			return false;
-		}
-
-		public override int GetHashCode() {
-			return this.Id.GetHashCode();
-		}
 	}
 }
