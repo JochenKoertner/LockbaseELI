@@ -13,6 +13,9 @@ namespace Lockbase.ui.UnitTest.CoreDomain {
 	public class LockSystemTest {
 
         const string TorWestId = "000000t00nuiu";
+        const string OfficeId = "040000t00nuiu";
+        const string SalesId = "080000t00nuiu";
+
         const string KlausFenderId = "000000hqvs1lo";
 
         const string WerktagPolicyId = "000002oe1g25o";
@@ -38,7 +41,7 @@ namespace Lockbase.ui.UnitTest.CoreDomain {
 		}
 
         [Fact]
-        public void TestAssignLockToKey() {
+        public void TestAssignLockToKeySingle() {
 
             var torwest = system.QueryLock(TorWestId);
             var klaus = system.QueryKey(KlausFenderId);
@@ -58,5 +61,69 @@ namespace Lockbase.ui.UnitTest.CoreDomain {
             Assert.True( policies.First() == WerktagPolicyId);
         }
 
+        [Fact]
+        public void TestAssignKeyToLockSingle() {
+
+            var torwest = system.QueryLock(TorWestId);
+            var klaus = system.QueryKey(KlausFenderId);
+            var werktags = system.QueryPolicy(WerktagPolicyId);
+
+            Assert.NotNull(torwest);
+            Assert.NotNull(klaus);
+            Assert.NotNull(werktags);
+
+            Assert.Empty(system.QueryPolicies(torwest, klaus));
+
+            system = system.AddAssignment(klaus, werktags, torwest.Yield());
+
+            var policies = system.QueryPolicies(torwest, klaus);
+
+            Assert.Single(policies);
+            Assert.True( policies.First() == WerktagPolicyId);
+        }
+
+        [Fact]
+        public void TestKeyToMultipleLockAssigments() {
+
+            var torwest = system.QueryLock(TorWestId);
+            var klaus = system.QueryKey(KlausFenderId);
+            var werktags = system.QueryPolicy(WerktagPolicyId);
+
+            var office = new Lock(OfficeId, "Office", null, "Office");
+            var sales  = new Lock(SalesId, "Sales", null, "Sales");
+
+            system = system
+                .AddLock(office)
+                .AddLock(sales)
+                .AddAssignment(torwest, werktags, klaus.Yield())
+                .AddAssignment(office, werktags, klaus.Yield())
+                .AddAssignment(sales, werktags, klaus.Yield());
+
+            
+            
+            Assert.Single(system.QueryPolicies(torwest, klaus));
+            Assert.Single(system.QueryPolicies(office, klaus));
+            Assert.Single(system.QueryPolicies(sales, klaus));
+        }
+
+        [Fact]
+        public void TestMulitpleLocksToSingleKeyAssigments() {
+
+            var torwest = system.QueryLock(TorWestId);
+            var klaus = system.QueryKey(KlausFenderId);
+            var werktags = system.QueryPolicy(WerktagPolicyId);
+
+            var office = new Lock(OfficeId, "Office", null, "Office");
+            var sales  = new Lock(SalesId, "Sales", null, "Sales");
+            
+            system = system
+                .AddLock(office)
+                .AddLock(sales)
+                .AddAssignment(klaus, werktags, new []{torwest,office,sales});
+            
+            Assert.Single(system.QueryPolicies(torwest, klaus));
+            Assert.Single(system.QueryPolicies(office, klaus));
+            Assert.Single(system.QueryPolicies(sales, klaus));
+        }
 	}
 }
