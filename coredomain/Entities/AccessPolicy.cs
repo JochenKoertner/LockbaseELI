@@ -31,5 +31,19 @@ namespace Lockbase.CoreDomain.Entities {
 
             return (this.Id == other.Id);
         }
+
+		public override bool Equals(object other) {
+			if (other == null)
+				return false;
+			if (other is AccessPolicy)
+				return this.Equals((AccessPolicy)other);
+			if (other is String) 
+				return this.Id.Equals((String)other);
+			return false;
+		}
+
+		public override int GetHashCode() {
+			return this.Id.GetHashCode();
+		}
 	}
 }

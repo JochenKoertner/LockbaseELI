@@ -115,5 +115,6 @@ namespace Lockbase.CoreDomain.Aggregates {
 
         public IEnumerable<Key> Keys => this.keys.Values;
         public IEnumerable<Lock> Locks => this.locks.Values;
+        public IEnumerable<AccessPolicy> Policies => this.policies.Values;
     }
 }
