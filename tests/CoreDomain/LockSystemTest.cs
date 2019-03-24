@@ -1,10 +1,12 @@
 using System;
-using Xunit; 
+using System.Linq;
 
+using Xunit;
+
+using Lockbase.CoreDomain;
 using Lockbase.CoreDomain.Entities;
 using Lockbase.CoreDomain.Aggregates;
 using Lockbase.CoreDomain.ValueObjects;
-using System.Linq;
 
 namespace Lockbase.ui.UnitTest.CoreDomain {
 
@@ -31,20 +33,29 @@ namespace Lockbase.ui.UnitTest.CoreDomain {
 		public void TestFoundEntities() {
 
             Assert.Single(system.Locks, _ => _ == TorWestId );
-            Assert.Single(system.Keys, _ => _.Id == KlausFenderId );
-            Assert.Single(system.Policies, _ => _.Id == WerktagPolicyId );
+            Assert.Single(system.Keys, _ => _ == KlausFenderId );
+            Assert.Single(system.Policies, _ => _ == WerktagPolicyId );
 		}
 
         [Fact]
         public void TestAssignLockToKey() {
 
-            var torwest = system.Locks.SingleOrDefault( l=> l == TorWestId);
-            var klaus = system.Keys.SingleOrDefault( k => k.Id == KlausFenderId);
-            var werktags = system.Policies.SingleOrDefault( p => p.Id == WerktagPolicyId);
+            var torwest = system.QueryLock(TorWestId);
+            var klaus = system.QueryKey(KlausFenderId);
+            var werktags = system.QueryPolicy(WerktagPolicyId);
 
             Assert.NotNull(torwest);
             Assert.NotNull(klaus);
             Assert.NotNull(werktags);
+
+            Assert.Empty(system.QueryPolicies(torwest, klaus));
+
+            system = system.AddAssignment(torwest, werktags, klaus.Yield());
+
+            var policies = system.QueryPolicies(torwest, klaus);
+
+            Assert.Single(policies);
+            Assert.True( policies.First() == WerktagPolicyId);
         }
 
 	}

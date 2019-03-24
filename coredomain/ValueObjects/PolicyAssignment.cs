@@ -19,9 +19,7 @@ namespace Lockbase.CoreDomain.ValueObjects  {
         public Assignment(TMaster master, IEnumerable<TDetail> details)
         {
             Master = master;
-
-            Details = details.Aggregate( 
-					ImmutableHashSet<TDetail>.Empty, (accu, current) => accu.Add(current) );
+            Details = details.ToImmutableHashSet();
         }
 
         public bool Equals(Assignment<TMaster,TDetail> other)
@@ -67,5 +65,9 @@ namespace Lockbase.CoreDomain.ValueObjects  {
 
             return (this.Source.Equals(other.Source) && this.Target.Equals(other.Target));
         }
+
+        public bool Match(Lock @lock, Key key) => Target.Match( 
+                lockAssignment => lockAssignment.Master == @lock && lockAssignment.Details.Contains(key), 
+                keyAssignment => keyAssignment.Master == key && keyAssignment.Details.Contains(@lock) );
     }
 }
