@@ -24,7 +24,7 @@ namespace Lockbase.ui.UnitTest.CoreDomain {
 
         public LockSystemTest()
         {
-            TimePeriodDefinition timePeriodDefinition = "20181231T230000Z/63072000";
+            TimePeriodDefinition timePeriodDefinition = "20190211T080000Z/28800/DW(Mo+Tu+We+Th+Fr)/20190329T160000Z";
 			AccessPolicy accessPolicy = new AccessPolicy("000002oe1g25o", new NumberOfLockings(12,45), new []{timePeriodDefinition});
             system = new LockSystem()
                 .AddLock(new Lock(TorWestId, "W1",null, "Tor West"))
@@ -100,7 +100,6 @@ namespace Lockbase.ui.UnitTest.CoreDomain {
                 .AddAssignment(sales, werktags, klaus.Yield());
 
             
-            
             Assert.Single(system.QueryPolicies(torwest, klaus));
             Assert.Single(system.QueryPolicies(office, klaus));
             Assert.Single(system.QueryPolicies(sales, klaus));
@@ -125,5 +124,30 @@ namespace Lockbase.ui.UnitTest.CoreDomain {
             Assert.Single(system.QueryPolicies(office, klaus));
             Assert.Single(system.QueryPolicies(sales, klaus));
         }
+
+        [Fact]
+        public void TestHasAccess() {
+
+            var torwest = system.QueryLock(TorWestId);
+            var klaus = system.QueryKey(KlausFenderId);
+            var werktags = system.QueryPolicy(WerktagPolicyId);
+
+            // "20190211T080000Z/28800/DW(Mo+Tu+We+Th+Fr)/20190329T160000Z";
+            //  2019-02-11 08:00 - 16:00 bis 2019-03-29   (Mo,Di,Mi,Do,Fr) 
+             system = system
+                .AddAssignment(klaus, werktags, new []{torwest});
+            
+            var friday = new DateTime(2019,2,15,12,0,0);  // Freitag Mittag ok 
+
+            var before = new DateTime(2018,2,15,12,0,0);  // Freitag Mittag not ok 
+            var after = new DateTime(2020,2,15,12,0,0);  // Freitag Mittag not ok 
+            
+            Assert.True(system
+                .HasAccess(klaus, torwest, friday).IsOpen);            
+            Assert.False(system
+                .HasAccess(klaus, torwest, before).IsOpen);            
+            Assert.False(system
+                .HasAccess(klaus, torwest, after).IsOpen);            
+        } 
 	}
 }

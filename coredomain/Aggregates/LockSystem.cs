@@ -117,10 +117,15 @@ namespace Lockbase.CoreDomain.Aggregates {
 
         #endregion
         
-        public bool HasAccess(Key key, Lock @lock, DateTime time) {
+        public (LockSystem,bool IsOpen) HasAccess(Key key, Lock @lock, DateTime time) {
             if (!this.keys.ContainsKey(key.Id)) throw new ArgumentException($"Key '{key.Id}' not found!");
             if (!this.locks.ContainsKey(@lock.Id)) throw new ArgumentException($"Lock '{@lock.Id}' not found!");
-            return false;
+
+            var definitions = QueryPolicies(@lock, key)
+                .SelectMany( policy => policy.TimePeriodDefinitions);
+
+            var newSystem = this;
+            return (newSystem, IsOpen: CheckAccess.Check(definitions, time));
         }
 
         public IEnumerable<Key> Keys => this.keys.Values;
