@@ -138,16 +138,24 @@ namespace Lockbase.ui.UnitTest.CoreDomain {
                 .AddAssignment(klaus, werktags, new []{torwest});
             
             var friday = new DateTime(2019,2,15,12,0,0);  // Freitag Mittag ok 
-
-            var before = new DateTime(2018,2,15,12,0,0);  // Freitag Mittag not ok 
-            var after = new DateTime(2020,2,15,12,0,0);  // Freitag Mittag not ok 
-            
             Assert.True(system
                 .HasAccess(klaus, torwest, friday).IsOpen);            
+            
+            var before = new DateTime(2018,2,15,12,0,0);  // 2018 not ok
             Assert.False(system
                 .HasAccess(klaus, torwest, before).IsOpen);            
+            
+            var after = new DateTime(2020,2,15,12,0,0);  // 2020 not ok 
             Assert.False(system
-                .HasAccess(klaus, torwest, after).IsOpen);            
+                .HasAccess(klaus, torwest, after).IsOpen);
+
+            var endOfWorkingDay = new DateTime(2019,2,15,16,30,0);  // Nach Feierabend (16:00)  
+            Assert.False(system
+                .HasAccess(klaus, torwest, endOfWorkingDay).IsOpen);
+
+            var  toEarly = new DateTime(2019,2,15,7,30,0);  // Vor Arbeitsbeginn (7:30)  
+            Assert.False(system
+                .HasAccess(klaus, torwest, toEarly).IsOpen);
         } 
 	}
 }

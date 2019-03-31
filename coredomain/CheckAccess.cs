@@ -19,7 +19,20 @@ namespace Lockbase.CoreDomain {
 
             if (definition == null)
                 return false;
-            return true;
+            return Check(definition, time);
         }
+
+        public static bool Check(TimePeriodDefinition timePeriodDefinition, DateTime time) {
+
+            if (timePeriodDefinition.Duration.HasValue && timePeriodDefinition.StartTime.HasValue)
+            {
+                TimeSpan start = timePeriodDefinition.StartTime.Value.TimeOfDay;
+                var allowed = timePeriodDefinition.Duration.Value;
+                var current = time.TimeOfDay.Subtract(start).TotalSeconds;
+                if (current > allowed || current < 0)
+                    return false;
+            }
+            return true;
+        } 
     }
 }
