@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Reflection;
 using Lockbase.CoreDomain.ValueObjects;
@@ -40,9 +41,31 @@ namespace Lockbase.CoreDomain {
             {
                 case RecurrenceRuleDayOfWeek dayOfWeekRule: 
                     return dayOfWeekRule.WeekDays.Contains(time.DayOfWeek);
+                
+          /*     case RecurrenceRuleDayOfMonth dayOfMonthRule: 
+                    var dayOfMonthRule.WeekDays.SelectMany(  spec => AddDates(time.Year, time.Month, spec));
+                    return dayOfMonthRule.WeekDays.Contains(time.DayOfWeek);
+             */   
                 default:
                     return true;
             }
         }
+
+        private static IEnumerable<DateTime> AddDates(int year, int month, DayOfWeekSpecified specified)
+        {
+            var weekdates = Enumerable
+                .Range(1, DateTime.DaysInMonth(year, month))
+                .Select( day => new DateTime(year,month,day))
+                .Where( d => d.DayOfWeek == specified.DayOfWeek);
+
+            DateTime date = default(DateTime);
+            if (specified.Specifier > 0)
+                date = weekdates.ElementAtOrDefault(specified.Specifier-1);
+            else if (specified.Specifier < 0)
+                date = weekdates.ElementAtOrDefault(weekdates.Count() + specified.Specifier);
+
+            if (date != default(DateTime))
+                yield return date;
+        } 
     }
 }
