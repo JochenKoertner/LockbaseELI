@@ -65,5 +65,15 @@ namespace Lockbase.ui.UnitTest.CoreDomain {
 			Assert.Contains(15, rule.Times);
 			Assert.Equal(2,rule.Times.Count);
 		}
+
+		[Fact]
+		public void TestDayOfYear()
+		{
+			RecurrenceRuleTime rule = "DY(34+35)";
+			Assert.Equal(TimeInterval.DayOfYear, rule.Frequency);
+			Assert.Contains(34, rule.Times);
+			Assert.Contains(35, rule.Times);
+			Assert.Equal(2,rule.Times.Count);
+		}
 	}
 }

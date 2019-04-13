@@ -53,6 +53,9 @@ namespace Lockbase.CoreDomain {
                         return timesRule.Times
                             .Select( x => new DateTime(time.Year,time.Month,x))
                             .Contains(time.Date);
+                    
+                    if (timesRule.Frequency == TimeInterval.DayOfYear)
+                        return timesRule.Times.Contains(time.DayOfYear);
 
                     return false;
                 

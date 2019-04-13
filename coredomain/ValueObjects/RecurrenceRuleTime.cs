@@ -28,6 +28,8 @@ namespace Lockbase.CoreDomain.ValueObjects  {
                 this.Times = GetTimesSet(values, 1, 12);
             else if (frequency == TimeInterval.DayOfMonth)
                 this.Times = GetTimesSet(values, 1, 31);
+            else if (frequency == TimeInterval.DayOfYear)
+                this.Times = GetTimesSet(values, 1, 366);
             else if (frequency == TimeInterval.Year)
                 this.Times = GetTimesSet(values, 2000, 2099);
             else throw new ArgumentException(nameof(frequency), frequency.Name);
