@@ -50,9 +50,7 @@ namespace Lockbase.CoreDomain {
 
                 case RecurrenceRuleTime timesRule:
                     if (timesRule.Frequency == TimeInterval.DayOfMonth)
-                        return timesRule.Times
-                            .Select( x => new DateTime(time.Year,time.Month,x))
-                            .Contains(time.Date);
+                        return timesRule.Times.Contains(time.Day);
                     
                     if (timesRule.Frequency == TimeInterval.DayOfYear)
                         return timesRule.Times.Contains(time.DayOfYear);
