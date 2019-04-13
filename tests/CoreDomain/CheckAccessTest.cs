@@ -105,6 +105,11 @@ namespace Lockbase.ui.UnitTest.CoreDomain {
         [InlineData("2021-02-09 12:00", "Y(2018-2020)", false)]  // 2021 
         [InlineData("2019-02-09 12:00", "h(12)", true)]      // 12:00
         [InlineData("2019-02-09 13:00", "h(12)", false)]     // 13:00
+        [InlineData("2019-02-09 12:17", "m(15-20)", true)]      // 12:17
+        [InlineData("2019-02-09 12:15", "m(15-20)", true)]      // 12:15
+        [InlineData("2019-02-09 12:20", "m(15-20)", true)]      // 12:20
+        [InlineData("2019-02-09 12:14", "m(15-20)", false)]     // 12:14
+        [InlineData("2019-02-09 12:21", "m(15-20)", false)]     // 12:14
         public void TestNormal(string timeString, string rule, bool expected) 
         {
             TimePeriodDefinition definition = $"20100101T080000Z/28800/{rule}";
@@ -115,9 +120,6 @@ namespace Lockbase.ui.UnitTest.CoreDomain {
                 Assert.True(actual, timeString + " " + rule);
             else
                 Assert.False(actual, timeString  + " " + rule); 
-        }
-
-
-        
+        }        
     }
 }
