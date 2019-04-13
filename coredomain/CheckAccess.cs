@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Reflection;
+using Lockbase.CoreDomain.Enumerations;
 using Lockbase.CoreDomain.ValueObjects;
 
 namespace Lockbase.CoreDomain {
@@ -43,8 +44,17 @@ namespace Lockbase.CoreDomain {
                     return dayOfWeekRule.WeekDays.Contains(time.DayOfWeek);
                 
                 case RecurrenceRuleDayOfMonth dayOfMonthRule: 
-                    var dates = dayOfMonthRule.WeekDays.SelectMany(  spec => AddDates(time.Year, time.Month, spec));
-                    return dates.Contains(time.Date);
+                    return dayOfMonthRule.WeekDays
+                        .SelectMany(  spec => AddDates(time.Year, time.Month, spec))
+                        .Contains(time.Date);
+
+                case RecurrenceRuleTime timesRule:
+                    if (timesRule.Frequency == TimeInterval.DayOfMonth)
+                        return timesRule.Times
+                            .Select( x => new DateTime(time.Year,time.Month,x))
+                            .Contains(time.Date);
+
+                    return false;
                 
                 default:
                     return true;
