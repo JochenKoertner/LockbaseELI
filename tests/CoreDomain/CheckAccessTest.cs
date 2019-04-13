@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Globalization;
 
 using Xunit;
 
@@ -7,7 +8,6 @@ using Lockbase.CoreDomain;
 using Lockbase.CoreDomain.Entities;
 using Lockbase.CoreDomain.Aggregates;
 using Lockbase.CoreDomain.ValueObjects;
-using System.Globalization;
 
 namespace Lockbase.ui.UnitTest.CoreDomain {
 
