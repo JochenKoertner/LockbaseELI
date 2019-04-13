@@ -61,6 +61,9 @@ namespace Lockbase.CoreDomain {
                     if (timesRule.Frequency == TimeInterval.Year)
                         return timesRule.Times.Contains(time.Year);
 
+                    if (timesRule.Frequency == TimeInterval.Hour)
+                        return timesRule.Times.Contains(time.Hour);
+
                     return false;
                 
                 default:

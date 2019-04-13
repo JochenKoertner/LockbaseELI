@@ -103,9 +103,11 @@ namespace Lockbase.ui.UnitTest.CoreDomain {
         [InlineData("2019-02-09 12:00", "Y(2018-2020)", true)]  // 2019 
         [InlineData("2017-02-09 12:00", "Y(2018-2020)", false)]  // 2017 
         [InlineData("2021-02-09 12:00", "Y(2018-2020)", false)]  // 2021 
+        [InlineData("2019-02-09 12:00", "h(12)", true)]      // 12:00
+        [InlineData("2019-02-09 13:00", "h(12)", false)]     // 13:00
         public void TestNormal(string timeString, string rule, bool expected) 
         {
-            TimePeriodDefinition definition = $"20190101T080000Z/28800/{rule}";
+            TimePeriodDefinition definition = $"20100101T080000Z/28800/{rule}";
 			var time = ToTime(timeString);
             var actual = CheckAccess.Check(definition, time);
 
