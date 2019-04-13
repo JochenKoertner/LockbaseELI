@@ -42,10 +42,10 @@ namespace Lockbase.CoreDomain {
                 case RecurrenceRuleDayOfWeek dayOfWeekRule: 
                     return dayOfWeekRule.WeekDays.Contains(time.DayOfWeek);
                 
-          /*     case RecurrenceRuleDayOfMonth dayOfMonthRule: 
-                    var dayOfMonthRule.WeekDays.SelectMany(  spec => AddDates(time.Year, time.Month, spec));
-                    return dayOfMonthRule.WeekDays.Contains(time.DayOfWeek);
-             */   
+                case RecurrenceRuleDayOfMonth dayOfMonthRule: 
+                    var dates = dayOfMonthRule.WeekDays.SelectMany(  spec => AddDates(time.Year, time.Month, spec));
+                    return dates.Contains(time.Date);
+                
                 default:
                     return true;
             }

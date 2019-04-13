@@ -43,11 +43,11 @@ namespace Lockbase.ui.UnitTest.CoreDomain {
                 Assert.False(actual, timeString); 
         }
 
-        //[Theory]
-        // [InlineData("2019-01-13 12:00", true)]
-        // [InlineData("2019-01-28 12:00", true)]
-        // [InlineData("2019-01-06 12:00", false)]
-        // [InlineData("2019-01-21 12:00", false)]
+        [Theory]
+        [InlineData("2019-01-13 12:00", true)]  // 2nd Sunday
+        [InlineData("2019-01-28 12:00", true)]  // Last Monday
+        [InlineData("2019-01-06 12:00", false)] // 1st Sunday
+        [InlineData("2019-01-21 12:00", false)] // Some Monday
         public void TestDayWeekOfMonth(string timeString, bool expected) 
         {
             // "2. Sonntag im Monat und Letzter Montag" 
