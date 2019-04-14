@@ -80,6 +80,24 @@ namespace Lockbase.ui.UnitTest.CoreDomain {
         }
 
         [Theory]
+        [InlineData("2019-01-31 12:00", true)]  
+        [InlineData("2019-02-28 12:00", true)]  
+        [InlineData("2019-01-30 12:00", false)] 
+        [InlineData("2019-02-27 12:00", false)] 
+        public void TestLastDayOfMonth(string timeString, bool expected) 
+        {
+            // "der Monatsletzte" 
+            TimePeriodDefinition definition = "20190101T080000Z/28800/DM(-1)";
+			var time = ToTime(timeString);
+            var actual = CheckAccess.Check(definition, time);
+
+            if (expected) 
+                Assert.True(actual, timeString);
+            else
+                Assert.False(actual, timeString); 
+        }
+
+        [Theory]
         [InlineData("2019-02-09 12:00", true)]  // 40. 
         [InlineData("2019-02-10 12:00", true)]  // 41. 
         [InlineData("2019-02-08 12:00", false)] // 39.

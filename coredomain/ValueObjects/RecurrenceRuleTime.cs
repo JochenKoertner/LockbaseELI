@@ -63,6 +63,8 @@ namespace Lockbase.CoreDomain.ValueObjects  {
 
                         if (accu.Op == Operator.Add)
                             return new ReductionState<int>( accu.Reduction.Add(operand), accu.Op);
+                        else if (accu.Reduction.Count == 0) 
+                            return new ReductionState<int>( accu.Reduction.Add(-operand), Operator.Add ); 
 
                         var lastOperand = accu.Reduction.Last();
 

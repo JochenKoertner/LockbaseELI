@@ -51,7 +51,7 @@ namespace Lockbase.CoreDomain {
 
                 case RecurrenceRuleTime timesRule:
                     if (timesRule.Frequency == TimeInterval.DayOfMonth)
-                        return timesRule.Times.Contains(time.Day);
+                        return CheckDayOfMonth(time, timesRule.Times);
                     
                     if (timesRule.Frequency == TimeInterval.DayOfYear)
                         return timesRule.Times.Contains(time.DayOfYear);
@@ -97,6 +97,16 @@ namespace Lockbase.CoreDomain {
             if (date != default(DateTime))
                 yield return date;
         } 
+
+        private static bool CheckDayOfMonth(DateTime time, IImmutableSet<int> times) {
+            return times.Aggregate(seed: false, 
+                func: (accu,current) => {
+                    if (current > 0)
+                        return accu || time.Day == current;
+                    else 
+                        return accu || time.Day == new DateTime(time.Year, time.Month, 1).AddMonths(1).AddDays(current).Day;
+                });
+        }
 
         private static int WeekOfYear(this DateTime date) {
 

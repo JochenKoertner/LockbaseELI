@@ -47,6 +47,15 @@ namespace Lockbase.ui.UnitTest.CoreDomain {
 		}
 
 		[Fact]
+		public void TestLastDayOfMonth()
+		{
+			RecurrenceRuleTime rule = "M(-1)";
+			Assert.Equal(TimeInterval.Month, rule.Frequency);
+			Assert.Contains(-1, rule.Times);
+			Assert.Single(rule.Times);
+		}
+
+		[Fact]
 		public void TestWeekSet()
 		{
 			RecurrenceRuleTime rule = "WY(23+35)";
