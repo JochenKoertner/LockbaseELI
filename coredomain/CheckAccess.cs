@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using Lockbase.CoreDomain.Enumerations;
@@ -70,6 +71,9 @@ namespace Lockbase.CoreDomain {
                     if (timesRule.Frequency == TimeInterval.Second)
                         return timesRule.Times.Contains(time.Second);
 
+                    if (timesRule.Frequency == TimeInterval.WeekOfYear)
+                        return timesRule.Times.Contains(time.WeekOfYear());
+
                     return false;
                 
                 default:
@@ -93,5 +97,37 @@ namespace Lockbase.CoreDomain {
             if (date != default(DateTime))
                 yield return date;
         } 
+
+        private static int WeekOfYear(this DateTime date) {
+
+            CultureInfo currentCulture = CultureInfo.CurrentCulture;
+
+            // Aktuellen Kalender ermitteln
+            Calendar calendar = currentCulture.Calendar;
+
+            // Kalenderwoche über das Calendar-Objekt ermitteln
+            int calendarWeek = calendar.GetWeekOfYear(date,
+               currentCulture.DateTimeFormat.CalendarWeekRule,
+               currentCulture.DateTimeFormat.FirstDayOfWeek);
+
+            // Überprüfen, ob eine Kalenderwoche größer als 52
+            // ermittelt wurde und ob die Kalenderwoche des Datums
+            // in einer Woche 2 ergibt: In diesem Fall hat
+            // GetWeekOfYear die Kalenderwoche nicht nach ISO 8601 
+            // berechnet (Montag, der 31.12.2007 wird z. B.
+            // fälschlicherweise als KW 53 berechnet). 
+            // Die Kalenderwoche wird dann auf 1 gesetzt
+            if (calendarWeek > 52)
+            {
+                date = date.AddDays(7);
+                int testCalendarWeek = calendar.GetWeekOfYear(date,
+                   currentCulture.DateTimeFormat.CalendarWeekRule,
+                   currentCulture.DateTimeFormat.FirstDayOfWeek);
+                if (testCalendarWeek == 2)
+                    calendarWeek = 1;
+            }
+
+            return calendarWeek;
+        }
     }
 }

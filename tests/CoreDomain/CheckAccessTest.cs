@@ -110,6 +110,10 @@ namespace Lockbase.ui.UnitTest.CoreDomain {
         [InlineData("2019-02-09 12:20", "m(15-20)", true)]      // 12:20
         [InlineData("2019-02-09 12:14", "m(15-20)", false)]     // 12:14
         [InlineData("2019-02-09 12:21", "m(15-20)", false)]     // 12:14
+        [InlineData("2019-06-03 12:00", "WY(23+35)", true)]     // 23. KW
+        [InlineData("2019-08-26 12:00", "WY(23+35)", true)]     // 35. KW
+        [InlineData("2019-05-27 12:00", "WY(23+35)", false)]    // 22. KW
+        [InlineData("2019-09-02 12:00", "WY(23+35)", false)]    // 36. KW
         public void TestNormal(string timeString, string rule, bool expected) 
         {
             TimePeriodDefinition definition = $"20100101T080000Z/28800/{rule}";
