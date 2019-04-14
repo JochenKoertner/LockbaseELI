@@ -1,10 +1,10 @@
 using System;
+using System.Linq;
 using Xunit; 
 
 using Lockbase.CoreDomain.Entities;
 using Lockbase.CoreDomain.Enumerations;
 using Lockbase.CoreDomain.ValueObjects;
-using System.Linq;
 
 namespace Lockbase.ui.UnitTest.CoreDomain {
 

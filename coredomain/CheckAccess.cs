@@ -54,7 +54,7 @@ namespace Lockbase.CoreDomain {
                         return CheckDayOfMonth(time, timesRule.Times);
                     
                     if (timesRule.Frequency == TimeInterval.DayOfYear)
-                        return timesRule.Times.Contains(time.DayOfYear);
+                        return CheckDayOfYear(time, timesRule.Times);
 
                     if (timesRule.Frequency == TimeInterval.Month)
                         return timesRule.Times.Contains(time.Month);
@@ -108,6 +108,15 @@ namespace Lockbase.CoreDomain {
                 });
         }
 
+         private static bool CheckDayOfYear(DateTime time, IImmutableSet<int> times) {
+            return times.Aggregate(seed: false, 
+                func: (accu,current) => {
+                    if (current > 0)
+                        return accu || time.DayOfYear == current;
+                    else 
+                        return accu || time.DayOfYear == new DateTime(time.Year, 12, 31).AddDays(current+1).DayOfYear;
+                });
+        }
         private static int WeekOfYear(this DateTime date) {
 
             CultureInfo currentCulture = CultureInfo.CurrentCulture;
