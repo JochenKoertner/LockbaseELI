@@ -149,7 +149,34 @@ namespace Lockbase.ui.UnitTest.CoreDomain {
             var door = lockSystem.QueryLock("000000t00nuiu");
 
             Assert.NotNull(door);
-            Assert.Equal(door.ExtData, "100, Meeting Room, Administration");
+            Assert.Empty(door.AppId);
+            Assert.Empty(door.Name);
+            Assert.Equal("100, Meeting Room, Administration", door.ExtData);
+        }
+
+           
+        [Fact]
+        public void TestDefineKey() {
+            var lockSystem= LockSystem.Empty.DefineKey("000000hqvs1lo,,,MTAzLTEsIEZlbmRlciwgS2xhdXMA");
+
+            var @key = lockSystem.QueryKey("000000hqvs1lo");
+
+            Assert.NotNull(@key);
+            Assert.Empty(@key.AppId);
+            Assert.Empty(@key.Name);
+            Assert.Equal("103-1, Fender, Klaus", @key.ExtData);
+        }
+
+        [Fact]
+        public void TestDefinePolicy() {
+            var lockSystem= LockSystem.Empty.DefinePolicy(
+                "000002oe1g25o,,20190212T080000Z/28800/DW(Mo+Tu+We+Th+Fr)/20190329T160000Z,20190401T070000Z/28800/DW(Mo+Tu+We+Th+Fr)/20191025T150000Z,20191028T080000Z/28800/DW(Mo+Tu+We+Th+Fr)/20200211T160000Z");
+
+            var  policy = lockSystem.QueryPolicy("000002oe1g25o");
+
+            Assert.NotNull(policy);
+            Assert.Null(policy.NumberOfLockings);
+            Assert.Equal(3, policy.TimePeriodDefinitions.Count());
         }
 	}
 }

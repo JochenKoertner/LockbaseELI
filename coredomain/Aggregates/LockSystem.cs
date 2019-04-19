@@ -94,8 +94,27 @@ namespace Lockbase.CoreDomain.Aggregates {
         }
 
         public LockSystem DefineKey(string statement) {
-            return this;
+            var properties = statement.Split(',');
+            var id = properties.ElementAt(0);
+            var appId = properties.ElementAtOrDefault(1);
+            var name = properties.ElementAtOrDefault(2);
+            var extData = properties.ElementAtOrDefault(3)
+                .FromBase64()
+                .RemoveTrailingZero();
+            return AddKey(new Key(id:id, name:name, appId: appId, extData: extData));
         }
+
+        public LockSystem DefinePolicy(string statement) {
+            var properties = statement.Split(',');
+            var id = properties.ElementAt(0);
+            var numberOfLockings = (NumberOfLockings) properties.ElementAt(1);
+            var timePeriodDefinitions = properties.Skip(2).Select( definition => (TimePeriodDefinition)definition);
+            
+            return AddPolicy(new AccessPolicy(id:id, 
+                numberOfLockings: numberOfLockings, 
+                timePeriodDefinitions: timePeriodDefinitions));
+        }
+
 
         #endregion
 
