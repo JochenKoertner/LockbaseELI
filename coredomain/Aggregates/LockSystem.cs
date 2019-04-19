@@ -82,6 +82,21 @@ namespace Lockbase.CoreDomain.Aggregates {
             return WithPolicies(this.policies.Add(accessPolicy.Id, accessPolicy));
         }
 
+        public LockSystem DefineLock(string statement) {
+            var properties = statement.Split(',');
+            var id = properties.ElementAt(0);
+            var appId = properties.ElementAtOrDefault(1);
+            var name = properties.ElementAtOrDefault(2);
+            var extData = properties.ElementAtOrDefault(3)
+                .FromBase64()
+                .RemoveTrailingZero();
+            return AddLock(new Lock(id:id, name:name, appId: appId, extData: extData));
+        }
+
+        public LockSystem DefineKey(string statement) {
+            return this;
+        }
+
         #endregion
 
         #region Remove Objects 

@@ -140,6 +140,16 @@ namespace Lockbase.ui.UnitTest.CoreDomain {
             var friday = new DateTime(2019,2,15,12,0,0);  // Freitag Mittag ok 
             Assert.True(system
                 .HasAccess(klaus, torwest, friday).IsOpen);
-        } 
+        }
+
+        [Fact]
+        public void TestDefineLock() {
+            var lockSystem= LockSystem.Empty.DefineLock("000000t00nuiu,,,MTAwLCBNZWV0aW5nIFJvb20sIEFkbWluaXN0cmF0aW9uAA==");
+
+            var door = lockSystem.QueryLock("000000t00nuiu");
+
+            Assert.NotNull(door);
+            Assert.Equal(door.ExtData, "100, Meeting Room, Administration");
+        }
 	}
 }
