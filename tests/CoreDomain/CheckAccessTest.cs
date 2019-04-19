@@ -179,5 +179,26 @@ namespace Lockbase.ui.UnitTest.CoreDomain {
                 Assert.False(actual, timeString); 
         
         }     
+
+/* 
+        [Theory]
+        [InlineData("2019-01-01 12:00", true)]  // Jan
+        [InlineData("2019-02-01 12:00", false)]  // Feb
+        [InlineData("2019-03-01 12:00", false)] // Mär
+        [InlineData("2019-04-01 12:00", true)]  // Apr 
+        public void TestMultiplierRule(string timeString, bool expected) 
+        {
+            // "Alle drei Monate" 
+            TimePeriodDefinition definition = "20190101T080000Z/28800/3M";
+			var time = ToTime(timeString);
+            var actual = CheckAccess.Check(definition, time);
+
+            if (expected) 
+                Assert.True(actual, timeString);
+            else
+                Assert.False(actual, timeString); 
+        
+        }     
+        */
     }
 }

@@ -10,6 +10,10 @@ namespace Lockbase.CoreDomain.Aggregates {
 
     public class LockSystem {
 
+        static private Lazy<LockSystem> empty = new Lazy<LockSystem>( ()=> new LockSystem(), true); 
+
+        public static LockSystem Empty => empty.Value;
+
         private readonly IImmutableDictionary<string, Key> keys;
         private readonly IImmutableDictionary<string, Lock> locks;
         private readonly IImmutableDictionary<string, AccessPolicy> policies;

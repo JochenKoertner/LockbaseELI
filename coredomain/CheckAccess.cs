@@ -57,7 +57,8 @@ namespace Lockbase.CoreDomain {
                         return CheckDayOfYear(time, timesRule.Times);
 
                     if (timesRule.Frequency == TimeInterval.Month)
-                        return timesRule.Times.Contains(time.Month);
+                        return CheckMonthMultiplier(time, timesRule.Multiplier)
+                            && timesRule.Times.Contains(time.Month);
 
                     if (timesRule.Frequency == TimeInterval.Year)
                         return timesRule.Times.Contains(time.Year);
@@ -98,6 +99,13 @@ namespace Lockbase.CoreDomain {
                 yield return date;
         } 
 
+        private static bool CheckMonthMultiplier(DateTime time, int multiplier) {
+            if (multiplier == 1)
+                return true;
+            else 
+                return false;
+        }
+        
         private static bool CheckDayOfMonth(DateTime time, IImmutableSet<int> times) {
             return times.Aggregate(seed: false, 
                 func: (accu,current) => {

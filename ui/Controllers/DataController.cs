@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Lockbase.CoreDomain;
+using Lockbase.CoreDomain.Aggregates;
 using Microsoft.AspNetCore.Mvc;
-
+using Microsoft.Extensions.Logging;
 using ui.Models;
 
 namespace ui.Controllers
@@ -11,9 +13,21 @@ namespace ui.Controllers
 	[Route("api/[controller]")]
 	public class DataController : Controller
 	{
+		private readonly AtomicValue<LockSystem> lockSystem;
+		private readonly ILogger<DataController> logger;
+
+		public DataController(AtomicValue<LockSystem> lockSystem, ILogger<DataController> logger)
+		{
+			this.lockSystem = lockSystem;
+			this.logger = logger;	
+		}
+
 		[HttpGet("[action]")]
 		public IEnumerable<PersonInfo> Persons()
 		{
+			logger.LogInformation("Persons called");
+			
+			
 			yield return new PersonInfo { 
 				value = "900-1", label = "Ahrens, Andrea", department = "Geschäftsführung", color = "OliveDrab" };
 			yield return new PersonInfo {
@@ -41,6 +55,8 @@ namespace ui.Controllers
 		[HttpGet("[action]")]
 		public IEnumerable<DoorInfo> Doors()
 		{
+			logger.LogInformation("Persons called");
+			
 			yield return new DoorInfo 
 			{
 				Id = 4711, 
