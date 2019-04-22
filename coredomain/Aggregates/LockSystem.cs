@@ -115,6 +115,21 @@ namespace Lockbase.CoreDomain.Aggregates {
                 timePeriodDefinitions: timePeriodDefinitions));
         }
 
+        public LockSystem DefineAssignmentKey(string statement) {
+            var properties = statement.Split(',');
+            var key = QueryKey(properties.ElementAt(0));
+            var policy = QueryPolicy(properties.ElementAt(1));
+            var locks = properties.Skip(2).Select( id => QueryLock(id));
+            return AddAssignment(key, policy, locks);
+        }
+
+        public LockSystem DefineAssignmentLock(string statement) {
+            var properties = statement.Split(',');
+            var @lock = QueryLock(properties.ElementAt(0));
+            var policy = QueryPolicy(properties.ElementAt(1));
+            var keys = properties.Skip(2).Select( id => QueryKey(id));
+            return AddAssignment(@lock, policy, keys);
+        }
 
         #endregion
 

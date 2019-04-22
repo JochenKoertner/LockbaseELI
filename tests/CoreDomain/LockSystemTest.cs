@@ -178,5 +178,43 @@ namespace Lockbase.ui.UnitTest.CoreDomain {
             Assert.Null(policy.NumberOfLockings);
             Assert.Equal(3, policy.TimePeriodDefinitions.Count());
         }
+
+        [Fact]
+        public void TestDefineAssignmentKey() {
+
+            var lockSystem= LockSystem.Empty
+                .DefineKey("000000hqvs1lo,,,MTAzLTEsIEZlbmRlciwgS2xhdXMA")
+                .DefineLock("0c0000t00nuiu,,,MTAzLCBBY2NvdW50aW5nLCBBZG1pbmlzdHJhdGlvbgA=")
+                .DefineLock("580000t00nuiu,,,WjEsIEVudHJhbmNlIFdlc3QsIEFkbWluaXN0cmF0aW9uAA==")
+                .DefinePolicy("000002oe1g25o,,20190212T080000Z/28800/DW(Mo+Tu+We+Th+Fr)/20190329T160000Z,20190401T070000Z/28800/DW(Mo+Tu+We+Th+Fr)/20191025T150000Z,20191028T080000Z/28800/DW(Mo+Tu+We+Th+Fr)/20200211T160000Z")
+                .DefineAssignmentKey("000000hqvs1lo,000002oe1g25o,0c0000t00nuiu,580000t00nuiu");
+
+            var @lock = lockSystem.QueryLock("580000t00nuiu");
+            var key = lockSystem.QueryKey("000000hqvs1lo");
+
+            var  policy = lockSystem.QueryPolicies(@lock, key).SingleOrDefault();
+
+            Assert.NotNull(policy);
+            Assert.Null(policy.NumberOfLockings);
+            Assert.Equal(3, policy.TimePeriodDefinitions.Count());
+        }
+        [Fact]
+        public void TestDefineAssignmentLock() {
+
+            var lockSystem= LockSystem.Empty
+                .DefineKey("000000hqvs1lo,,,MTAzLTEsIEZlbmRlciwgS2xhdXMA")
+                .DefineLock("0c0000t00nuiu,,,MTAzLCBBY2NvdW50aW5nLCBBZG1pbmlzdHJhdGlvbgA=")
+                .DefinePolicy("000002oe1g25o,,20190212T080000Z/28800/DW(Mo+Tu+We+Th+Fr)/20190329T160000Z,20190401T070000Z/28800/DW(Mo+Tu+We+Th+Fr)/20191025T150000Z,20191028T080000Z/28800/DW(Mo+Tu+We+Th+Fr)/20200211T160000Z")
+                .DefineAssignmentLock("0c0000t00nuiu,000002oe1g25o,000000hqvs1lo");
+
+            var @lock = lockSystem.QueryLock("0c0000t00nuiu");
+            var key = lockSystem.QueryKey("000000hqvs1lo");
+
+            var  policy = lockSystem.QueryPolicies(@lock, key).SingleOrDefault();
+
+            Assert.NotNull(policy);
+            Assert.Null(policy.NumberOfLockings);
+            Assert.Equal(3, policy.TimePeriodDefinitions.Count());
+        }
 	}
 }
