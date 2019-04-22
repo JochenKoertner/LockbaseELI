@@ -2,7 +2,8 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 
-namespace Lockbase.CoreDomain {
+namespace Lockbase.CoreDomain
+{
     public static class EnumerableExtensions
     {
         // https://stackoverflow.com/questions/1577822/passing-a-single-item-as-ienumerablet

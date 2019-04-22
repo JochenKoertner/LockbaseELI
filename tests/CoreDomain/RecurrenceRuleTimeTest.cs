@@ -1,10 +1,10 @@
 using System;
+using System.Linq;
 using Xunit; 
 
 using Lockbase.CoreDomain.Entities;
 using Lockbase.CoreDomain.Enumerations;
 using Lockbase.CoreDomain.ValueObjects;
-using System.Linq;
 
 namespace Lockbase.ui.UnitTest.CoreDomain {
 
@@ -47,6 +47,15 @@ namespace Lockbase.ui.UnitTest.CoreDomain {
 		}
 
 		[Fact]
+		public void TestLastDayOfMonth()
+		{
+			RecurrenceRuleTime rule = "M(-1)";
+			Assert.Equal(TimeInterval.Month, rule.Frequency);
+			Assert.Contains(-1, rule.Times);
+			Assert.Single(rule.Times);
+		}
+
+		[Fact]
 		public void TestWeekSet()
 		{
 			RecurrenceRuleTime rule = "WY(23+35)";
@@ -63,6 +72,16 @@ namespace Lockbase.ui.UnitTest.CoreDomain {
 			Assert.Equal(TimeInterval.DayOfMonth, rule.Frequency);
 			Assert.Contains(5, rule.Times);
 			Assert.Contains(15, rule.Times);
+			Assert.Equal(2,rule.Times.Count);
+		}
+
+		[Fact]
+		public void TestDayOfYear()
+		{
+			RecurrenceRuleTime rule = "DY(34+35)";
+			Assert.Equal(TimeInterval.DayOfYear, rule.Frequency);
+			Assert.Contains(34, rule.Times);
+			Assert.Contains(35, rule.Times);
 			Assert.Equal(2,rule.Times.Count);
 		}
 	}

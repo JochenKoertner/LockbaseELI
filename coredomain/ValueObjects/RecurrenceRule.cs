@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions; 
 
 using Lockbase.CoreDomain.Enumerations;
@@ -11,6 +13,7 @@ namespace Lockbase.CoreDomain.ValueObjects  {
 
     // see also  RFC 5545 !! 
     
+    [DebuggerDisplay("{DebuggerDisplay,nq}")] // nq means no quote
     public class RecurrenceRule {
 
 
@@ -19,7 +22,7 @@ namespace Lockbase.CoreDomain.ValueObjects  {
         {
             // https://regex101.com/r/vln7Wv/2/
 
-            const string pattern = @"(?'multiplier'\d*)(?'frequency's|m|h|DWY|DWM|DW|DM|WY|M|Y)(?'values'\(.+\))*";
+            const string pattern = @"(?'multiplier'\d*)(?'frequency's|m|h|DWY|DWM|DW|DM|DY|WY|M|Y)(?'values'\(.+\))*";
 
             RegexOptions options = RegexOptions.IgnoreCase;
 
@@ -67,6 +70,17 @@ namespace Lockbase.CoreDomain.ValueObjects  {
             return GetAllEnums<DayOfWeek>()
                 .Single( day => shortname.Equals(Enum.GetName(typeof(DayOfWeek), day).Substring(0,shortname.Length),
                     StringComparison.OrdinalIgnoreCase));
+        }
+
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    	internal string DebuggerDisplay { 
+            get {
+                var sb = new StringBuilder();
+                if (Multiplier != 1)
+                    sb.Append(Multiplier);
+                sb.Append(Frequency.DebuggerDisplay);
+                return sb.ToString();
+            }
         }
 
         protected enum Operator {

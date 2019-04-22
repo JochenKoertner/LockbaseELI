@@ -7,6 +7,7 @@ using Lockbase.CoreDomain;
 using Lockbase.CoreDomain.Entities;
 using Lockbase.CoreDomain.Aggregates;
 using Lockbase.CoreDomain.ValueObjects;
+using System.IO;
 
 namespace Lockbase.ui.UnitTest.CoreDomain {
 
@@ -140,6 +141,102 @@ namespace Lockbase.ui.UnitTest.CoreDomain {
             var friday = new DateTime(2019,2,15,12,0,0);  // Freitag Mittag ok 
             Assert.True(system
                 .HasAccess(klaus, torwest, friday).IsOpen);
-        } 
+        }
+
+        [Fact]
+        public void TestDefineLock() {
+            var lockSystem= LockSystem.Empty.DefineLock("000000t00nuiu,,,MTAwLCBNZWV0aW5nIFJvb20sIEFkbWluaXN0cmF0aW9uAA==");
+
+            var door = lockSystem.QueryLock("000000t00nuiu");
+
+            Assert.NotNull(door);
+            Assert.Empty(door.AppId);
+            Assert.Empty(door.Name);
+            Assert.Equal("100, Meeting Room, Administration", door.ExtData);
+        }
+
+           
+        [Fact]
+        public void TestDefineKey() {
+            var lockSystem= LockSystem.Empty.DefineKey("000000hqvs1lo,,,MTAzLTEsIEZlbmRlciwgS2xhdXMA");
+
+            var @key = lockSystem.QueryKey("000000hqvs1lo");
+
+            Assert.NotNull(@key);
+            Assert.Empty(@key.AppId);
+            Assert.Empty(@key.Name);
+            Assert.Equal("103-1, Fender, Klaus", @key.ExtData);
+        }
+
+        [Fact]
+        public void TestDefinePolicy() {
+            var lockSystem= LockSystem.Empty.DefinePolicy(
+                "000002oe1g25o,,20190212T080000Z/28800/DW(Mo+Tu+We+Th+Fr)/20190329T160000Z,20190401T070000Z/28800/DW(Mo+Tu+We+Th+Fr)/20191025T150000Z,20191028T080000Z/28800/DW(Mo+Tu+We+Th+Fr)/20200211T160000Z");
+
+            var  policy = lockSystem.QueryPolicy("000002oe1g25o");
+
+            Assert.NotNull(policy);
+            Assert.Null(policy.NumberOfLockings);
+            Assert.Equal(3, policy.TimePeriodDefinitions.Count());
+        }
+
+        [Fact]
+        public void TestDefineAssignmentKey() {
+
+            var lockSystem= LockSystem.Empty
+                .DefineKey("000000hqvs1lo,,,MTAzLTEsIEZlbmRlciwgS2xhdXMA")
+                .DefineLock("0c0000t00nuiu,,,MTAzLCBBY2NvdW50aW5nLCBBZG1pbmlzdHJhdGlvbgA=")
+                .DefineLock("580000t00nuiu,,,WjEsIEVudHJhbmNlIFdlc3QsIEFkbWluaXN0cmF0aW9uAA==")
+                .DefinePolicy("000002oe1g25o,,20190212T080000Z/28800/DW(Mo+Tu+We+Th+Fr)/20190329T160000Z,20190401T070000Z/28800/DW(Mo+Tu+We+Th+Fr)/20191025T150000Z,20191028T080000Z/28800/DW(Mo+Tu+We+Th+Fr)/20200211T160000Z")
+                .DefineAssignmentKey("000000hqvs1lo,000002oe1g25o,0c0000t00nuiu,580000t00nuiu");
+
+            var @lock = lockSystem.QueryLock("580000t00nuiu");
+            var key = lockSystem.QueryKey("000000hqvs1lo");
+
+            var  policy = lockSystem.QueryPolicies(@lock, key).SingleOrDefault();
+
+            Assert.NotNull(policy);
+            Assert.Null(policy.NumberOfLockings);
+            Assert.Equal(3, policy.TimePeriodDefinitions.Count());
+        }
+
+        [Fact]
+        public void TestDefineAssignmentLock() {
+
+            var lockSystem= LockSystem.Empty
+                .DefineKey("000000hqvs1lo,,,MTAzLTEsIEZlbmRlciwgS2xhdXMA")
+                .DefineLock("0c0000t00nuiu,,,MTAzLCBBY2NvdW50aW5nLCBBZG1pbmlzdHJhdGlvbgA=")
+                .DefinePolicy("000002oe1g25o,,20190212T080000Z/28800/DW(Mo+Tu+We+Th+Fr)/20190329T160000Z,20190401T070000Z/28800/DW(Mo+Tu+We+Th+Fr)/20191025T150000Z,20191028T080000Z/28800/DW(Mo+Tu+We+Th+Fr)/20200211T160000Z")
+                .DefineAssignmentLock("0c0000t00nuiu,000002oe1g25o,000000hqvs1lo");
+
+            var @lock = lockSystem.QueryLock("0c0000t00nuiu");
+            var key = lockSystem.QueryKey("000000hqvs1lo");
+
+            var  policy = lockSystem.QueryPolicies(@lock, key).SingleOrDefault();
+
+            Assert.NotNull(policy);
+            Assert.Null(policy.NumberOfLockings);
+            Assert.Equal(3, policy.TimePeriodDefinitions.Count());
+        }
+
+        [Fact]
+        public void TestDefineLockSystem() {
+            var lines = File.ReadAllLines("samples/ELIApp2Drv.txt");
+            var lockSystem = lines.Aggregate( 
+                seed: LockSystem.Empty, 
+                func: (system, line) => system.DefineStatement(line)
+            );
+            
+            Assert.Equal( 16, lockSystem.Keys.Count());
+            Assert.Equal( 13, lockSystem.Locks.Count());
+            Assert.Equal( 5, lockSystem.Policies.Count());
+
+            var policiy = lockSystem.QueryPolicies( 
+                    lockSystem.QueryLock("0g0000t00nuiu"), 
+                    lockSystem.QueryKey("7s0000l00nuiu")).SingleOrDefault();
+
+            Assert.NotNull( policiy );
+            Assert.Equal("080002uc1k25o", policiy.Id);
+        }
 	}
 }

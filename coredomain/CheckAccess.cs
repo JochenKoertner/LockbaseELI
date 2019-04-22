@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
+using Lockbase.CoreDomain.Enumerations;
 using Lockbase.CoreDomain.ValueObjects;
 
 namespace Lockbase.CoreDomain {
@@ -42,10 +44,39 @@ namespace Lockbase.CoreDomain {
                 case RecurrenceRuleDayOfWeek dayOfWeekRule: 
                     return dayOfWeekRule.WeekDays.Contains(time.DayOfWeek);
                 
-          /*     case RecurrenceRuleDayOfMonth dayOfMonthRule: 
-                    var dayOfMonthRule.WeekDays.SelectMany(  spec => AddDates(time.Year, time.Month, spec));
-                    return dayOfMonthRule.WeekDays.Contains(time.DayOfWeek);
-             */   
+                case RecurrenceRuleDayOfMonth dayOfMonthRule: 
+                    return dayOfMonthRule.WeekDays
+                        .SelectMany(  spec => AddDates(time.Year, time.Month, spec))
+                        .Contains(time.Date);
+
+                case RecurrenceRuleTime timesRule:
+                    if (timesRule.Frequency == TimeInterval.DayOfMonth)
+                        return CheckDayOfMonth(time, timesRule.Times);
+                    
+                    if (timesRule.Frequency == TimeInterval.DayOfYear)
+                        return CheckDayOfYear(time, timesRule.Times);
+
+                    if (timesRule.Frequency == TimeInterval.Month)
+                        return CheckMonthMultiplier(time, timesRule.Multiplier)
+                            && timesRule.Times.Contains(time.Month);
+
+                    if (timesRule.Frequency == TimeInterval.Year)
+                        return timesRule.Times.Contains(time.Year);
+
+                    if (timesRule.Frequency == TimeInterval.Hour)
+                        return timesRule.Times.Contains(time.Hour);
+
+                    if (timesRule.Frequency == TimeInterval.Minute)
+                        return timesRule.Times.Contains(time.Minute);
+
+                    if (timesRule.Frequency == TimeInterval.Second)
+                        return timesRule.Times.Contains(time.Second);
+
+                    if (timesRule.Frequency == TimeInterval.WeekOfYear)
+                        return timesRule.Times.Contains(time.WeekOfYear());
+
+                    return false;
+                
                 default:
                     return true;
             }
@@ -67,5 +98,63 @@ namespace Lockbase.CoreDomain {
             if (date != default(DateTime))
                 yield return date;
         } 
+
+        private static bool CheckMonthMultiplier(DateTime time, int multiplier) {
+            if (multiplier == 1)
+                return true;
+            else 
+                return false;
+        }
+        
+        private static bool CheckDayOfMonth(DateTime time, IImmutableSet<int> times) {
+            return times.Aggregate(seed: false, 
+                func: (accu,current) => {
+                    if (current > 0)
+                        return accu || time.Day == current;
+                    else 
+                        return accu || time.Day == new DateTime(time.Year, time.Month, 1).AddMonths(1).AddDays(current).Day;
+                });
+        }
+
+         private static bool CheckDayOfYear(DateTime time, IImmutableSet<int> times) {
+            return times.Aggregate(seed: false, 
+                func: (accu,current) => {
+                    if (current > 0)
+                        return accu || time.DayOfYear == current;
+                    else 
+                        return accu || time.DayOfYear == new DateTime(time.Year, 12, 31).AddDays(current+1).DayOfYear;
+                });
+        }
+        private static int WeekOfYear(this DateTime date) {
+
+            CultureInfo currentCulture = CultureInfo.CurrentCulture;
+
+            // Aktuellen Kalender ermitteln
+            Calendar calendar = currentCulture.Calendar;
+
+            // Kalenderwoche über das Calendar-Objekt ermitteln
+            int calendarWeek = calendar.GetWeekOfYear(date,
+               currentCulture.DateTimeFormat.CalendarWeekRule,
+               currentCulture.DateTimeFormat.FirstDayOfWeek);
+
+            // Überprüfen, ob eine Kalenderwoche größer als 52
+            // ermittelt wurde und ob die Kalenderwoche des Datums
+            // in einer Woche 2 ergibt: In diesem Fall hat
+            // GetWeekOfYear die Kalenderwoche nicht nach ISO 8601 
+            // berechnet (Montag, der 31.12.2007 wird z. B.
+            // fälschlicherweise als KW 53 berechnet). 
+            // Die Kalenderwoche wird dann auf 1 gesetzt
+            if (calendarWeek > 52)
+            {
+                date = date.AddDays(7);
+                int testCalendarWeek = calendar.GetWeekOfYear(date,
+                   currentCulture.DateTimeFormat.CalendarWeekRule,
+                   currentCulture.DateTimeFormat.FirstDayOfWeek);
+                if (testCalendarWeek == 2)
+                    calendarWeek = 1;
+            }
+
+            return calendarWeek;
+        }
     }
 }

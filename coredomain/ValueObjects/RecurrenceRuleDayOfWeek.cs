@@ -1,13 +1,17 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions; 
 
 using Lockbase.CoreDomain.Enumerations;
 
 namespace Lockbase.CoreDomain.ValueObjects  {
     
+    [DebuggerDisplay("{DebuggerDisplay,nq}")] // nq means no quote
+
     public class RecurrenceRuleDayOfWeek : RecurrenceRule {
 
         public static implicit operator RecurrenceRuleDayOfWeek(string value) {
@@ -67,6 +71,15 @@ namespace Lockbase.CoreDomain.ValueObjects  {
                             .TakeWhile( day => day != end)
                             .Concat(new []{end});
             return range;
-        }        
+        }   
+
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    	internal new string DebuggerDisplay { 
+            get {
+                var weekdays = String.Join('+',
+                    WeekDays.Select( wd => wd.ToString().Substring(0,2)));
+                return $"{base.DebuggerDisplay}({weekdays})";
+            }
+        }     
     }
 }

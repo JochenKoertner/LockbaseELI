@@ -10,6 +10,10 @@ namespace Lockbase.CoreDomain.Aggregates {
 
     public class LockSystem {
 
+        static private Lazy<LockSystem> empty = new Lazy<LockSystem>( ()=> new LockSystem(), true); 
+
+        public static LockSystem Empty => empty.Value;
+
         private readonly IImmutableDictionary<string, Key> keys;
         private readonly IImmutableDictionary<string, Lock> locks;
         private readonly IImmutableDictionary<string, AccessPolicy> policies;
@@ -76,6 +80,74 @@ namespace Lockbase.CoreDomain.Aggregates {
         // AT
         public LockSystem AddPolicy(AccessPolicy accessPolicy) {
             return WithPolicies(this.policies.Add(accessPolicy.Id, accessPolicy));
+        }
+
+        public LockSystem DefineLock(string statement) {
+            var properties = statement.Split(',');
+            var id = properties.ElementAt(0);
+            var appId = properties.ElementAtOrDefault(1);
+            var name = properties.ElementAtOrDefault(2);
+            var extData = properties.ElementAtOrDefault(3)
+                .FromBase64()
+                .RemoveTrailingZero();
+            return AddLock(new Lock(id:id, name:name, appId: appId, extData: extData));
+        }
+
+        public LockSystem DefineKey(string statement) {
+            var properties = statement.Split(',');
+            var id = properties.ElementAt(0);
+            var appId = properties.ElementAtOrDefault(1);
+            var name = properties.ElementAtOrDefault(2);
+            var extData = properties.ElementAtOrDefault(3)
+                .FromBase64()
+                .RemoveTrailingZero();
+            return AddKey(new Key(id:id, name:name, appId: appId, extData: extData));
+        }
+
+        public LockSystem DefinePolicy(string statement) {
+            var properties = statement.Split(',');
+            var id = properties.ElementAt(0);
+            var numberOfLockings = (NumberOfLockings) properties.ElementAt(1);
+            var timePeriodDefinitions = properties.Skip(2).Select( definition => (TimePeriodDefinition)definition);
+            
+            return AddPolicy(new AccessPolicy(id:id, 
+                numberOfLockings: numberOfLockings, 
+                timePeriodDefinitions: timePeriodDefinitions));
+        }
+
+        public LockSystem DefineAssignmentKey(string statement) {
+            var properties = statement.Split(',');
+            var key = QueryKey(properties.ElementAt(0));
+            var policy = QueryPolicy(properties.ElementAt(1));
+            var locks = properties.Skip(2).Select( id => QueryLock(id));
+            return AddAssignment(key, policy, locks);
+        }
+
+        public LockSystem DefineAssignmentLock(string statement) {
+            var properties = statement.Split(',');
+            var @lock = QueryLock(properties.ElementAt(0));
+            var policy = QueryPolicy(properties.ElementAt(1));
+            var keys = properties.Skip(2).Select( id => QueryKey(id));
+            return AddAssignment(@lock, policy, keys);
+        }
+
+        public LockSystem DefineStatement(string statement) {
+            int index = statement.IndexOf(',');
+            string head = statement.Substring(0,index);
+            string tail = statement.Substring(index+1);
+
+            if (head.Equals("DK"))
+                return DefineKey(tail);
+            else if (head.Equals("DL"))
+                return DefineLock(tail);
+            else if (head.Equals("AT"))
+                return DefinePolicy(tail);
+            else if (head.Equals("AL"))
+                return DefineAssignmentLock(tail);    
+            else if (head.Equals("AK"))
+                return DefineAssignmentKey(tail);
+                
+            throw new NotImplementedException(head);
         }
 
         #endregion

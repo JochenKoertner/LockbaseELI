@@ -31,24 +31,8 @@ export const LanguageContext = React.createContext(
 	}
 );
 
-// persons and departments 
-
-export const persons = [
-	{ value: '900-1', label: 'Ahrens, Andrea', department: 'Geschäftsführung', color: 'OliveDrab' },
-	{ value: '901-1', label: 'Barthauer, Thomas', department: 'Geschäftsführung', color: 'SandyBrown'  },
-	{ value: '103-1', label: 'Fendler, Klaus', department: 'Buchhaltung' },
-	{ value: '104-1', label: 'Kistler, Sabine', department: 'Vertrieb' },
-	{ value: '105-1', label: 'Kohl, Ulrich', department: 'Vertrieb' },
-	{ value: '200-1', label: 'Leinkamp, Sebastian', department: 'Lager' },
-	{ value: '201-1', label: 'Mertens, Martina', department: 'Lager' },
-	{ value: '202-1', label: 'Sidow, Janin', department: 'Montage' },
-	{ value: '203-1', label: 'Walter, Jens', department: 'Montage' },
-	{ value: '203-2', label: 'Winter, Sina', department: 'Montage' },
-	{ value: '203-3', label: 'Wondraschek, Volker', department: 'Montage' }
-]
-
 // doors and locks 
-
+/*
 export const doors = [
 	{ value: 'W1', label: 'Tor West', building: '-.-', image: 'tor_west', color: 'LightSlateGray' },
 	{
@@ -72,7 +56,7 @@ export const doors = [
 		]
 	}
 ]
-
+*/
 
 // Time functions 
 
@@ -126,17 +110,24 @@ export let minutes = Array
 		};
 	})
 
-export const findLabel = (roomId) => {
-		const onlyDoors = doors
-			.map(x => {
-				if (x.type === 'group') {
-					return x.items
-				}
-				return [x]
-			})
-			.reduce((a, b) => a.concat(b), []);
-	
-		const index = onlyDoors.findIndex(x => x.value === roomId);
-	
-		return onlyDoors[index].label;
-	};
+
+export const findLabel = (doors, roomId) => {
+
+		return "";
+
+		/*if (doors !== undefined) {
+			const onlyDoors = doors
+				.map(x => {
+					if (x.type === 'group') {
+						return x.items
+					}
+					return [x]
+				})
+				.reduce((a, b) => a.concat(b), []);
+		
+			const index = onlyDoors.findIndex(x => x.value === roomId);
+		
+			return onlyDoors[index].label; 
+		}*/
+		return "-.-"
+	}; 
