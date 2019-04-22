@@ -1,4 +1,5 @@
-using System; 
+using System;
+using System.Diagnostics;
 
 namespace Lockbase.CoreDomain.Enumerations {
 
@@ -18,6 +19,7 @@ namespace Lockbase.CoreDomain.Enumerations {
         
     }
 
+	[DebuggerDisplay("{DebuggerDisplay,nq}")] // nq means no quote
     public sealed class TimeInterval : Enumeration<TimeInterval>
 	{
         public string Alias { get; }
@@ -44,6 +46,9 @@ namespace Lockbase.CoreDomain.Enumerations {
 		public static readonly TimeInterval WeekOfYear = new TimeInterval(8, "Week of Year", "WY");
 		public static readonly TimeInterval Month = new TimeInterval(9, "Month", "M");
 		public static readonly TimeInterval Year = new TimeInterval(10, "Year", "Y");
+
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    	private string DebuggerDisplay => Alias;
 	}
 
 
