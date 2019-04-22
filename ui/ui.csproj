@@ -23,6 +23,9 @@
 
   <ItemGroup>
     <ProjectReference Include="../coredomain/coredomain.csproj" />
+	<Content Include="sample\*.txt" >
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   
   <ItemGroup>
