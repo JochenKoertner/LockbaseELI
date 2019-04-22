@@ -13,5 +13,10 @@ namespace Lockbase.CoreDomain
         {
             this.state = seed;
         }
+
+        public static implicit operator T(AtomicValue<T> value)
+        {
+            return value.state;
+        }
     }
 }

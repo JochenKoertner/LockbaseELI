@@ -10,6 +10,7 @@ import { findLabel } from './../services/BackendAdapter';
 
 interface BaseProps {
 	id: string,
+	doors: any,
 	onClick: (e: React.MouseEvent<SVGElement>) => void,
 	getClassName: (prefix: string, roomId: string) => string
 }
@@ -27,7 +28,7 @@ interface PathRoomProps extends BaseProps {
 
 const Room: React.SFC<RoomProps> = (props) => {
 	return (
-		<Tooltip className='room-tooltip' title={findLabel(props.id)}>
+		<Tooltip className='room-tooltip' title={findLabel(props.doors, props.id)}>
 			<rect id={props.id} className={props.getClassName('room',props.id)} 
 			onClick={props.onClick} x={props.x} y={props.y} width={props.width} height={props.height} />
 		</Tooltip>
@@ -36,7 +37,7 @@ const Room: React.SFC<RoomProps> = (props) => {
 
 const PathRoom: React.SFC<PathRoomProps> = (props) => {
 	return (
-		<Tooltip className='room-tooltip' title={findLabel(props.id)}>
+		<Tooltip className='room-tooltip' title={findLabel(props.doors, props.id)}>
 			<path id={props.id} className={props.getClassName('room',props.id)} 
 			onClick={props.onClick} d={props.d} />
 		</Tooltip>
@@ -45,7 +46,7 @@ const PathRoom: React.SFC<PathRoomProps> = (props) => {
 
 const Property: React.SFC<RoomProps> = (props) => {
 	return (
-		<Tooltip className='room-tooltip' title={findLabel(props.id)}>
+		<Tooltip className='room-tooltip' title={findLabel(props.doors, props.id)}>
 			<rect id={props.id} className={props.getClassName('property',props.id)} 
 			onClick={props.onClick} x={props.x} y={props.y} width={props.width} height={props.height} />
 		</Tooltip>
@@ -55,11 +56,13 @@ const Property: React.SFC<RoomProps> = (props) => {
 export interface GroundPlanProps {
 	selectedRoom: string;
 	onClick: (selected: string) => void;
+	doors: any; 
 }
 export class GroundPlan extends React.PureComponent<GroundPlanProps> {
 	public static propTypes: any = {
-		selectedRoom: PropTypes.string.isRequired,
-		onClick: PropTypes.func.isRequired
+		selectedRoom: PropTypes.string,
+		onClick: PropTypes.func.isRequired,
+		doors: PropTypes.array
 	};
 
 	public static defaultProps = {
@@ -83,18 +86,18 @@ export class GroundPlan extends React.PureComponent<GroundPlanProps> {
 			
 				<svg width="100%" height="100%" version="1.1" viewBox="25 0 1083 687">
 					<g id="property">
-						<Property id='W1' onClick={this.handleRoomSelect} getClassName={this.getClassName} x={28} y={14} width={1077} height={666} />
+						<Property doors={this.props.doors} id='W1' onClick={this.handleRoomSelect} getClassName={this.getClassName} x={28} y={14} width={1077} height={666} />
 						<line className={this.getClassName('roomdoor', 'W1')} x1="680" y1="680" x2="453" y2="680"  />
 						<text x="490" y="650">Tor West</text>
 					</g>
 					<g id="production">
 						<text x="710" y="50">Production</text>
 						
-						<Room id='200' onClick={this.handleRoomSelect} getClassName={this.getClassName} x={567} y={71} width={170} height={156} />
-						<Room id='201' onClick={this.handleRoomSelect} getClassName={this.getClassName} x={567} y={227} width={170} height={142} />
-						<Room id='202' onClick={this.handleRoomSelect} getClassName={this.getClassName} x={567} y={369} width={170} height={156} />
-						<Room id='204' onClick={this.handleRoomSelect} getClassName={this.getClassName} x={737} y={369} width={326} height={156} />
-						<Room id='205' onClick={this.handleRoomSelect} getClassName={this.getClassName} x={737} y={71} width={326} height={156} />
+						<Room doors={this.props.doors} id='200' onClick={this.handleRoomSelect} getClassName={this.getClassName} x={567} y={71} width={170} height={156} />
+						<Room doors={this.props.doors} id='201' onClick={this.handleRoomSelect} getClassName={this.getClassName} x={567} y={227} width={170} height={142} />
+						<Room doors={this.props.doors} id='202' onClick={this.handleRoomSelect} getClassName={this.getClassName} x={567} y={369} width={170} height={156} />
+						<Room doors={this.props.doors} id='204' onClick={this.handleRoomSelect} getClassName={this.getClassName} x={737} y={369} width={326} height={156} />
+						<Room doors={this.props.doors} id='205' onClick={this.handleRoomSelect} getClassName={this.getClassName} x={737} y={71} width={326} height={156} />
 						
 						<g>
 							<line className={this.getClassName('roomdoor', '200')} x1="567" y1="110" x2="567" y2="170" />
@@ -116,13 +119,13 @@ export class GroundPlan extends React.PureComponent<GroundPlanProps> {
 					</g>
 					<g id="administration">
 						<text x="170" y="50">Verwaltung</text>
-						<Room id='Z1' onClick={this.handleRoomSelect} getClassName={this.getClassName} x={213} y={71} width={99} height={482} />
-						<Room id='100' onClick={this.handleRoomSelect} getClassName={this.getClassName} x={85} y={270} width={128} height={340}  />
-						<Room id='101' onClick={this.handleRoomSelect} getClassName={this.getClassName} x={312} y={255} width={156} height={156} />
-						<PathRoom id='102' onClick={this.handleRoomSelect} getClassName={this.getClassName} d="M312 496 L468 496 L468 595 L312 609 Z" />
-						<Room id='103' onClick={this.handleRoomSelect} getClassName={this.getClassName} x={312} y={411} width={156} height={85} />
-						<Room id='104' onClick={this.handleRoomSelect} getClassName={this.getClassName} x={312} y={71} width={156} height={184} />
-						<Room id='105' onClick={this.handleRoomSelect} getClassName={this.getClassName} x={85} y={71} width={128} height={198} />
+						<Room doors={this.props.doors} id='Z1' onClick={this.handleRoomSelect} getClassName={this.getClassName} x={213} y={71} width={99} height={482} />
+						<Room doors={this.props.doors} id='100' onClick={this.handleRoomSelect} getClassName={this.getClassName} x={85} y={270} width={128} height={340}  />
+						<Room doors={this.props.doors} id='101' onClick={this.handleRoomSelect} getClassName={this.getClassName} x={312} y={255} width={156} height={156} />
+						<PathRoom doors={this.props.doors} id='102' onClick={this.handleRoomSelect} getClassName={this.getClassName} d="M312 496 L468 496 L468 595 L312 609 Z" />
+						<Room doors={this.props.doors} id='103' onClick={this.handleRoomSelect} getClassName={this.getClassName} x={312} y={411} width={156} height={85} />
+						<Room doors={this.props.doors} id='104' onClick={this.handleRoomSelect} getClassName={this.getClassName} x={312} y={71} width={156} height={184} />
+						<Room doors={this.props.doors} id='105' onClick={this.handleRoomSelect} getClassName={this.getClassName} x={85} y={71} width={128} height={198} />
 
 						<g>
 							<line className={this.getClassName('roomdoor', 'Z1')} x1="230" y1="553" x2="290" y2="553" />

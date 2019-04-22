@@ -30,7 +30,7 @@ import ColorInfoBox from './ColorInfoBox';
 
 import { arrowClosed, arrowOpen } from './Constants';
 import { DateSelection, TimeSelection } from './DateTimeSelection';
-import { LanguageContext, doors } from './../services/BackendAdapter';
+import { LanguageContext } from './../services/BackendAdapter';
 
 import { messages } from './../translations/messages';
 
@@ -65,7 +65,7 @@ class Home extends Component {
 			doorList: null,
 			isOpen: false,
 			person: null,
-			door: doors[1].items[2],
+			door: null,
 			selectedDate: date,
 			open: false,
 			transition: 0
@@ -91,8 +91,8 @@ class Home extends Component {
 				 .then(response => response.json())
 				 .then(data => this.setState({
 					 isLoading: false,
-					 doorList: doors,
-					 door: doors[1].items[2]
+					 doorList: data,
+					 door: data[1].items[1]
 				 }))
 			);
 	}
@@ -106,6 +106,8 @@ class Home extends Component {
 	};
 
 	toggleDoor() {
+		console.log(`Toggle Door ${this.state.door.lockId} - ${this.state.person.keyId} - ${this.state.selectedDate}`)
+
 		this.setState(function(state) {
 			let transition;
 			if (typeof state.isOpen !== 'undefined') {
@@ -150,7 +152,7 @@ class Home extends Component {
 	}
 
 	onSelectPerson(selected) {
-		console.log("onSelectPerson")
+		
 		const index = this.state.personList.findIndex(x => x.value === selected.value);
 		this.setState({ person: this.state.personList[index] });
 	}
@@ -182,7 +184,7 @@ class Home extends Component {
 							ContentProps={{
 							'aria-describedby': 'message-id',
 							}}
-							message={<span id="message-id">{this.state.door.label} kann geöffnet werden!</span>}
+							message={<span id="message-id">{(this.state.door) ? this.state.door.label : "xxx" } kann geöffnet werden!</span>}
 							action={[
 								<IconButton
 									key="close"
@@ -195,9 +197,9 @@ class Home extends Component {
 							]}
 						/>
 
-						<Door doorId={this.state.door.image} isOpen={this.state.isOpen} transition={this.state.transition}/>
+						<Door doorId={(this.state.door) ? this.state.door.image : "nothing"} isOpen={this.state.isOpen} transition={this.state.transition}/>
 						
-						<DoorCaption doorName={this.state.door.label}></DoorCaption>
+						<DoorCaption doorName={(this.state.door) ? this.state.door.label : "nothing"}></DoorCaption>
 
 					<Row className="grid-content">
 						<Col xs={4} className="col-content-aside col-content-left">
@@ -213,7 +215,7 @@ class Home extends Component {
 
 							<ColorInfoBox label={this.props.intl.formatMessage(messages.homeLabelKeyId)}
 								color={(this.state.person) && (this.state.person.color) ? this.state.person.color : undefined}>
-								{(this.state.person) ? this.state.person.value : null} 
+								{(this.state.person) ? `${this.state.person.value} (${this.state.person.keyId})` : null} 
 							</ColorInfoBox>
 
 							<Label>{this.props.intl.formatMessage(messages.homeLabelDoor)}</Label>
@@ -226,12 +228,15 @@ class Home extends Component {
 
 							<ColorInfoBox label={this.props.intl.formatMessage(messages.homeLabelLockId)}
 								color={(this.state.door) && (this.state.door.color) ? this.state.door.color : undefined}>
-								{(this.state.door) ? this.state.door.value : null}
+								{(this.state.door) ? `${this.state.door.value} (${this.state.door.lockId})` : null}
 							</ColorInfoBox>
 						</Col>
 						
 						<Col xs={4} className="col-content-center" >
-							<GroundPlan selectedRoom={this.state.door.value} onClick={this.onSelectRoom}/>
+							<GroundPlan 
+								selectedRoom={(this.state.door) ? this.state.door.value: null} 
+								onClick={this.onSelectRoom}
+								doors={this.state.doorList} />
 						</Col>
 
 						<Col xs={4} className="col-content-aside col-content-right">
