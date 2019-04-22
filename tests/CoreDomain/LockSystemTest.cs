@@ -7,6 +7,7 @@ using Lockbase.CoreDomain;
 using Lockbase.CoreDomain.Entities;
 using Lockbase.CoreDomain.Aggregates;
 using Lockbase.CoreDomain.ValueObjects;
+using System.IO;
 
 namespace Lockbase.ui.UnitTest.CoreDomain {
 
@@ -198,6 +199,7 @@ namespace Lockbase.ui.UnitTest.CoreDomain {
             Assert.Null(policy.NumberOfLockings);
             Assert.Equal(3, policy.TimePeriodDefinitions.Count());
         }
+
         [Fact]
         public void TestDefineAssignmentLock() {
 
@@ -215,6 +217,26 @@ namespace Lockbase.ui.UnitTest.CoreDomain {
             Assert.NotNull(policy);
             Assert.Null(policy.NumberOfLockings);
             Assert.Equal(3, policy.TimePeriodDefinitions.Count());
+        }
+
+        [Fact]
+        public void TestDefineLockSystem() {
+            var lines = File.ReadAllLines("samples/ELIApp2Drv.txt");
+            var lockSystem = lines.Aggregate( 
+                seed: LockSystem.Empty, 
+                func: (system, line) => system.DefineStatement(line)
+            );
+            
+            Assert.Equal( 16, lockSystem.Keys.Count());
+            Assert.Equal( 13, lockSystem.Locks.Count());
+            Assert.Equal( 5, lockSystem.Policies.Count());
+
+            var policiy = lockSystem.QueryPolicies( 
+                    lockSystem.QueryLock("0g0000t00nuiu"), 
+                    lockSystem.QueryKey("7s0000l00nuiu")).SingleOrDefault();
+
+            Assert.NotNull( policiy );
+            Assert.Equal("080002uc1k25o", policiy.Id);
         }
 	}
 }

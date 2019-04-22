@@ -131,6 +131,25 @@ namespace Lockbase.CoreDomain.Aggregates {
             return AddAssignment(@lock, policy, keys);
         }
 
+        public LockSystem DefineStatement(string statement) {
+            int index = statement.IndexOf(',');
+            string head = statement.Substring(0,index);
+            string tail = statement.Substring(index+1);
+
+            if (head.Equals("DK"))
+                return DefineKey(tail);
+            else if (head.Equals("DL"))
+                return DefineLock(tail);
+            else if (head.Equals("AT"))
+                return DefinePolicy(tail);
+            else if (head.Equals("AL"))
+                return DefineAssignmentLock(tail);    
+            else if (head.Equals("AK"))
+                return DefineAssignmentKey(tail);
+                
+            throw new NotImplementedException(head);
+        }
+
         #endregion
 
         #region Remove Objects 
