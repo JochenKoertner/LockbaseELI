@@ -63,11 +63,11 @@ class Home extends Component {
 			isLoading: false,
 			personList: null,
 			doorList: null,
-			isOpen: false,
+			isOpen: null,
 			person: null,
 			door: null,
 			selectedDate: date,
-			open: false,
+			open: null,
 			transition: 0
 		};
 
@@ -102,35 +102,49 @@ class Home extends Component {
 			return;
 		}
 
-		this.setState({ open: false });
+		this.setState({ open: null });
 	};
 
 	toggleDoor() {
 		console.log(`Toggle Door ${this.state.door.lockId} - ${this.state.person.keyId} - ${this.state.selectedDate}`)
-
-		this.setState(function(state) {
-			let transition;
-			if (typeof state.isOpen !== 'undefined') {
-				if (state.isOpen) {
-					transition = 1;
-				} else
-				{
-					transition = 2;
+		var dateString = dfns.format(this.state.selectedDate, "yyyy-MM-dd'T'HH:mmZ")   
+		console.log(dateString)
+		fetch(`api/data/check?keyId=${this.state.person.keyId}&lockId=${this.state.door.lockId}&dateTime=${dateString}`)
+			.then( response => response.json())
+			.then( ok => {
+				console.log(` response with ${ok}`)
+				if (ok) {
+					this.setState(function(state) {
+						let transition;
+						if (typeof state.isOpen !== 'undefined') {
+							if (state.isOpen) {
+								transition = 1;
+							} else
+							{
+								transition = 2;
+							}
+						}
+						else
+						{
+							transition = 0;
+						}
+						return {
+							isOpen: !state.isOpen,
+							open: true,
+							transition: transition,
+						}
+					})
+					//var audio = document.getElementById('door-sound');
+					//audio.play();
 				}
-			}
-			else
-			{
-				transition = 0;
-			}
-			return {
-				isOpen: !state.isOpen,
-				open: true,
-				transition: transition,
-			}
-		});
-
-		var audio = document.getElementById('door-sound');
-		audio.play();
+				else {
+					this.setState(function(state) {
+						return {
+							open: false
+						}
+					})
+				}
+			});
 	}
 
 	handleDateChange = date => {

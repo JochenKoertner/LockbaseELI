@@ -22,6 +22,24 @@ namespace ui.Controllers
 			this.logger = logger;	
 		}
 
+		// https://localhost:5001/api/data/check?keyId=233&lockid=34434&dateTime=2010-12-09T08:00:00.000Z	
+		[HttpGet("[action]")]
+		public bool Check(string keyId, string lockId, DateTime dateTime) {
+			dateTime = dateTime.ToUniversalTime();
+			logger.LogInformation("key {Key} , Lock {Lock}, DateTime {DateTime}", keyId, lockId, dateTime);
+
+			LockSystem system = lockSystem; 
+
+			var policiy = system.QueryPolicies( 
+                    system.QueryLock(lockId), 
+                    system.QueryKey(keyId)).SingleOrDefault();
+
+			var result = policiy.TimePeriodDefinitions.Aggregate(false,
+				(accu, current) => accu || CheckAccess.Check(current, dateTime));
+
+			return result;
+		}
+
 		[HttpGet("[action]")]
 		public IEnumerable<PersonInfo> Persons()
 		{
