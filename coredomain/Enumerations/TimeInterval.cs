@@ -48,7 +48,7 @@ namespace Lockbase.CoreDomain.Enumerations {
 		public static readonly TimeInterval Year = new TimeInterval(10, "Year", "Y");
 
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    	private string DebuggerDisplay => Alias;
+    	internal string DebuggerDisplay => Alias;
 	}
 
 
