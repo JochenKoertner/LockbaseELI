@@ -1,10 +1,16 @@
+using System.IO;
+using System.Linq;
 using System.Net.Mqtt;
+using Lockbase.CoreDomain;
+using Lockbase.CoreDomain.Aggregates;
+using Lockbase.CoreDomain.Entities;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 
 using ui.Common; 
@@ -39,6 +45,10 @@ namespace ui
             });
 
             services.AddEventBus(_configuration);
+
+			
+
+			services.AddSingleton(new AtomicValue<LockSystem>(CreateLockSystem()));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -76,5 +86,9 @@ namespace ui
                 }
             });
         }
+
+		private LockSystem CreateLockSystem() => 
+			File.ReadAllLines("sample/ELIApp2Drv.txt")
+				.Aggregate(LockSystem.Empty, (accu, current) => accu.DefineStatement(current));
     }
 }

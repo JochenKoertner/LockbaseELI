@@ -18,7 +18,7 @@ namespace Lockbase.CoreDomain.ValueObjects  {
         {
             // https://regex101.com/r/UJhaaC/3
 
-            const string pattern = @"((?'negation'!)?(?'starttime'\d{8}T\d{6}Z)?(\/(?'duration'\d*)?(\/(?'recurrence'(\d*)(s|m|h|DWY|DWM|DW|DM|WY|M|Y)(\(.+\))*)?(\/(?'endtime'\d{8}T\d{6}Z))?)?)?)?";
+            const string pattern = @"((?'negation'!)?(?'starttime'\d{8}T\d{6}Z)?(\/(?'duration'\d*)?(\/(?'recurrence'(\d*)(s|m|h|DWY|DWM|DW|DM|DY|WY|M|Y)(\(.+\))*)?(\/(?'endtime'\d{8}T\d{6}Z))?)?)?)?";
 
             RegexOptions options = RegexOptions.IgnoreCase;
 
