@@ -81,7 +81,7 @@ namespace ui
 
                 if (env.IsDevelopment())
                 {
-                	spa.Options.SourcePath = "../frontend";
+                	spa.Options.SourcePath = "../../frontend";
                     spa.UseReactDevelopmentServer(npmScript: "start");
                 }
             });

@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/ui/ui.csproj"
+                "${workspaceFolder}/backend/ui/ui.csproj"
             ],
             "group": {
                 "kind": "build",
@@ -25,7 +25,7 @@
             },
             "args": [
                 "test",
-                "${workspaceFolder}/tests/UnitTest.csproj"
+                "${workspaceFolder}/backend/tests/UnitTest.csproj"
             ],
             "problemMatcher": "$msCompile"
         }
