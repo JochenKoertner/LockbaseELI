@@ -17,6 +17,23 @@ namespace Lockbase.ui.UnitTest.CoreDomain {
             DateTime.ParseExact(timeString, "yyyy-MM-dd HH:mm", 
                 CultureInfo.InvariantCulture);
 
+			[Theory]
+			[InlineData("2018-12-30 12:00", false)]
+			[InlineData("2019-12-30 12:00", true)]
+			[InlineData("2020-12-30 12:00", true)]
+			[InlineData("2021-12-30 12:00", false)]
+			public void TestWithoutRecurrencyRule(string timeString, bool expected)
+			{
+				TimePeriodDefinition definition = "20181231T230000Z/63072000";
+				var time = ToTime(timeString);
+				var actual = CheckAccess.Check(definition, time);
+
+				if (expected) 
+						Assert.True(actual, timeString);
+				else
+						Assert.False(actual, timeString);
+			}
+
         [Theory]
         // Freitags
         [InlineData("2019-02-15 12:00", true)]

@@ -1,6 +1,5 @@
 import * as React from 'react';
 
-import DateFnsUtils from '@date-io/date-fns';
 import { DatePicker } from 'material-ui-pickers';
 import { TimePicker } from 'material-ui-pickers';
 
