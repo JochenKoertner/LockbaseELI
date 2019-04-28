@@ -1,11 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Subjects;
 using System.Threading.Tasks;
 using Lockbase.CoreDomain;
 using Lockbase.CoreDomain.Aggregates;
+using Lockbase.CoreDomain.Services;
+using Lockbase.CoreDomain.ValueObjects;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using ui.Common;
 using ui.Models;
 
 namespace ui.Controllers
@@ -15,11 +20,17 @@ namespace ui.Controllers
 	{
 		private readonly AtomicValue<LockSystem> lockSystem;
 		private readonly ILogger<DataController> logger;
+        private readonly Subject<Statement> statementSubject;
 
-		public DataController(AtomicValue<LockSystem> lockSystem, ILogger<DataController> logger)
+
+        public DataController(
+			AtomicValue<LockSystem> lockSystem, 
+			ILogger<DataController> logger, 
+			Subject<Statement> statementSubject)
 		{
 			this.lockSystem = lockSystem;
-			this.logger = logger;	
+			this.logger = logger;
+			this.statementSubject = statementSubject;
 		}
 
 		// https://localhost:5001/api/data/check?keyId=233&lockid=34434&dateTime=2010-12-09T08:00:00.000Z	
@@ -36,6 +47,8 @@ namespace ui.Controllers
 
 			var result = policiy.TimePeriodDefinitions.Aggregate(false,
 				(accu, current) => accu || CheckAccess.Check(current, dateTime));
+
+			statementSubject.OnNext(new Statement($"EK,{lockId},{keyId},{result}"));
 
 			return result;
 		}
