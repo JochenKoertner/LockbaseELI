@@ -4,6 +4,8 @@
         "**/obj": true,
         "**/node_modules": true,
         "**/.idea": true,
+        "**/ipch": true,
+        "frontend/build" : true,
         "driver/build": true,
         "driver/cmake-build-debug": true
     },
