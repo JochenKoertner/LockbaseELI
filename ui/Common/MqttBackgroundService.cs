@@ -1,10 +1,12 @@
 using System;
 using System.Net.Mqtt;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Lockbase.CoreDomain.Services;
+using Lockbase.CoreDomain.ValueObjects;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -26,12 +28,18 @@ namespace ui.Common
         private IMqttServer _mqttServer;
 
 		private readonly IMessageBusInteractor messageBusInteractor;
+        private readonly Subject<Statement> statementSubject;
 
-        public MqttBackgroundService(IOptions<BrokerConfig> brokerConfig, ILoggerFactory loggerFactory, IMessageBusInteractor messageBusInteractor)
+        public MqttBackgroundService(
+			IOptions<BrokerConfig> brokerConfig, 
+			ILoggerFactory loggerFactory, 
+			IMessageBusInteractor messageBusInteractor, 
+			Subject<Statement> statementSubject)
         {
             _brokerConfig = brokerConfig.Value;
             _logger = loggerFactory.CreateLogger<MqttBackgroundService>();
 			this.messageBusInteractor = messageBusInteractor;
+            this.statementSubject = statementSubject;
         }
         
         private async Task<IMqttClient> CreateClient()
@@ -60,7 +68,10 @@ namespace ui.Common
             
             await client.SubscribeAsync(_brokerConfig.Topic, MqttQualityOfService.ExactlyOnce); //QoS2
             
-            
+            this.statementSubject.Subscribe( statement => 
+				Publish(client, "heartbeat", statement.Head, MqttQualityOfService.ExactlyOnce).Wait()
+			);
+
             
             client
                 .MessageStream

@@ -1,10 +1,12 @@
 using System.IO;
 using System.Linq;
 using System.Net.Mqtt;
+using System.Reactive.Subjects;
 using Lockbase.CoreDomain;
 using Lockbase.CoreDomain.Aggregates;
 using Lockbase.CoreDomain.Entities;
 using Lockbase.CoreDomain.Services;
+using Lockbase.CoreDomain.ValueObjects;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -44,10 +46,12 @@ namespace ui
             {
                 configuration.RootPath = "ClientApp/build";
             });
+
+			services.AddSingleton<Subject<Statement>>();
 			services.AddSingleton(new AtomicValue<LockSystem>(CreateLockSystem()));
 			services.AddSingleton<IMessageBusInteractor,MessageBusInteractor>();
 			
-            services.AddEventBus(_configuration);
+            services.AddMqttService(_configuration);
 
 			
 

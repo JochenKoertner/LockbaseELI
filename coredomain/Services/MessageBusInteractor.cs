@@ -18,7 +18,5 @@ namespace Lockbase.CoreDomain.Services {
             logger.LogInformation($"Message received in topic {topic}");
             logger.LogInformation($"{session_id} ´{message}´");
         }
-
-        public void Publish(string topic, string session_id, string message) {}
     }
 }
