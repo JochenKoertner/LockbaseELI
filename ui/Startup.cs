@@ -4,6 +4,7 @@ using System.Net.Mqtt;
 using Lockbase.CoreDomain;
 using Lockbase.CoreDomain.Aggregates;
 using Lockbase.CoreDomain.Entities;
+using Lockbase.CoreDomain.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -43,12 +44,13 @@ namespace ui
             {
                 configuration.RootPath = "ClientApp/build";
             });
-
+			services.AddSingleton(new AtomicValue<LockSystem>(CreateLockSystem()));
+			services.AddSingleton<IMessageBusInteractor,MessageBusInteractor>();
+			
             services.AddEventBus(_configuration);
 
 			
 
-			services.AddSingleton(new AtomicValue<LockSystem>(CreateLockSystem()));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

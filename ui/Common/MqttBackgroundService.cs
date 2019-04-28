@@ -4,6 +4,7 @@ using System.Reactive.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Lockbase.CoreDomain.Services;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -22,13 +23,15 @@ namespace ui.Common
     {
         private readonly BrokerConfig _brokerConfig;
         private readonly ILogger<MqttBackgroundService> _logger;
-        // private IMqttClient _mqttClient;
         private IMqttServer _mqttServer;
 
-        public MqttBackgroundService(IOptions<BrokerConfig> brokerConfig, ILoggerFactory loggerFactory)
+		private readonly IMessageBusInteractor messageBusInteractor;
+
+        public MqttBackgroundService(IOptions<BrokerConfig> brokerConfig, ILoggerFactory loggerFactory, IMessageBusInteractor messageBusInteractor)
         {
             _brokerConfig = brokerConfig.Value;
             _logger = loggerFactory.CreateLogger<MqttBackgroundService>();
+			this.messageBusInteractor = messageBusInteractor;
         }
         
         private async Task<IMqttClient> CreateClient()
@@ -114,9 +117,7 @@ namespace ui.Common
         private void LogMessage(MqttApplicationMessage msg)
         {
             var message = JsonConvert.DeserializeObject<Message>(Encoding.UTF8.GetString(msg.Payload));
-            
-            _logger.LogInformation($"Message received in topic {msg.Topic}");
-            _logger.LogInformation($"{message.session_id} ´{message.text}´");
+			messageBusInteractor.Receive(topic: msg.Topic, session_id: message.session_id, message: message.text);
         }
 
         private async Task<SessionState> Connect(IMqttClient client, string clientId)
