@@ -38,23 +38,17 @@ namespace ui
         {
             _logger.LogInformation("ConfigureServices");
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             
             
             // In production, the React files will be served from this directory
-            services.AddSpaStaticFiles(configuration =>
-            {
-                configuration.RootPath = "ClientApp/build";
-            });
+            services.AddSpaStaticFiles(spa =>spa.RootPath = "ClientApp" );
 
 			services.AddSingleton<Subject<Statement>>();
 			services.AddSingleton(new AtomicValue<LockSystem>(CreateLockSystem()));
 			services.AddSingleton<IMessageBusInteractor,MessageBusInteractor>();
 			
             services.AddMqttService(_configuration);
-
-			
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -84,10 +78,10 @@ namespace ui
 
             app.UseSpa(spa =>
             {
-                spa.Options.SourcePath = "ClientApp";
 
                 if (env.IsDevelopment())
                 {
+                	spa.Options.SourcePath = "../../frontend";
                     spa.UseReactDevelopmentServer(npmScript: "start");
                 }
             });
