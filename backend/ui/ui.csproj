@@ -1,9 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
-	<PropertyGroup>
-		<TargetFramework>netcoreapp2.2</TargetFramework>
-		<IsPackable>false</IsPackable>
-	</PropertyGroup>
+	<Import Project="../common.targets" />
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.AspNetCore.App" />
