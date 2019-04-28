@@ -26,11 +26,19 @@ namespace Lockbase.CoreDomain {
 
             if (td.Duration.HasValue && td.StartTime.HasValue)
             {
-                TimeSpan start = td.StartTime.Value.TimeOfDay;
-                var allowed = td.Duration.Value;
-                var current = time.TimeOfDay.Subtract(start).TotalSeconds;
-                if (current > allowed || current < 0)
-                    return false;
+					var seconds = td.Duration.Value;
+
+					if (seconds >= new TimeSpan(24,0,0).TotalSeconds) {
+						var endTime = td.StartTime.Value.AddSeconds(seconds);
+						if (time < td.StartTime || time > endTime)
+							return false;
+					} 
+					else {
+						TimeSpan start = td.StartTime.Value.TimeOfDay;
+						var current = time.TimeOfDay.Subtract(start).TotalSeconds;
+						if (current > seconds || current < 0)
+							return false;
+					}
             }
 
             return td.RecurrenceRules.Aggregate(true, 

@@ -113,8 +113,6 @@ export let minutes = Array
 
 export const findLabel = (doors, roomId) => {
 
-		return "";
-
 		/*if (doors !== undefined) {
 			const onlyDoors = doors
 				.map(x => {

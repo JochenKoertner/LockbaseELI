@@ -2,7 +2,9 @@ import React, { Component } from 'react';
 import { Col, Grid, Row, Label } from 'react-bootstrap';
 import Dropdown from 'react-dropdown';
 
-import DateFnsUtils from '@date-io/date-fns';
+import DateFnsUtils from '@date-io/date-fns'
+import format from 'date-fns/format'
+import moment from 'moment'
 
 import Button from '@material-ui/core/Button';
 import Snackbar from '@material-ui/core/Snackbar';
@@ -41,6 +43,15 @@ const localeMap = {
 	fr: frLocale,
 	it: itLocale,
 };
+
+class ExtDateFnsUtils extends DateFnsUtils {
+    startOfMonth(date) {
+        return moment(date).startOf('month').toDate();
+    }
+    getDatePickerHeaderText(date) {
+        return format(date, 'd MMMM', {locale: this.locale})
+    }
+}
 
 const dfns = new DateFnsUtils();
 
@@ -261,7 +272,7 @@ class Home extends Component {
 									this.props.intl.formatMessage(messages.homeDoorOpenState): 
 									this.props.intl.formatMessage(messages.homeDoorCloseState)}
 							</InfoBox>
-							<MuiPickersUtilsProvider utils={DateFnsUtils} locale={localeMap[language.language.value]}>
+							<MuiPickersUtilsProvider utils={ExtDateFnsUtils} locale={localeMap[language.language.value]}>
 								<Row>
 									<Col xs={6}>
 										<Label>{this.props.intl.formatMessage(messages.homeLabelDate)}</Label>
