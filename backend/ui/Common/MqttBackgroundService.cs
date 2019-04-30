@@ -76,7 +76,7 @@ namespace ui.Common
 
 			_observerStatement = this.statementSubject.Subscribe(
 				async statement =>
-					await Publish(_mqttClient, statement.Topic, statement.SessionId, statement.Head,
+					await Publish(_mqttClient, statement.Topic, statement.SessionId, statement.Message,
 					 statement.Topic.Equals(TOPIC_HEARTBEAT) ? MqttQualityOfService.AtMostOnce : MqttQualityOfService.ExactlyOnce)
 			);
 
@@ -132,7 +132,7 @@ namespace ui.Common
 		private void HandleMessage(MqttApplicationMessage msg)
 		{
 			var message = JsonConvert.DeserializeObject<Message>(Encoding.UTF8.GetString(msg.Payload));
-			messageBusInteractor.Receive(replyTo: message.reply_to, session_id: message.session_id, message: message.text);
+			messageBusInteractor.Receive(replyTo: message.reply_to, sessionId: Convert.ToInt32(message.session_id), message: message.text);
 		}
 
 		private async Task<SessionState> Connect(IMqttClient client, string clientId)

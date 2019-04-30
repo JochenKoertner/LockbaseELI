@@ -21,5 +21,7 @@ namespace Lockbase.CoreDomain.ValueObjects
 		public string Tail { get; private set; }
 		public string Topic { get; private set; }
 		public int SessionId { get; private set; }
+
+		public string Message => $"{Head},{Tail}";
 	}
 }
