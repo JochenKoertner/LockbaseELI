@@ -20,75 +20,71 @@ using ui.Common;
 
 namespace ui
 {
-    public class Startup
-    {
-        private readonly ILogger<Startup> _logger;
+	public class Startup
+	{
+		private readonly ILogger<Startup> _logger;
 
-        private readonly IConfiguration _configuration;
-        
-        public Startup(IConfiguration configuration, ILoggerFactory loggerFactory)
-        {
-            _configuration = configuration;
-            _logger = loggerFactory.CreateLogger<Startup>();
-        }
+		private readonly IConfiguration _configuration;
+		
+		public Startup(IConfiguration configuration, ILoggerFactory loggerFactory)
+		{
+				_configuration = configuration;
+				_logger = loggerFactory.CreateLogger<Startup>();
+		}
 
 
-        // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
-        {
-            _logger.LogInformation("ConfigureServices");
+		// This method gets called by the runtime. Use this method to add services to the container.
+			public void ConfigureServices(IServiceCollection services)
+			{
+				services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+				
+				
+				// In production, the React files will be served from this directory
+				services.AddSpaStaticFiles(spa =>spa.RootPath = "ClientApp" );
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-            
-            
-            // In production, the React files will be served from this directory
-            services.AddSpaStaticFiles(spa =>spa.RootPath = "ClientApp" );
+				services.AddSingleton<Subject<Statement>>();
+				services.AddSingleton(new AtomicValue<LockSystem>(CreateLockSystem()));
+				services.AddSingleton<IMessageBusInteractor,MessageBusInteractor>();
+				
+				services.AddMqttService(_configuration);
+			}
 
-			services.AddSingleton<Subject<Statement>>();
-			services.AddSingleton(new AtomicValue<LockSystem>(CreateLockSystem()));
-			services.AddSingleton<IMessageBusInteractor,MessageBusInteractor>();
-			
-            services.AddMqttService(_configuration);
-        }
+		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+		public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+		{
+				if (env.IsDevelopment())
+				{
+					app.UseDeveloperExceptionPage();
+				}
+				else
+				{
+					app.UseExceptionHandler("/Error");
+					app.UseHsts();
+				}
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
-        {
-            _logger.LogInformation("Configure");
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-            else
-            {
-                app.UseExceptionHandler("/Error");
-                app.UseHsts();
-            }
+				app.UseHttpsRedirection();
+				app.UseStaticFiles();
+				app.UseSpaStaticFiles();
 
-            app.UseHttpsRedirection();
-            app.UseStaticFiles();
-            app.UseSpaStaticFiles();
+				app.UseMvc(routes =>
+				{
+					routes.MapRoute(
+						name: "default",
+						template: "{controller}/{action=Index}/{id?}");
+				});
 
-            app.UseMvc(routes =>
-            {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller}/{action=Index}/{id?}");
-            });
-
-            app.UseSpa(spa =>
-            {
-
-                if (env.IsDevelopment())
-                {
-                	spa.Options.SourcePath = "../../frontend";
-                    spa.UseReactDevelopmentServer(npmScript: "start");
-                }
-            });
-        }
+				app.UseSpa(spa =>
+				{
+					if (env.IsDevelopment())
+					{
+						spa.Options.SourcePath = "../../frontend";
+						spa.UseReactDevelopmentServer(npmScript: "start");
+					}
+				});
+		}
 
 		private LockSystem CreateLockSystem() => 
 			File.ReadAllLines("sample/ELIApp2Drv.txt")
 				.Aggregate(LockSystem.Empty, (accu, current) => accu.DefineStatement(current));
-    }
+	}
 }

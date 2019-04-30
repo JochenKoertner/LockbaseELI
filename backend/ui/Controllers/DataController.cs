@@ -18,12 +18,13 @@ namespace ui.Controllers
 	[Route("api/[controller]")]
 	public class DataController : Controller
 	{
+		private const string TOPIC_RESPONSE = "response";
 		private readonly AtomicValue<LockSystem> lockSystem;
 		private readonly ILogger<DataController> logger;
-        private readonly Subject<Statement> statementSubject;
+		private readonly Subject<Statement> statementSubject;
 
 
-        public DataController(
+		public DataController(
 			AtomicValue<LockSystem> lockSystem, 
 			ILogger<DataController> logger, 
 			Subject<Statement> statementSubject)
@@ -42,13 +43,13 @@ namespace ui.Controllers
 			LockSystem system = lockSystem; 
 
 			var policiy = system.QueryPolicies( 
-                    system.QueryLock(lockId), 
-                    system.QueryKey(keyId)).SingleOrDefault();
+					system.QueryLock(lockId), 
+					system.QueryKey(keyId)).SingleOrDefault();
 
 			var result = policiy.TimePeriodDefinitions.Aggregate(false,
 				(accu, current) => accu || CheckAccess.Check(current, dateTime));
 
-			statementSubject.OnNext(new Statement($"EK,{lockId},{keyId},{result}"));
+			statementSubject.OnNext(new Statement(TOPIC_RESPONSE, 4711, $"EK,{lockId},{keyId},{result}"));
 
 			return result;
 		}

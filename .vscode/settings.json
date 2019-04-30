@@ -12,5 +12,6 @@
 
     "files.autoSave": "afterDelay",
     "files.autoSaveDelay": 5000,
-    "editor.renderWhitespace": "boundary"
+    "editor.renderWhitespace": "boundary",
+    "editor.detectIndentation": false
 }
