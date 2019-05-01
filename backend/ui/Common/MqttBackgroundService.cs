@@ -80,8 +80,17 @@ namespace ui.Common
 
 			var subscriptionStatement = this.observableStatement.Subscribe(
 				async statement =>
-					await Publish(mqttClient, statement.Topic, statement.SessionId, statement.Message,
-					 statement.Topic.Equals(TOPIC_HEARTBEAT) ? MqttQualityOfService.AtMostOnce : MqttQualityOfService.ExactlyOnce)
+					await Publish(
+						client: mqttClient, 
+						topic: statement.Topic, 
+						sessionId: statement.SessionId, 
+						payload: statement.Message,
+						replyTo: TOPIC_RESPONSE,
+						qos: statement.Topic.Equals(TOPIC_HEARTBEAT) ? 
+							MqttQualityOfService.AtMostOnce 
+							: 
+							MqttQualityOfService.ExactlyOnce
+					)
 			);
 
 			var subscriptionChannel = mqttClient
@@ -147,12 +156,13 @@ namespace ui.Common
 			await client.DisconnectAsync();
 		}
 
-		private async Task Publish(IMqttClient client, string topic, int sessionId, string payload, MqttQualityOfService qos)
+		private async Task Publish(IMqttClient client, string topic, int sessionId, string payload, string replyTo, MqttQualityOfService qos)
 		{
 			var message = new Message()
 			{
 				session_id = sessionId.ToString(),
-				text = payload
+				text = payload,
+				reply_to = replyTo
 			};
 			var json = JsonConvert.SerializeObject(message, Formatting.Indented);
 			var msg = new MqttApplicationMessage(topic, Encoding.UTF8.GetBytes(json));
