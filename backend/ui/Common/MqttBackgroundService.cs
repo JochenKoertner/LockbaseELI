@@ -28,7 +28,6 @@ namespace ui.Common
 		private const string TOPIC_HEARTBEAT = "heartbeat";
 		private readonly BrokerConfig _brokerConfig;
 		private readonly ILogger<MqttBackgroundService> _logger;
-		// private IMqttClient mqttClient;
 		private IMqttServer _mqttServer;
 
 		private IDisposable _disposables;
@@ -53,7 +52,6 @@ namespace ui.Common
 
 		private async Task<IMqttClient> CreateClient()
 		{
-			_logger.LogInformation("CreateClient");
 			var configuration = new MqttConfiguration
 			{
 				BufferSize = 128 * 1024,
@@ -70,7 +68,6 @@ namespace ui.Common
 		protected override async Task ExecuteAsync(CancellationToken stoppingToken)
 		{
 			var mqttClient = await CreateClient();
-			_logger.LogInformation("Execute");
 
 			var sessionState = await Connect(mqttClient, _brokerConfig.User);
 
