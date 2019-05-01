@@ -1,6 +1,12 @@
+using System;
+using System.IO;
+using Lockbase.CoreDomain.ValueObjects;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using ui.Common;
 
 namespace ui
 {
@@ -8,8 +14,10 @@ namespace ui
 	{
 		public static void Main(string[] args)
 		{
-			var host = CreateWebHostBuilder(args).Build();
-			host.Run();
+			CreateWebHostBuilder(args)
+				.Build()
+				.LoadSample("sample/ELIApp2Drv.txt")
+				.Run();
 		}
 
 
@@ -17,5 +25,16 @@ namespace ui
 			WebHost.CreateDefaultBuilder(args)
 				.ConfigureLogging(f => f.AddConsole())
 				.UseStartup<Startup>();
+
+		private static IWebHost LoadSample(this IWebHost host, string fileName)
+		{
+			var observer = host.Services.GetService<IObserver<Statement>>();
+			var brokerConfig = host.Services.GetService<IOptions<BrokerConfig>>().Value;
+			
+			foreach(var statement in File.ReadAllLines(fileName))
+				observer.OnNext(new Statement(brokerConfig.Topic, 007, statement));
+
+			return host;
+		}
 	}
 }

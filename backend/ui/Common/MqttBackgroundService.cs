@@ -34,7 +34,6 @@ namespace ui.Common
 		private IDisposable _observerResponse;
 
 		private readonly IMessageBusInteractor messageBusInteractor;
-		private readonly Subject<Statement> statementSubject;
 		private readonly IObservable<Statement> observableStatement;
 		private readonly IObserver<Statement> statementObserver;
 
@@ -42,14 +41,12 @@ namespace ui.Common
 			IOptions<BrokerConfig> brokerConfig,
 			ILoggerFactory loggerFactory,
 			IMessageBusInteractor messageBusInteractor,
-			Subject<Statement> statementSubject,
 			IObservable<Statement> observableStatement,
 			IObserver<Statement> statementObserver)
 		{
 			_brokerConfig = brokerConfig.Value;
 			_logger = loggerFactory.CreateLogger<MqttBackgroundService>();
 			this.messageBusInteractor = messageBusInteractor;
-			this.statementSubject = statementSubject;
 			this.observableStatement = observableStatement;
 			this.statementObserver = statementObserver;
 		}

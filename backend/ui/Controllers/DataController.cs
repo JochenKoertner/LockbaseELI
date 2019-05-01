@@ -21,19 +21,16 @@ namespace ui.Controllers
 		private const string TOPIC_RESPONSE = "response";
 		private readonly AtomicValue<LockSystem> lockSystem;
 		private readonly ILogger<DataController> logger;
-		private readonly Subject<Statement> statementSubject;
 		private readonly IObserver<Statement> statementObserver;
 
 
 		public DataController(
 			AtomicValue<LockSystem> lockSystem, 
 			ILogger<DataController> logger, 
-			Subject<Statement> statementSubject,
 			IObserver<Statement> statementObserver)
 		{
 			this.lockSystem = lockSystem;
 			this.logger = logger;
-			this.statementSubject = statementSubject;
 			this.statementObserver = statementObserver;
 		}
 
