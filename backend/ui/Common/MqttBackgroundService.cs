@@ -1,5 +1,6 @@
 using System;
 using System.Net.Mqtt;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Text;
@@ -27,11 +28,10 @@ namespace ui.Common
 		private const string TOPIC_HEARTBEAT = "heartbeat";
 		private readonly BrokerConfig _brokerConfig;
 		private readonly ILogger<MqttBackgroundService> _logger;
-		private IMqttClient _mqttClient;
+		// private IMqttClient mqttClient;
 		private IMqttServer _mqttServer;
-		private IDisposable _observerStatement;
-		private IDisposable _observerChannel;
-		private IDisposable _observerResponse;
+
+		private IDisposable _disposables;
 
 		private readonly IMessageBusInteractor messageBusInteractor;
 		private readonly IObservable<Statement> observableStatement;
@@ -69,51 +69,45 @@ namespace ui.Common
 
 		protected override async Task ExecuteAsync(CancellationToken stoppingToken)
 		{
-			_mqttClient = await CreateClient();
+			var mqttClient = await CreateClient();
 			_logger.LogInformation("Execute");
 
+			var sessionState = await Connect(mqttClient, _brokerConfig.User);
 
-			var sessionState = await Connect(_mqttClient, _brokerConfig.User);
+			await mqttClient.SubscribeAsync(_brokerConfig.Topic, MqttQualityOfService.ExactlyOnce); //QoS2
+			await mqttClient.SubscribeAsync(TOPIC_HEARTBEAT, MqttQualityOfService.AtMostOnce); //QoS0
+			await mqttClient.SubscribeAsync(TOPIC_RESPONSE, MqttQualityOfService.ExactlyOnce); //QoS2
 
-			await _mqttClient.SubscribeAsync(_brokerConfig.Topic, MqttQualityOfService.ExactlyOnce); //QoS2
-
-	/* 		_observerStatement = this.statementSubject.Subscribe(
+			var subscriptionStatement = this.observableStatement.Subscribe(
 				async statement =>
-					await Publish(_mqttClient, statement.Topic, statement.SessionId, statement.Message,
-					 statement.Topic.Equals(TOPIC_HEARTBEAT) ? MqttQualityOfService.AtMostOnce : MqttQualityOfService.ExactlyOnce)
-			);
-*/
-			_observerStatement = this.observableStatement.Subscribe(
-				async statement =>
-					await Publish(_mqttClient, statement.Topic, statement.SessionId, statement.Message,
+					await Publish(mqttClient, statement.Topic, statement.SessionId, statement.Message,
 					 statement.Topic.Equals(TOPIC_HEARTBEAT) ? MqttQualityOfService.AtMostOnce : MqttQualityOfService.ExactlyOnce)
 			);
 
-			_observerChannel = _mqttClient
+			var subscriptionChannel = mqttClient
 				.MessageStream
-				.Where(msg => msg.Topic == _brokerConfig.Topic)
-				.Subscribe(msg => HandleMessage(msg));
+				.Subscribe(msg => {
+					if (msg.Topic.Equals(_brokerConfig.Topic))
+						HandleMessage(msg);
+					else 
+						_logger.LogInformation($"Publish {msg.Topic} '{Encoding.UTF8.GetString(msg.Payload)}'");
+				});
+		
+			_disposables = new CompositeDisposable(
+				new []{mqttClient, subscriptionChannel, subscriptionStatement});
 
-			_observerResponse = _mqttClient
-				.MessageStream
-				.Where(msg => msg.Topic == TOPIC_RESPONSE)
-				.Subscribe(msg => _logger.LogInformation($"Publish to topic {msg.Topic}"));
-
-			// sends a initial message on the topic
-			this.statementObserver.OnNext(new Statement(_brokerConfig.Topic, 4711,"DK,000000hqvs1lo,,,MTAzLTEsIEZlbmRlciwgS2xhdXMA"));
 			while (!stoppingToken.IsCancellationRequested)
 			{
-
-				// all five second do some lookup for working 
+				// all 30sec do some lookup for working 
 				this.statementObserver.OnNext(new Statement(TOPIC_HEARTBEAT, 4711, $"HC,{DateTime.UtcNow.ToShortTimeString()}"));
-				await Task.Delay(5000, stoppingToken);
+				await Task.Delay(30000, stoppingToken);
 			}
 
 			//Method to unsubscribe a topic or many topics, which means that the message will no longer
 			//be received in the MessageStream anymore
-			await _mqttClient.UnsubscribeAsync(_brokerConfig.Topic);
+			await mqttClient.UnsubscribeAsync(_brokerConfig.Topic);
 
-			await Disconnect(_mqttClient);
+			await Disconnect(mqttClient);
 		}
 
 		public override Task StartAsync(CancellationToken cancellationToken)
@@ -127,10 +121,8 @@ namespace ui.Common
 		public override Task StopAsync(CancellationToken cancellationToken)
 		{
 			_logger.LogInformation("Stop MQTT-Broker");
-			_observerStatement?.Dispose();
-			_observerChannel?.Dispose();
-			_observerResponse?.Dispose();
-			_mqttClient?.Dispose();
+		
+			_disposables?.Dispose();
 
 			_mqttServer.Stop();
 			_mqttServer.Dispose();

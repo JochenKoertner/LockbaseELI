@@ -44,10 +44,11 @@ namespace ui
 				// In production, the React files will be served from this directory
 				services.AddSpaStaticFiles(spa =>spa.RootPath = "ClientApp" );
 
-				services.AddSingleton<Subject<Statement>>();
 				services.AddSingleton(new AtomicValue<LockSystem>(CreateLockSystem()));
-				services.AddSingleton<IObservable<Statement>>(sp => sp.GetService<Subject<Statement>>().AsObservable());
-				services.AddSingleton<IObserver<Statement>>(sp => sp.GetService<Subject<Statement>>());
+
+				services.AddSingleton<ISubject<Statement>,ReplaySubject<Statement>>();
+				services.AddSingleton<IObservable<Statement>>(sp => sp.GetService<ISubject<Statement>>().AsObservable());
+				services.AddSingleton<IObserver<Statement>>(sp => sp.GetService<ISubject<Statement>>());
 				
 				services.AddSingleton<IMessageBusInteractor,MessageBusInteractor>();
 				
@@ -88,8 +89,8 @@ namespace ui
 				});
 		}
 
-		private LockSystem CreateLockSystem() => 
-			File.ReadAllLines("sample/ELIApp2Drv.txt")
-				.Aggregate(LockSystem.Empty, (accu, current) => accu.DefineStatement(current));
+		private LockSystem CreateLockSystem() => LockSystem.Empty;
+		//	File.ReadAllLines("sample/ELIApp2Drv.txt")
+		//		.Aggregate(LockSystem.Empty, (accu, current) => accu.DefineStatement(current));
 	}
 }
