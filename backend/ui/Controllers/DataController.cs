@@ -22,16 +22,19 @@ namespace ui.Controllers
 		private readonly AtomicValue<LockSystem> lockSystem;
 		private readonly ILogger<DataController> logger;
 		private readonly Subject<Statement> statementSubject;
+		private readonly IObserver<Statement> statementObserver;
 
 
 		public DataController(
 			AtomicValue<LockSystem> lockSystem, 
 			ILogger<DataController> logger, 
-			Subject<Statement> statementSubject)
+			Subject<Statement> statementSubject,
+			IObserver<Statement> statementObserver)
 		{
 			this.lockSystem = lockSystem;
 			this.logger = logger;
 			this.statementSubject = statementSubject;
+			this.statementObserver = statementObserver;
 		}
 
 		// https://localhost:5001/api/data/check?keyId=233&lockid=34434&dateTime=2010-12-09T08:00:00.000Z	
@@ -49,7 +52,7 @@ namespace ui.Controllers
 			var result = policiy.TimePeriodDefinitions.Aggregate(false,
 				(accu, current) => accu || CheckAccess.Check(current, dateTime));
 
-			statementSubject.OnNext(new Statement(TOPIC_RESPONSE, 4711, $"EK,{lockId},{keyId},{result}"));
+			statementObserver.OnNext(new Statement(TOPIC_RESPONSE, 4711, $"EK,{lockId},{keyId},{result}"));
 
 			return result;
 		}

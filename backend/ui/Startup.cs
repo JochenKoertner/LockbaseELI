@@ -1,6 +1,8 @@
+using System;
 using System.IO;
 using System.Linq;
 using System.Net.Mqtt;
+using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using Lockbase.CoreDomain;
 using Lockbase.CoreDomain.Aggregates;
@@ -44,6 +46,9 @@ namespace ui
 
 				services.AddSingleton<Subject<Statement>>();
 				services.AddSingleton(new AtomicValue<LockSystem>(CreateLockSystem()));
+				services.AddSingleton<IObservable<Statement>>(sp => sp.GetService<Subject<Statement>>().AsObservable());
+				services.AddSingleton<IObserver<Statement>>(sp => sp.GetService<Subject<Statement>>());
+				
 				services.AddSingleton<IMessageBusInteractor,MessageBusInteractor>();
 				
 				services.AddMqttService(_configuration);

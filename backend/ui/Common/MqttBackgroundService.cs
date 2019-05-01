@@ -35,17 +35,23 @@ namespace ui.Common
 
 		private readonly IMessageBusInteractor messageBusInteractor;
 		private readonly Subject<Statement> statementSubject;
+		private readonly IObservable<Statement> observableStatement;
+		private readonly IObserver<Statement> statementObserver;
 
 		public MqttBackgroundService(
 			IOptions<BrokerConfig> brokerConfig,
 			ILoggerFactory loggerFactory,
 			IMessageBusInteractor messageBusInteractor,
-			Subject<Statement> statementSubject)
+			Subject<Statement> statementSubject,
+			IObservable<Statement> observableStatement,
+			IObserver<Statement> statementObserver)
 		{
 			_brokerConfig = brokerConfig.Value;
 			_logger = loggerFactory.CreateLogger<MqttBackgroundService>();
 			this.messageBusInteractor = messageBusInteractor;
 			this.statementSubject = statementSubject;
+			this.observableStatement = observableStatement;
+			this.statementObserver = statementObserver;
 		}
 
 		private async Task<IMqttClient> CreateClient()
@@ -74,7 +80,13 @@ namespace ui.Common
 
 			await _mqttClient.SubscribeAsync(_brokerConfig.Topic, MqttQualityOfService.ExactlyOnce); //QoS2
 
-			_observerStatement = this.statementSubject.Subscribe(
+	/* 		_observerStatement = this.statementSubject.Subscribe(
+				async statement =>
+					await Publish(_mqttClient, statement.Topic, statement.SessionId, statement.Message,
+					 statement.Topic.Equals(TOPIC_HEARTBEAT) ? MqttQualityOfService.AtMostOnce : MqttQualityOfService.ExactlyOnce)
+			);
+*/
+			_observerStatement = this.observableStatement.Subscribe(
 				async statement =>
 					await Publish(_mqttClient, statement.Topic, statement.SessionId, statement.Message,
 					 statement.Topic.Equals(TOPIC_HEARTBEAT) ? MqttQualityOfService.AtMostOnce : MqttQualityOfService.ExactlyOnce)
@@ -91,12 +103,12 @@ namespace ui.Common
 				.Subscribe(msg => _logger.LogInformation($"Publish to topic {msg.Topic}"));
 
 			// sends a initial message on the topic
-			this.statementSubject.OnNext(new Statement(_brokerConfig.Topic, 4711,"DK,000000hqvs1lo,,,MTAzLTEsIEZlbmRlciwgS2xhdXMA"));
+			this.statementObserver.OnNext(new Statement(_brokerConfig.Topic, 4711,"DK,000000hqvs1lo,,,MTAzLTEsIEZlbmRlciwgS2xhdXMA"));
 			while (!stoppingToken.IsCancellationRequested)
 			{
 
 				// all five second do some lookup for working 
-				this.statementSubject.OnNext(new Statement(TOPIC_HEARTBEAT, 4711, $"HC,{DateTime.UtcNow.ToShortTimeString()}"));
+				this.statementObserver.OnNext(new Statement(TOPIC_HEARTBEAT, 4711, $"HC,{DateTime.UtcNow.ToShortTimeString()}"));
 				await Task.Delay(5000, stoppingToken);
 			}
 
