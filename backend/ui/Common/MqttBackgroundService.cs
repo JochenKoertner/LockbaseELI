@@ -6,6 +6,7 @@ using System.Reactive.Subjects;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Lockbase.CoreDomain;
 using Lockbase.CoreDomain.Services;
 using Lockbase.CoreDomain.ValueObjects;
 using Microsoft.Extensions.Hosting;
@@ -72,7 +73,6 @@ namespace ui.Common
 			var sessionState = await Connect(mqttClient, _brokerConfig.User);
 
 			await mqttClient.SubscribeAsync(_brokerConfig.Topic, MqttQualityOfService.ExactlyOnce); //QoS2
-			await mqttClient.SubscribeAsync(TOPIC_HEARTBEAT, MqttQualityOfService.AtMostOnce); //QoS0
 			await mqttClient.SubscribeAsync(TOPIC_RESPONSE, MqttQualityOfService.ExactlyOnce); //QoS2
 
 			var subscriptionStatement = this.observableStatement.Subscribe(
@@ -106,7 +106,7 @@ namespace ui.Common
 			{
 				// all 30sec do some lookup for working 
 				this.statementObserver.OnNext(new Statement(TOPIC_HEARTBEAT, 4711, $"HC,{DateTime.UtcNow.ToShortTimeString()}"));
-				await Task.Delay(30000, stoppingToken);
+				await Task.Delay(5000, stoppingToken);
 			}
 
 			//Method to unsubscribe a topic or many topics, which means that the message will no longer
@@ -139,7 +139,7 @@ namespace ui.Common
 		private void HandleMessage(MqttApplicationMessage msg)
 		{
 			var message = JsonConvert.DeserializeObject<Message>(Encoding.UTF8.GetString(msg.Payload));
-			messageBusInteractor.Receive(replyTo: message.reply_to, sessionId: Convert.ToInt32(message.session_id), message: message.text);
+			messageBusInteractor.Receive(replyTo: message.reply_to, sessionId: message.session_id.FromHex(), message: message.text);
 		}
 
 		private async Task<SessionState> Connect(IMqttClient client, string clientId)
@@ -157,7 +157,7 @@ namespace ui.Common
 		{
 			var message = new Message()
 			{
-				session_id = sessionId.ToString(),
+				session_id = sessionId.ToString("X8"),
 				text = payload,
 				reply_to = replyTo
 			};

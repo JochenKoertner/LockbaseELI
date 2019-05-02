@@ -252,7 +252,7 @@ LBELI_EXPORT const char* ELIOpen( const char* sUserList, const char* sSystem, co
 
     node_t * node = new_session(&driverInfo->sessions, sUserList, sSystem, sExtData);
     const char* sSessID = session_id_to_string(node->session_id);
-    const char* message = create_event_payload("ELIOpen", sSessID, "Open a new session");
+    const char* message = create_event_payload("ELIOpen", sSessID, "OPEN,sSystem,sExtData");
     rc = mqtt_publish(sSystem, message, QoS_FireAndForget);
     if (rc != MQTTCLIENT_SUCCESS) {
         return "EUNKNOWN,,,,'0'";
@@ -274,7 +274,7 @@ LBELI_EXPORT const char* ELIClose( const char* sSessID ) {
         return "EUNKNOWN";
     }
 
-    const char* message = create_event_payload("ELIClose", sSessID, "Closing the session");
+    const char* message = create_event_payload("ELIClose", sSessID, "CLOSE,session");
     int rc = mqtt_publish(node->sSystem, message, QoS_FireAndForget);
     if (rc != MQTTCLIENT_SUCCESS) {
         printf("not publish to %s retcode %d \n", node->sSystem, rc);
@@ -304,7 +304,7 @@ LBELI_EXPORT int ELIApp2Drv( const char* sSessID, int nJob, const char* sJob) {
         return -1;
     }
 
-    const char* message = create_event_payload("ELIApp2Drv", sSessID, "Event created");
+    const char* message = create_event_payload("ELIApp2Drv", sSessID, "DK,000000hqvs1lo,,,MTAzLTEsIEZlbmRlciwgS2xhdXMA");
     int rc = mqtt_publish(node->sSystem, message, QoS_FireAndForget);
     if (rc != MQTTCLIENT_SUCCESS) {
         printf("not publish to %s retcode %d \n", node->sSystem, rc);

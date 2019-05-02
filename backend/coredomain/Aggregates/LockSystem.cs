@@ -157,6 +157,8 @@ namespace Lockbase.CoreDomain.Aggregates
 				return DefineAssignmentLock(tail);
 			else if (head.Equals("AK"))
 				return DefineAssignmentKey(tail);
+			else if (head.Equals("OPEN") || head.Equals("CLOSE"))
+				return this;
 
 			throw new NotImplementedException(head);
 		}
