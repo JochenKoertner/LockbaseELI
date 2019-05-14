@@ -241,7 +241,7 @@ LBELI_EXPORT const char* ELISystemInfo( const char* sUsers ) {
             u8",[ID:Product2],,[ACLR]\n"; */
 }
 
-LBELI_EXPORT const char* ELIOpen( const char* sUserList, const char* sSystem, const char* sExtData) {
+LBELI_EXPORT const char* ELIOpen( const char* sUserList, const char* sSysID, const char* sExtData) {
 
     // connect to the broker
     int rc = mqtt_connect();
@@ -250,10 +250,10 @@ LBELI_EXPORT const char* ELIOpen( const char* sUserList, const char* sSystem, co
         return "EUNKNOWN,,,,'0'";
     }
 
-    node_t * node = new_session(&driverInfo->sessions, sUserList, sSystem, sExtData);
+    node_t * node = new_session(&driverInfo->sessions, sUserList, sSysID, sExtData);
     const char* sSessID = session_id_to_string(node->session_id);
     const char* message = create_event_payload("ELIOpen", sSessID, "OPEN,sSystem,sExtData");
-    rc = mqtt_publish(sSystem, message, QoS_FireAndForget);
+    rc = mqtt_publish(sSysID, message, QoS_FireAndForget);
     if (rc != MQTTCLIENT_SUCCESS) {
         return "EUNKNOWN,,,,'0'";
     }
@@ -263,7 +263,7 @@ LBELI_EXPORT const char* ELIOpen( const char* sUserList, const char* sSystem, co
     return buf;
 }
 
-LBELI_EXPORT const char* ELIClose( const char* sSessID ) {
+LBELI_EXPORT const char* ELIClose( const char* sSysID, const char* sSessID ) {
 
     int session_id = string_to_session_id(sSessID);
 
@@ -293,24 +293,25 @@ LBELI_EXPORT const char* ELIClose( const char* sSessID ) {
     return "EOK";
 }
 
-LBELI_EXPORT int ELIApp2Drv( const char* sSessID, int nJob, const char* sJob) {
+LBELI_EXPORT int ELIApp2Drv( const char* sSysID, const char *sJobID, const char* sJobData) {
 
-    int session_id = string_to_session_id(sSessID);
+    int session_id = string_to_session_id(sSysID);
 
     node_t * node = find_session(driverInfo->sessions, session_id);
     if (!node)
     {
-        printf("session %s unknown\n", sSessID);
+        printf("session %s unknown\n", sSysID);
         return -1;
     }
 
-    const char* message = create_event_payload("ELIApp2Drv", sSessID, "DK,000000hqvs1lo,,,MTAzLTEsIEZlbmRlciwgS2xhdXMA");
+    const char* message = create_event_payload("ELIApp2Drv", sSysID, sJobData);
     int rc = mqtt_publish(node->sSystem, message, QoS_FireAndForget);
     if (rc != MQTTCLIENT_SUCCESS) {
         printf("not publish to %s retcode %d \n", node->sSystem, rc);
         return -1;
     }
 
+    /*   "response" cames separatly and asynchron via ELIDrv2App
     char* payload = NULL;
     rc = mqtt_receive_msg("heartbeat", 5000L, &payload);
     if (rc != MQTTCLIENT_SUCCESS) {
@@ -327,6 +328,7 @@ LBELI_EXPORT int ELIApp2Drv( const char* sSessID, int nJob, const char* sJob) {
     };
 
     free(payload);
+     */
 
     return 0;
 }

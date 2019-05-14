@@ -14,9 +14,9 @@
 #endif
 
 
-#define LbwELI_VERSION     "0.2.1844"
+#define LbwELI_VERSION     "0.4.1848"
 
-typedef int (*ELIDrv2App)( const char* sSessID, int nJob, const char* sJob);
+typedef int (*ELIDrv2App)( const char* sSysID, const char* sJobID, const char* sJobData);
 
 LBELI_EXPORT const char* ELIDriverInfo();
 LBELI_EXPORT const char* ELIProductInfo( const char* sProductID );
@@ -27,9 +27,9 @@ LBELI_EXPORT void  ELIDriverUI(const char* SessID, const char* SID);
 LBELI_EXPORT const char* ELICreate( const char* sLic, const char* sLbwELIRev, ELIDrv2App callback);
 LBELI_EXPORT void ELIDestroy();
 
-LBELI_EXPORT const char* ELIOpen( const char* sUserList, const char* sSystem, const char* sExtData);
-LBELI_EXPORT const char* ELIClose( const char* sSessID );
+LBELI_EXPORT const char* ELIOpen( const char* sUserList, const char* sSysID, const char* sExtData);
+LBELI_EXPORT const char* ELIClose( const char* sSysID, const char* sSessID );
 
-LBELI_EXPORT int ELIApp2Drv( const char* sSessID, int nJob, const char* sJob);
+LBELI_EXPORT int ELIApp2Drv( const char* sSysID, const char *sJobID, const char* sJobData);
 
 #endif
