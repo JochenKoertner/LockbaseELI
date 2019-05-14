@@ -18,5 +18,8 @@ namespace Lockbase.CoreDomain
                 value = value.Remove(value.Length - 1);
             return value;
         }
+
+		public static int FromHex(this string hexValue) =>
+			int.Parse(hexValue, System.Globalization.NumberStyles.HexNumber);
     }
 }
