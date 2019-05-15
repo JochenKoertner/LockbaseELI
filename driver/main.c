@@ -20,7 +20,8 @@ int myCallBack( const char* sSysID, const char*  sJobID, const char* sJobData) {
 const char* getField(const char* line, int num)
 {
     static char _result[100];
-    char* prev = line;
+    char* prev;
+    prev = line;
     int len=0;
     while (num > 0) {
         if (prev != NULL) {
