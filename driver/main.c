@@ -3,7 +3,6 @@
 #include <string.h>
 
 #include "library.h"
-#include "jsmn/jsmn.h"
 
 #define CLIENT_ID    "Alice"
 #define SYSTEM       "channel"
@@ -20,7 +19,7 @@ int myCallBack( const char* sSysID, const char*  sJobID, const char* sJobData) {
 const char* getField(const char* line, int num)
 {
     static char _result[100];
-    char* prev;
+    const char* prev;
     prev = line;
     int len=0;
     while (num > 0) {

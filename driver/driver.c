@@ -108,7 +108,7 @@ char* getIdArrayField(const char* keyName, jsmntok_t* token, const char* json) {
         printf("Failed to parse JSON: %d\n", r);
     }
 
-    char* list = concatStringArray(&t, 1, r-1, json + token->start);
+    char* list = concatStringArray(t, 1, r-1, json + token->start);
     char* result = concatStrings(strdup(keyName), list, '=');
     free(list);
     return result;
@@ -136,7 +136,7 @@ char* getEventTypesField(const char* keyName, jsmntok_t* token, const char* json
                 int start = i+1;
                 int end = i + t[i].size;
 
-                char* items = concatStringArray(&t, start, end, json + token->start);
+                char* items = concatStringArray(t, start, end, json + token->start);
                 list = concatStrings(list, items, ';');
                 free(items);
 
@@ -195,7 +195,6 @@ void parseProductInfo(const char* json, const char* sProductID, char** productIn
             if (jsoneq(json, &t[i], sProductID) == 0 && t[i + 1].type == JSMN_OBJECT) {
                 {
                     found = true;
-                    printf("von bis %i .. %i\n ", t[i + 1].start, t[i + 1].end);
                     break;
                 }
             }
