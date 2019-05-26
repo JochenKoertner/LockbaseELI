@@ -3,7 +3,6 @@
 #include <string.h>
 
 #include "library.h"
-#include "jsmn/jsmn.h"
 
 #define CLIENT_ID    "Alice"
 #define SYSTEM       "channel"
