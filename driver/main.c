@@ -56,16 +56,18 @@ int main() {
 
     // initialise driver interface and register a callback function
     const char* retCode = ELICreate("lic", LbwELI_VERSION, myCallBack );
-    printf("ELICreate(...) => '%s'\n", retCode);
+    printf("ELICreate(...) => '%s'\n\n", retCode);
     if (strcmp(retCode, "EOK") != 0) {
         return -1;
     }
 
     // dump the driver-info to console
-    // printf("%s\n",ELIDriverInfo());
+    const char* driverInfo = ELIDriverInfo();
+    printf("ELIDriverInfo() => \n%s\n\n", driverInfo);
 
     // dump product-info to console
-    printf("%s\n",ELIProductInfo("productid"));
+    const char* productId = PRODUCT_ID;
+    printf("ELIProductInfo('%s') => \n%s\n\n", productId, ELIProductInfo(productId));
 
     // dump system-info to console
     // printf("%s\n",ELISystemInfo("users"));

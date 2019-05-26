@@ -14,6 +14,7 @@ typedef struct driver_info {
     char * host;
     char * productInfo;
     char * systemInfo;
+    char * driverInfo;
     long port;
 } driver_info_t;
 
@@ -25,6 +26,7 @@ void free_driver(driver_info_t * driver);
 
 void parseProductInfo(const char* json, const char* sProductID, char** productInfo);
 void parseSystemInfo(const char* json, char** systemInfo);
+void parseDriverInfo(const char* json, char** driverInfo);
 
 
 #endif //DRIVER_H

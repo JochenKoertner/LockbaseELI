@@ -188,15 +188,8 @@ LBELI_EXPORT void ELIDestroy() {
 */
 
 LBELI_EXPORT const char* ELIDriverInfo() {
-
-    return u8"DriverRevision=0.9\n"         // required
-        u8"LbwELIRevision=0.1.1837\n"    // required
-        u8"Manufacturer = KMGmbH,\"de:Körtner & Muth GmbH\"\n" // required
-        u8"Products = [ID:product 1],[LTL:product name 1];[ID: product 2],[LTL:product name 2]\n" // required
-        u8"DriverAuthor = [LTL:CaptainFuture]\n" // optional
-        u8"DriverCopyright = [LTL:Copyright CaptainFuture (c) 2018]\n" // optional
-        u8"DriverUI = [LTL:Start DemoApp]\n" // optional
-            ;
+    parseDriverInfo(driverInfo->config, &driverInfo->driverInfo);
+    return driverInfo->driverInfo;
 }
 
 /*

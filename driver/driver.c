@@ -292,8 +292,105 @@ void parseProductInfo(const char* json, const char* sProductID, char** productIn
 }
 
 void parseSystemInfo(const char* json, char** systemInfo) {
+    free(*systemInfo);
+}
+
+void parseDriverInfo(const char* json, char** driverInfo) {
+    free(*driverInfo);
+
+    int i;
+    int r;
+    jsmn_parser p;
+    jsmntok_t t[128]; /* We expect no more than 128 tokens */
+
+    jsmn_init(&p);
+    if (json == NULL) return;
+
+    r = jsmn_parse(&p, json, strlen(json), t, sizeof(t)/sizeof(t[0]));
+    if (r < 0) {
+        printf("Failed to parse JSON: %d\n", r);
+    }
+
+    /* Assume the top-level element is an object */
+    if (r < 1 || t[0].type != JSMN_OBJECT) {
+        printf("Object expected\n");
+    }
+
+    int found = false;
+    /* Loop over all keys of the root object */
+    for (i = 1; i < r; i++) {
+        if (jsoneq(json, &t[i], "driverInfo") == 0 && t[i + 1].type == JSMN_OBJECT) {
+            {
+                found = true;
+                break;
+            }
+        }
+    }
+
+    if (found) {
+        const char* pi = json + t[i + 1].start;
+        r = jsmn_parse(&p, pi, t[i+1].end - t[i+1].end, t, sizeof(t)/sizeof(t[0]));
+        if (r < 0) {
+            printf("Failed to parse JSON: %d\n", r);
+        }
+
+        const char* MANUFACTURER = "Manufacturer";
+        const char* DRIVER_REVISION = "DriverRevision";
+        const char* LbwELI_REVISION = "LbwELIRevision";
+
+        const char* AUTHOR = "DriverAuthor";
+        const char* COPYRIGHT = "DriverCopyright";
+        const char* UI = "DriverUI";
+        const char* PRODUCTS = "Products";
+
+
+
+        char* driverVersion=malloc(strlen(DRIVER_REVISION)+1+strlen(Driver_VERSION)+1);
+        sprintf(driverVersion, "%s=%s", DRIVER_REVISION, Driver_VERSION);
+        *driverInfo = concatStrings(*driverInfo, driverVersion, NEWLINE);
+        free(driverVersion);
+
+        char* driverRevision=malloc(strlen(LbwELI_REVISION)+1+strlen(LbwELI_VERSION)+1);
+        sprintf(driverRevision, "%s=%s", LbwELI_REVISION, LbwELI_VERSION);
+        *driverInfo = concatStrings(*driverInfo, driverRevision, NEWLINE);
+        free(driverRevision);
+
+        for (i = 1; i < r; i++) {
+
+            if (jsoneq(json, &t[i], MANUFACTURER) == 0) {
+                char *manufacturer = getStringField(MANUFACTURER, &t[i + 1], json);
+                *driverInfo = concatStrings(*driverInfo, manufacturer, NEWLINE);
+                free(manufacturer);
+                i++;
+            } else if (jsoneq(json, &t[i], AUTHOR) == 0) {
+                char *author = getStringField(AUTHOR, &t[i + 1], json);
+                *driverInfo = concatStrings(*driverInfo, author, NEWLINE);
+                free(author);
+                i++;
+            } else if (jsoneq(json, &t[i], COPYRIGHT) == 0) {
+                char *copyright = getStringField(COPYRIGHT, &t[i + 1], json);
+                *driverInfo = concatStrings(*driverInfo, copyright, NEWLINE);
+                free(copyright);
+                i++;
+            } else if (jsoneq(json, &t[i], UI) == 0) {
+                char *ui = getStringField(UI, &t[i + 1], json);
+                *driverInfo = concatStrings(*driverInfo, ui, NEWLINE);
+                free(ui);
+                i++;
+            }  else if (jsoneq(json, &t[i], PRODUCTS) == 0) {
+                char* productIds = getIdArrayField(PRODUCTS, &t[i+1], json);
+                *driverInfo = concatStrings(*driverInfo, productIds, NEWLINE);
+                free(productIds);
+                i++;
+            }
+        }
+
+    }
+
 
 }
+
+
 
 // read config file (json format)
 char* readFile(const char* file) {
@@ -337,6 +434,7 @@ driver_info_t * new_driver(ELIDrv2App callBack) {
     new_driver->host = NULL;
     new_driver->productInfo = NULL;
     new_driver->systemInfo = NULL;
+    new_driver->driverInfo = NULL;
 
 
     if (new_driver->config != NULL) {
@@ -354,5 +452,6 @@ void free_driver(driver_info_t * driver) {
     free(driver->host);
     free(driver->productInfo);
     free(driver->systemInfo);
+    free(driver->driverInfo);
     free(driver);
 }
