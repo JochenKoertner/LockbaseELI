@@ -79,7 +79,7 @@ int main() {
     const char* csv = ELIOpen("UserList", SYSTEM, CLIENT_ID);
     const char* errorCode = getField(csv, 1);
     if (strcmp(errorCode, "EOK") == 0) {
-        const char* session = getField(csv, 2);
+        const char* session = getField(csv, 4);
 
         printf("ELIOpen(...) => '%s' (%s)\n", retCode, session);
 

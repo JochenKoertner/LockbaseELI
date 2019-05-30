@@ -252,7 +252,7 @@ LBELI_EXPORT const char* ELIOpen( const char* sUserList, const char* sSysID, con
     }
     
     static char buf[100];
-    sprintf(buf, "%s,%08X,ACLR,%08X,'1'", "EOK", node->session_id, node->last_session_id);
+    sprintf(buf, "%s,%s,ACLR,%08X,'1'", "EOK", node->sSystem, node->session_id);
     return buf;
 }
 
