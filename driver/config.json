@@ -2,10 +2,17 @@
   "host" : "localhost",
   "port" : 1883,
 
+  "driverInfo" : {
+    "Manufacturer" : "KMGmbH, de:Körtner & Muth GmbH",
+    "Products" : [ "DemoDriver"],
+    "DriverAuthor" : "de:Captain Future",
+    "DriverCopyright" : "Copyright (c) 2019",
+    "DriverUI" : "Start Browser"
+  },
 
   "productInfos" : {
 
-    "productid" :  {
+    "DemoDriver" :  {
       "ProductName" : "The LOCKBASE ELI Simulator, de:Der LOCKBASE ELI Simulator",
       "ProgrammingTarget" : 1,
       "DeviceCapacity" : 1000,

@@ -26,6 +26,10 @@ Hierfür sind folgende Branches mit einer bestimmten Bedeutung hinterlegt.
 
 # Git Workflow's
 
+## Start eines neuen Feature Branch
+
+`master` und `develop` sollten clean sein. Am Anfang wird `gitflow start feature <name>` aufgerufen. 
+
 ## Sync mit UpStream
 
 Im regelmäßigen Abständen wird der Fork unter `CaptainFuture/LockbaseELI`mit dem Upstream syncronisiert. Diese Synchronisierung läuft immer im Branch `master`. Für diesen vorgang ist es eine Vorraussetzung das ein Remote Repository unter dem Namen `upstream` bekannt gegeben wird. 

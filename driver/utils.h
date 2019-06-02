@@ -3,6 +3,7 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+#define JSMN_HEADER
 #include "jsmn/jsmn.h"
 
 #define NEWLINE 0x0A

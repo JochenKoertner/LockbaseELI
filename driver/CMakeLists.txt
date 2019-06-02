@@ -14,21 +14,6 @@ ENDIF()
 
 set(CMAKE_C_STANDARD 11)
 
-## Build JSMN Library ----------------------------------------------
-project(Jsmn C)
-
-IF(WIN32)
-  ADD_DEFINITIONS(-D_CRT_SECURE_NO_DEPRECATE -DWIN32_LEAN_AND_MEAN -MD)
-ELSEIF(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
-  ADD_DEFINITIONS(-DOSX)
-ENDIF()
-
-set(PROJECT_SOURCE_DIR ${PROJECT_SOURCE_DIR}/jsmn)
-
-add_library(${PROJECT_NAME} 
-  ${PROJECT_SOURCE_DIR}/jsmn.c 
-  ${PROJECT_SOURCE_DIR}/jsmn.h)
-
 ## Build PahoMqtt Library ------------------------------------------
 project(PahoMqtt C)
 
@@ -133,8 +118,8 @@ add_library(${PROJECT_NAME} SHARED
   library.c library.h 
   session_list.c session_list.h 
   driver.c driver.h 
-  utils.c utils.h)
-target_link_libraries(${PROJECT_NAME} PahoMqtt Jsmn ${LIBS_SYSTEM}  )
+  utils.c utils.h jsmn.c)
+target_link_libraries(${PROJECT_NAME} PahoMqtt ${LIBS_SYSTEM}  )
 
 ## Build Sample console Application --------------------------------
 
