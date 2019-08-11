@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using ElectronNET.API;
 using Lockbase.CoreDomain.ValueObjects;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
@@ -24,7 +25,8 @@ namespace ui
 		private static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
 			WebHost.CreateDefaultBuilder(args)
 				.ConfigureLogging(f => f.AddConsole())
-				.UseStartup<Startup>();
+				.UseStartup<Startup>()
+				.UseElectron(args);
 
 		private static IWebHost LoadSample(this IWebHost host, string fileName)
 		{

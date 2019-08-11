@@ -4,6 +4,9 @@ using System.Linq;
 using System.Net.Mqtt;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Threading.Tasks;
+using ElectronNET.API;
+using ElectronNET.API.Entities;
 using Lockbase.CoreDomain;
 using Lockbase.CoreDomain.Aggregates;
 using Lockbase.CoreDomain.Entities;
@@ -65,10 +68,8 @@ namespace ui
 				else
 				{
 					app.UseExceptionHandler("/Error");
-					app.UseHsts();
 				}
 
-				app.UseHttpsRedirection();
 				app.UseStaticFiles();
 				app.UseSpaStaticFiles();
 
@@ -87,6 +88,14 @@ namespace ui
 						spa.UseReactDevelopmentServer(npmScript: "start");
 					}
 				});
+
+				// Open the Electron-Window here
+				Task.Run(async () => await Electron.WindowManager.CreateWindowAsync(
+					new BrowserWindowOptions
+					{
+						Width = 1260,
+						Height = 1200,
+					}));
 		}
 
 		private LockSystem CreateLockSystem() => LockSystem.Empty;
