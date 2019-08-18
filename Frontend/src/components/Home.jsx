@@ -111,7 +111,7 @@ class Home extends Component {
 			);
 
 		const hubConnection = new HubConnectionBuilder()
-			.withUrl('http://localhost:5000/signalr')
+			.withUrl('/signalr')
 			.configureLogging(LogLevel.Information)
 			.build();
 
@@ -120,6 +120,24 @@ class Home extends Component {
 				.start()
 				.then( () => console.log('Connection started'))
 				.catch( err => console.log('Error while establishing connection'));
+		});
+
+		hubConnection.on('BroadcastMessage', (receivedMessage) => {
+			console.log(receivedMessage.message);
+
+			fetch('api/data/persons')
+			.then(response => response.json())
+			.then(data => this.setState({
+					personList: data,
+					person: data[0]
+				 }))
+			.then( () => fetch('api/data/doors')
+				 .then(response => response.json())
+				 .then(data => this.setState({
+					 doorList: data,
+					 door: data[1].items[1]
+				 }))
+			);
 		});
 	}
 	
