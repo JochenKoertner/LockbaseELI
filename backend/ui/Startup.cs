@@ -47,13 +47,24 @@ namespace ui
 				// In production, the React files will be served from this directory
 				services.AddSpaStaticFiles(spa =>spa.RootPath = "ClientApp" );
 
-				services.AddSingleton(new AtomicValue<LockSystem>(CreateLockSystem()));
+				services
+					.AddSingleton(new AtomicValue<LockSystem>(CreateLockSystem()))
+					.AddSingleton<ISubject<Statement>,ReplaySubject<Statement>>()
+					.AddSingleton<IObservable<Statement>>(sp => sp.GetService<ISubject<Statement>>().AsObservable())
+					.AddSingleton<IObserver<Statement>>(sp => sp.GetService<ISubject<Statement>>())
+					.AddSingleton<IMessageBusInteractor,MessageBusInteractor>();
 
-				services.AddSingleton<ISubject<Statement>,ReplaySubject<Statement>>();
-				services.AddSingleton<IObservable<Statement>>(sp => sp.GetService<ISubject<Statement>>().AsObservable());
-				services.AddSingleton<IObserver<Statement>>(sp => sp.GetService<ISubject<Statement>>());
-				
-				services.AddSingleton<IMessageBusInteractor,MessageBusInteractor>();
+				services.AddCors(o => o.AddPolicy("CorsPolicy", b =>
+				{
+					b.AllowAnyMethod()
+						.AllowAnyHeader()
+						.AllowAnyOrigin()
+						.AllowCredentials();
+				}));
+
+				services
+					.AddSignalR(options => { options.KeepAliveInterval = TimeSpan.FromSeconds(5); })
+					.AddMessagePackProtocol();
 				
 				services.AddMqttService(_configuration);
 			}
@@ -72,6 +83,12 @@ namespace ui
 
 				app.UseStaticFiles();
 				app.UseSpaStaticFiles();
+				app.UseCors("CorsPolicy");
+
+				app.UseSignalR(routes =>
+				{
+					routes.MapHub<SignalrHub>("/signalr");
+				});
 
 				app.UseMvc(routes =>
 				{
