@@ -1,7 +1,7 @@
 namespace Lockbase.CoreDomain.Services {
 
-    public interface IMessageBusInteractor {
+	public interface IMessageBusInteractor {
 
-        void Receive(string replyTo, int sessionId, string message);
-    }
+		void Receive(string replyTo, int sessionId, string message);
+	}
 }
