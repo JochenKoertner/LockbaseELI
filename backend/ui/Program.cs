@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Net;
 using ElectronNET.API;
 using Lockbase.CoreDomain.ValueObjects;
 using Microsoft.AspNetCore;
@@ -25,6 +26,9 @@ namespace ui
 		private static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
 			WebHost.CreateDefaultBuilder(args)
 				.ConfigureLogging(f => f.AddConsole())
+				.UseKestrel(options => {
+					options.ListenLocalhost(5000); //HTTP port
+				})
 				.UseStartup<Startup>()
 				.UseElectron(args);
 

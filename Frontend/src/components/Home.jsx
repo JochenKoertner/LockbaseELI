@@ -6,6 +6,8 @@ import DateFnsUtils from '@date-io/date-fns'
 import format from 'date-fns/format'
 import moment from 'moment'
 
+import { HubConnectionBuilder, LogLevel } from '@aspnet/signalr';
+
 import Button from '@material-ui/core/Button';
 import Snackbar from '@material-ui/core/Snackbar';
 import IconButton from '@material-ui/core/IconButton';
@@ -79,7 +81,8 @@ class Home extends Component {
 			door: null,
 			selectedDate: date,
 			open: null,
-			transition: 0
+			transition: 0,
+			hubConnection: null,
 		};
 
 		this.toggleDoor = this.toggleDoor.bind(this);
@@ -106,6 +109,18 @@ class Home extends Component {
 					 door: data[1].items[1]
 				 }))
 			);
+
+		const hubConnection = new HubConnectionBuilder()
+			.withUrl('http://localhost:5000/signalr')
+			.configureLogging(LogLevel.Information)
+			.build();
+
+		this.setState({hubConnection}, () => {
+			this.state.hubConnection
+				.start()
+				.then( () => console.log('Connection started'))
+				.catch( err => console.log('Error while establishing connection'));
+		});
 	}
 	
 	handleClose = (event, reason) => {
