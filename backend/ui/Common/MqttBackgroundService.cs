@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Lockbase.CoreDomain;
 using Lockbase.CoreDomain.Services;
 using Lockbase.CoreDomain.ValueObjects;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -37,18 +38,22 @@ namespace ui.Common
 		private readonly IObservable<Statement> observableStatement;
 		private readonly IObserver<Statement> statementObserver;
 
+		private readonly IHubContext<SignalrHub, IHubClient> hub;
+
 		public MqttBackgroundService(
 			IOptions<BrokerConfig> brokerConfig,
 			ILoggerFactory loggerFactory,
 			IMessageBusInteractor messageBusInteractor,
 			IObservable<Statement> observableStatement,
-			IObserver<Statement> statementObserver)
+			IObserver<Statement> statementObserver,
+			IHubContext<SignalrHub, IHubClient> hub)
 		{
 			_brokerConfig = brokerConfig.Value;
 			_logger = loggerFactory.CreateLogger<MqttBackgroundService>();
 			this.messageBusInteractor = messageBusInteractor;
 			this.observableStatement = observableStatement;
 			this.statementObserver = statementObserver;
+			this.hub = hub;
 		}
 
 		private async Task<IMqttClient> CreateClient()
@@ -92,9 +97,9 @@ namespace ui.Common
 
 			var subscriptionChannel = mqttClient
 				.MessageStream
-				.Subscribe(msg => {
+				.Subscribe(async msg => {
 					if (msg.Topic.Equals(_brokerConfig.Topic))
-						HandleMessage(msg);
+						await HandleMessage(msg);
 					else 
 						_logger.LogInformation($"Publish {msg.Topic} '{Encoding.UTF8.GetString(msg.Payload)}'");
 				});
@@ -136,10 +141,14 @@ namespace ui.Common
 			return base.StopAsync(cancellationToken);
 		}
 
-		private void HandleMessage(MqttApplicationMessage msg)
+		private async Task HandleMessage(MqttApplicationMessage msg)
 		{
 			var message = JsonConvert.DeserializeObject<Message>(Encoding.UTF8.GetString(msg.Payload));
 			messageBusInteractor.Receive(replyTo: message.reply_to, sessionId: message.session_id.FromHex(), message: message.text);
+
+			var signalrMsg = new MessageInstance()
+				{ Timestamp = DateTime.UtcNow.ToString(), From= message.session_id, Message = message.text };
+			await this.hub.Clients.All.BroadcastMessage(signalrMsg);
 		}
 
 		private async Task<SessionState> Connect(IMqttClient client, string clientId)

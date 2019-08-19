@@ -1,0 +1,10 @@
+{
+	"executable": "ui",
+	"build": {
+		"appId": "com.koertner-muth.lockbaseeli.demo.app",
+		"productName": "LockbaseELI Demo",
+		"copyright": "Copyright 2018-2019",
+		"buildVersion": "1.00.00",
+		"compression": "maximum"
+	}
+}

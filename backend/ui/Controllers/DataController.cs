@@ -1,21 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reactive.Subjects;
-using System.Threading.Tasks;
 using Lockbase.CoreDomain;
 using Lockbase.CoreDomain.Aggregates;
-using Lockbase.CoreDomain.Services;
 using Lockbase.CoreDomain.ValueObjects;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using ui.Common;
 using ui.Models;
 
 namespace ui.Controllers
 {
-	[Route("api/[controller]")]
+    [Route("api/[controller]")]
 	public class DataController : Controller
 	{
 		private const string TOPIC_RESPONSE = "response";
