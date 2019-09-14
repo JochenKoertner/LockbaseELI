@@ -1,7 +1,4 @@
 using System;
-using System.IO;
-using System.Linq;
-using System.Net.Mqtt;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading.Tasks;
@@ -9,7 +6,6 @@ using ElectronNET.API;
 using ElectronNET.API.Entities;
 using Lockbase.CoreDomain;
 using Lockbase.CoreDomain.Aggregates;
-using Lockbase.CoreDomain.Entities;
 using Lockbase.CoreDomain.Services;
 using Lockbase.CoreDomain.ValueObjects;
 using Microsoft.AspNetCore.Builder;
@@ -18,14 +14,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 
-using ui.Common; 
+using ui.Common;
 
 namespace ui
 {
-	public class Startup
+    public class Startup
 	{
 		private readonly ILogger<Startup> _logger;
 

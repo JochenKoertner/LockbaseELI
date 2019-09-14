@@ -30,7 +30,8 @@
                 }
             },
             "env": {
-                "ASPNETCORE_ENVIRONMENT": "Development"
+				"ASPNETCORE_ENVIRONMENT": "Production",
+				"ASPNETCORE_CONTENTROOT": "${workspaceFolder}/frontend"
             },
             "sourceFileMap": {
                 "/Views": "${workspaceFolder}/Views"
