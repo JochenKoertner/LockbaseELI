@@ -14,3 +14,21 @@ The SubDirectorys are
 * /driver - LowLevel driver connected to the Web-App (written in C)
 * /doc - Lockbase ELI specification and other documents
 * /sample - Empty DLL body and other samples
+
+## Build the frontend
+
+Change path to /frontend
+
+`yarn build`
+
+
+### Upgrade single package 
+
+`yarn add package eslint-utils`
+`yarn add package fstream`
+`yarn add package lodash.template`
+
+### Update yarn complete 
+
+`brew upgrade yarn`
+

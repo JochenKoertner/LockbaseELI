@@ -45,7 +45,7 @@ namespace ui
 				
 				
 				// In production, the React files will be served from this directory
-				services.AddSpaStaticFiles(spa =>spa.RootPath = "ClientApp" );
+				services.AddSpaStaticFiles(spa =>spa.RootPath = "build");
 
 				services
 					.AddSingleton(new AtomicValue<LockSystem>(CreateLockSystem()))
