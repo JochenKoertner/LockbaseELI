@@ -32,3 +32,7 @@ Change path to /frontend
 
 `brew upgrade yarn`
 
+### yarn audit 
+
+`export FORCE_COLOR=0`
+`yarn audit --level high > audit.log`
