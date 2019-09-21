@@ -24,7 +24,7 @@ namespace Lockbase.CoreDomain.ValueObjects  {
                 return ImmutableHashSet<DayOfWeekSpecified>.Empty.AddRange(GetAllEnums<DayOfWeek>().Select( day => new DayOfWeekSpecified(day, 0)));
     
             
-            var seed = new ReductionState<DayOfWeekSpecified>();
+            var seed = ReductionState<DayOfWeekSpecified>.Default();
 
             // https://regex101.com/r/lbGStS/2
             RegexOptions options = RegexOptions.IgnoreCase;

@@ -33,7 +33,7 @@ namespace Lockbase.CoreDomain.ValueObjects  {
             if (string.IsNullOrEmpty(values))
                 return ImmutableHashSet<DayOfWeek>.Empty.AddRange(GetAllEnums<DayOfWeek>());
             
-            var seed = new ReductionState<DayOfWeek>();
+            var seed = ReductionState<DayOfWeek>.Default();
 
             // https://regex101.com/r/4NRHND/2
             RegexOptions options = RegexOptions.IgnoreCase;
