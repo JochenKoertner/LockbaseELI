@@ -15,7 +15,6 @@ import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 
 import Layout from './components/Layout';
 import Home from './components/Home';
-import Sankey from './components/Sankey';
 
 import { LanguageContext, findLanguage } from './services/BackendAdapter';
 
