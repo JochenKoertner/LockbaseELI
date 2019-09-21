@@ -1,12 +1,9 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 using System.Threading;
 
 namespace Lockbase.CoreDomain
 {
-	public class AtomicValue<T> where T : class
+    public class AtomicValue<T> where T : class
 	{
 		private T state;
 
