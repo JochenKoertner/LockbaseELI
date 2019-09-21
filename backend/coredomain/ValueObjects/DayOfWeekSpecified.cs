@@ -1,27 +1,21 @@
-
 using System;
 
 namespace Lockbase.CoreDomain.ValueObjects  {
-    
-    public class DayOfWeekSpecified : IEquatable<DayOfWeekSpecified> {
-            
-        public DayOfWeek DayOfWeek { get; private set; }
-        public int Specifier { get; private set; }
+	
+	public readonly struct DayOfWeekSpecified : IEquatable<DayOfWeekSpecified> {
+			
+		public readonly DayOfWeek DayOfWeek;
+		public readonly int Specifier;
 
-        public DayOfWeekSpecified(DayOfWeek dayOfWeek, int specifier) {
-            this.DayOfWeek = dayOfWeek;
-            this.Specifier = specifier;
-        }
+		public DayOfWeekSpecified(DayOfWeek dayOfWeek, int specifier) 
+			=> (DayOfWeek, Specifier) = (dayOfWeek, specifier);
 
-        public bool Equals(DayOfWeekSpecified other)
-        {
-            if (other == null)
-                return false;
-
-            if (this.DayOfWeek == other.DayOfWeek && this.Specifier == other.Specifier)
-                return true;
-             else
-                 return false;
-        }
-    }
+		public bool Equals(DayOfWeekSpecified other)
+		{
+			if (this.DayOfWeek == other.DayOfWeek && this.Specifier == other.Specifier)
+				return true;
+			 else
+				 return false;
+		}
+	}
 }

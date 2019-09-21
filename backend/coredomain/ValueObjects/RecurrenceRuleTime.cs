@@ -44,7 +44,7 @@ namespace Lockbase.CoreDomain.ValueObjects  {
             if (string.IsNullOrEmpty(values))
                 return ImmutableHashSet<int>.Empty.AddRange(Enumerable.Range(start, end-start+1));
             
-            var seed = new ReductionState<int>();
+            var seed = ReductionState<int>.Default();
 
             // https://regex101.com/r/P8yGDm/2
             RegexOptions options = RegexOptions.IgnoreCase;

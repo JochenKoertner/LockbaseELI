@@ -2,19 +2,19 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Linq;
 using Lockbase.CoreDomain.Entities;
 
-namespace Lockbase.CoreDomain.ValueObjects  {
+namespace Lockbase.CoreDomain.ValueObjects
+{
 
 
-	public class Assignment<TMaster,TDetail> : IEquatable<Assignment<TMaster,TDetail>> 
+    public class Assignment<TMaster,TDetail> : IEquatable<Assignment<TMaster,TDetail>> 
 		where TMaster : IEquatable<TMaster>
 		where TDetail : IEquatable<TDetail> 
 	{
-		public TMaster Master { get; private set; }
+		public readonly TMaster Master;
 
-		public ISet<TDetail> Details { get; private set; }
+		public readonly ISet<TDetail> Details;
 
 		public Assignment(TMaster master, IEnumerable<TDetail> details)
 		{
