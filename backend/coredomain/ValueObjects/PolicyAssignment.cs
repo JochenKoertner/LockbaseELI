@@ -8,7 +8,7 @@ namespace Lockbase.CoreDomain.ValueObjects
 {
 
 
-    public class Assignment<TMaster,TDetail> : IEquatable<Assignment<TMaster,TDetail>> 
+	public class Assignment<TMaster,TDetail> : IEquatable<Assignment<TMaster,TDetail>> 
 		where TMaster : IEquatable<TMaster>
 		where TDetail : IEquatable<TDetail> 
 	{
