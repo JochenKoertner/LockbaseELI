@@ -32,18 +32,32 @@ namespace Lockbase.CoreDomain.ValueObjects
 			 else
 				 return false;
 		}
+
+		public override int GetHashCode() {
+			return this.Master.GetHashCode() * 13 + this.Details.GetHashCode();
+		}
 	}
-	public class LockAssignment : Assignment<Lock,Key> {
+	public class LockAssignment : Assignment<Lock,Key>, IEquatable<LockAssignment>  {
 		
 		public LockAssignment(Lock @lock, IEnumerable<Key> keys):base(@lock, keys) 
 		{
 		}
+
+		public bool Equals(LockAssignment other)
+		{
+			return base.Equals(other);
+		}
 	}
 	
-	public class KeyAssignment : Assignment<Key,Lock> {
+	public class KeyAssignment : Assignment<Key,Lock>, IEquatable<KeyAssignment> {
 		
 		public KeyAssignment(Key key, IEnumerable<Lock> locks):base(key, locks) 
 		{
+		}
+
+		public bool Equals(KeyAssignment other)
+		{
+			return base.Equals(other);
 		}
 	}
 	

@@ -13,7 +13,9 @@ namespace Lockbase.CoreDomain
 	/// </summary>
 	/// <typeparam name="TL">Type of "Left" item.</typeparam>
 	/// <typeparam name="TR">Type of "Right" item.</typeparam>
-	public class Either<TL, TR>
+	public class Either<TL, TR> : IEquatable<Either<TL, TR>> 
+		where TL : IEquatable<TL>
+		where TR : IEquatable<TR> 
 	{
 		private readonly TL left;
 		private readonly TR right;
@@ -66,6 +68,20 @@ namespace Lockbase.CoreDomain
 		public TL LeftOrDefault() => this.Match(l => l, r => default(TL));
 
 		public TR RightOrDefault() => this.Match(l => default(TR), r => r);
+
+		public bool Equals(Either<TL, TR> other)
+		{
+			if (other == null)
+				return false;
+
+			if (this.isLeft != other.isLeft)
+				return false;
+
+			if (this.isLeft)
+				return this.left.Equals(other.left);
+			
+			return this.right.Equals(other.right);
+		}
 
 		public static implicit operator Either<TL, TR>(TL left) => new Either<TL, TR>(left);
 

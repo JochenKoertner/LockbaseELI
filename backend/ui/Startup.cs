@@ -39,8 +39,9 @@ namespace ui
 				services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 				
 				
+				services.AddSpaStaticFiles(spa =>spa.RootPath = "ClientApp" );
 				// In production, the React files will be served from this directory
-				services.AddSpaStaticFiles(spa =>spa.RootPath = "build");
+				// services.AddSpaStaticFiles(spa =>spa.RootPath = "build");
 
 				services
 					.AddSingleton(new AtomicValue<LockSystem>(CreateLockSystem()))
@@ -97,7 +98,8 @@ namespace ui
 					if (env.IsDevelopment())
 					{
 						spa.Options.SourcePath = "../../frontend";
-						spa.UseReactDevelopmentServer(npmScript: "start");
+						spa.UseProxyToSpaDevelopmentServer("http://localhost:3000");
+						//spa.UseReactDevelopmentServer(npmScript: "start");
 					}
 				});
 

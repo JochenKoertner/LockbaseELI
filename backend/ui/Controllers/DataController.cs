@@ -38,11 +38,11 @@ namespace ui.Controllers
 			LockSystem system = lockSystem; 
 
 			// TODO: Hier kann null zurückkommen besser IMaybe Monade 
-			var policiy = system.QueryPolicies( 
+			var policy = system.QueryPolicies( 
 					system.QueryLock(lockId), 
 					system.QueryKey(keyId)).SingleOrDefault();
 
-			var result = policiy.TimePeriodDefinitions.Aggregate(false,
+			var result = policy.TimePeriodDefinitions.Aggregate(false,
 				(accu, current) => accu || CheckAccess.Check(current, dateTime));
 
 			statementObserver.OnNext(new Statement(TOPIC_RESPONSE, 4711, $"EK,{lockId},{keyId},{result}"));
