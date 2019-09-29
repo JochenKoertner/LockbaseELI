@@ -52,6 +52,7 @@ namespace Lockbase.CoreDomain.ValueObjects  {
 			string pattern = @"([+\-])|(\d{1,4})";
 			
 			return Regex.Matches(input, pattern, options)
+				.Cast<Match>()
 				.Select(  match => match.Value )
 				.Aggregate(seed, (accu,current) => 
 					{
