@@ -1,12 +1,10 @@
 using System;
 using System.IO;
-using System.Net;
 using ElectronNET.API;
 using Lockbase.CoreDomain.ValueObjects;
-using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ui.Common;
 
@@ -15,6 +13,24 @@ namespace ui
 	public static class Program
 	{
 		public static void Main(string[] args)
+		{	
+			var host = CreateHostBuilder(args)
+				.Build();
+			host.Run();
+		}
+
+		public static IHostBuilder CreateHostBuilder(string[] args) =>
+    		Host.CreateDefaultBuilder(args)
+        	.ConfigureWebHostDefaults(webBuilder =>
+        {
+            webBuilder.ConfigureKestrel(serverOptions =>
+            {
+				serverOptions.ListenLocalhost(5000);
+            })
+            .UseStartup<Startup>()
+			.UseElectron(args);
+        });
+	/* 	public static void Main(string[] args)
 		{
 			CreateWebHostBuilder(args)
 				.Build()
@@ -32,7 +48,9 @@ namespace ui
 				.UseStartup<Startup>()
 				.UseElectron(args);
 
-		private static IWebHost LoadSample(this IWebHost host, string fileName)
+				*/
+
+		private static IHost LoadSample(this IHost host, string fileName)
 		{
 			var observer = host.Services.GetService<IObserver<Statement>>();
 			var brokerConfig = host.Services.GetService<IOptions<BrokerConfig>>().Value;
@@ -44,3 +62,9 @@ namespace ui
 		}
 	}
 }
+
+/*
+uses 'System.Runtime, Version=4.1.2.0, 
+' which has a higher version than referenced assembly 
+'System.Runtime' with identity 'System.Runtime, Version=4.1.0.0
+ */

@@ -10,11 +10,10 @@ using Lockbase.CoreDomain.Services;
 using Lockbase.CoreDomain.ValueObjects;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Hosting;
 
 using ui.Common;
 
@@ -26,17 +25,29 @@ namespace ui
 
 		private readonly IConfiguration _configuration;
 		
-		public Startup(IConfiguration configuration, ILoggerFactory loggerFactory)
+
+		public Startup(IWebHostEnvironment env)
 		{
-				_configuration = configuration;
-				_logger = loggerFactory.CreateLogger<Startup>();
+			var builder = new ConfigurationBuilder()
+				.AddJsonFile("appsettings.json", optional: false)
+				.AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+				.AddEnvironmentVariables();
+			this._configuration = builder.Build();
+			// .ConfigureLogging(f => f.AddConsole())
+			// 	.UseKestrel(options => {
+			// 		options.ListenLocalhost(5000); //HTTP port
+			// 	})
+			// 	_configuration = configuration;
+			// 	_logger = loggerFactory.CreateLogger<Startup>();
 		}
 
 
 		// This method gets called by the runtime. Use this method to add services to the container.
 			public void ConfigureServices(IServiceCollection services)
 			{
-				services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+				services.AddControllersWithViews()
+					.AddNewtonsoftJson();
+    			services.AddRazorPages();
 				
 				
 				services.AddSpaStaticFiles(spa =>spa.RootPath = "ClientApp" );
@@ -66,7 +77,7 @@ namespace ui
 			}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-		public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+		public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 		{
 				if (env.IsDevelopment())
 				{
@@ -79,19 +90,14 @@ namespace ui
 
 				app.UseStaticFiles();
 				app.UseSpaStaticFiles();
+				app.UseRouting();
 				app.UseCors("CorsPolicy");
 
-				app.UseSignalR(routes =>
-				{
-					routes.MapHub<SignalrHub>("/signalr");
-				});
-
-				app.UseMvc(routes =>
-				{
-					routes.MapRoute(
-						name: "default",
-						template: "{controller}/{action=Index}/{id?}");
-				});
+				app.UseEndpoints(endpoints =>
+    			{
+        			endpoints.MapHub<SignalrHub>("/signalr");
+       			 	endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
+    			});
 
 				app.UseSpa(spa =>
 				{
