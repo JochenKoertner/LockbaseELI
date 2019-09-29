@@ -10,7 +10,7 @@ using Lockbase.CoreDomain.ValueObjects;
 using System.IO;
 using System.Collections.Immutable;
 
-namespace Lockbase.ui.UnitTest.CoreDomain {
+namespace Lockbase.Tests.CoreDomain {
 
 	public class LockSystemTest {
 

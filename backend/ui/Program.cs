@@ -20,16 +20,17 @@ namespace ui
 		}
 
 		public static IHostBuilder CreateHostBuilder(string[] args) =>
-    		Host.CreateDefaultBuilder(args)
-        	.ConfigureWebHostDefaults(webBuilder =>
-        {
-            webBuilder.ConfigureKestrel(serverOptions =>
-            {
+			Host.CreateDefaultBuilder(args)
+			.ConfigureWebHostDefaults(webBuilder =>
+		{
+			webBuilder.ConfigureKestrel(serverOptions =>
+			{
 				serverOptions.ListenLocalhost(5000);
-            })
-            .UseStartup<Startup>()
+			})
+			.UseStartup<Startup>()
 			.UseElectron(args);
-        });
+		});
+		
 	/* 	public static void Main(string[] args)
 		{
 			CreateWebHostBuilder(args)
