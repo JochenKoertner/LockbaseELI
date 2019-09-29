@@ -6,17 +6,19 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using ui.Common;
 
 namespace ui
 {
+	using Common;
+
 	public static class Program
 	{
 		public static void Main(string[] args)
 		{	
-			var host = CreateHostBuilder(args)
-				.Build();
-			host.Run();
+			CreateHostBuilder(args)
+				.Build()
+				.LoadSample("sample/ELIApp2Drv.txt")
+				.Run();
 		}
 
 		public static IHostBuilder CreateHostBuilder(string[] args) =>
@@ -30,7 +32,7 @@ namespace ui
 			.UseStartup<Startup>()
 			.UseElectron(args);
 		});
-		
+
 	/* 	public static void Main(string[] args)
 		{
 			CreateWebHostBuilder(args)
@@ -63,9 +65,3 @@ namespace ui
 		}
 	}
 }
-
-/*
-uses 'System.Runtime, Version=4.1.2.0, 
-' which has a higher version than referenced assembly 
-'System.Runtime' with identity 'System.Runtime, Version=4.1.0.0
- */

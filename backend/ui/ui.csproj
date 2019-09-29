@@ -17,6 +17,10 @@
 
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.0.0" />
 		<PackageReference Include="System.Reactive" Version="4.1.6" />
+		<PackageReference Include="System.Reactive.Core" Version="4.1.6" />
+		<PackageReference Include="System.Reactive.Linq" Version="4.1.6" />
+		<PackageReference Include="System.Reactive.Interfaces" Version="4.1.6" />
+		
 		<PackageReference Include="System.Net.Mqtt" Version="0.5.42-beta" />
 		<PackageReference Include="System.Net.Mqtt.Server" Version="0.5.42-beta" />
 		<PackageReference Include="ElectronNET.API" Version="5.22.14" />

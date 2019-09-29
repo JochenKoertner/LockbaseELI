@@ -21,6 +21,8 @@ namespace ui
 {
     public class Startup
 	{
+		readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
 		private readonly ILogger<Startup> _logger;
 
 		private readonly IConfiguration _configuration;
@@ -42,39 +44,43 @@ namespace ui
 		}
 
 
-		// This method gets called by the runtime. Use this method to add services to the container.
-			public void ConfigureServices(IServiceCollection services)
+		public void ConfigureServices(IServiceCollection services)
+		{
+			services.AddControllersWithViews()
+				.AddNewtonsoftJson();
+			services.AddRazorPages();
+			
+			
+			services.AddSpaStaticFiles(spa =>spa.RootPath = "ClientApp" );
+			// In production, the React files will be served from this directory
+			// services.AddSpaStaticFiles(spa =>spa.RootPath = "build");
+
+			services
+				.AddSingleton(new AtomicValue<LockSystem>(CreateLockSystem()))
+				.AddSingleton<ISubject<Statement>,ReplaySubject<Statement>>()
+				.AddSingleton<IObservable<Statement>>(sp => sp.GetService<ISubject<Statement>>().AsObservable())
+				.AddSingleton<IObserver<Statement>>(sp => sp.GetService<ISubject<Statement>>())
+				.AddSingleton<IMessageBusInteractor,MessageBusInteractor>();
+
+			services.AddCors(options => 
 			{
-				services.AddControllersWithViews()
-					.AddNewtonsoftJson();
-    			services.AddRazorPages();
-				
-				
-				services.AddSpaStaticFiles(spa =>spa.RootPath = "ClientApp" );
-				// In production, the React files will be served from this directory
-				// services.AddSpaStaticFiles(spa =>spa.RootPath = "build");
-
-				services
-					.AddSingleton(new AtomicValue<LockSystem>(CreateLockSystem()))
-					.AddSingleton<ISubject<Statement>,ReplaySubject<Statement>>()
-					.AddSingleton<IObservable<Statement>>(sp => sp.GetService<ISubject<Statement>>().AsObservable())
-					.AddSingleton<IObserver<Statement>>(sp => sp.GetService<ISubject<Statement>>())
-					.AddSingleton<IMessageBusInteractor,MessageBusInteractor>();
-
-				services.AddCors(o => o.AddPolicy("CorsPolicy", b =>
+				options.AddPolicy(MyAllowSpecificOrigins, builder =>
 				{
-					b.AllowAnyMethod()
-						.AllowAnyHeader()
-						.AllowAnyOrigin()
-						.AllowCredentials();
-				}));
+					builder// .WithOrigins("http://localhost","http://127.0.0.1")
+							.AllowAnyMethod()
+							.AllowAnyHeader()
+							.AllowAnyOrigin() 
+							//.AllowCredentials()
+							;
+				});
+			});
 
-				services
-					.AddSignalR(options => { options.KeepAliveInterval = TimeSpan.FromSeconds(5); })
-					.AddMessagePackProtocol();
-				
-				services.AddMqttService(_configuration);
-			}
+			services
+				.AddSignalR(options => { options.KeepAliveInterval = TimeSpan.FromSeconds(5); })
+				.AddMessagePackProtocol();
+			
+			services.AddMqttService(_configuration);
+		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
 		public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -88,10 +94,11 @@ namespace ui
 					app.UseExceptionHandler("/Error");
 				}
 
+				app.UseCors(MyAllowSpecificOrigins);
+
 				app.UseStaticFiles();
 				app.UseSpaStaticFiles();
 				app.UseRouting();
-				app.UseCors("CorsPolicy");
 
 				app.UseEndpoints(endpoints =>
     			{
