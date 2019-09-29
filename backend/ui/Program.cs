@@ -4,6 +4,7 @@ using ElectronNET.API;
 using Lockbase.CoreDomain.ValueObjects;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
@@ -21,37 +22,13 @@ namespace ui
 				.Run();
 		}
 
-		public static IHostBuilder CreateHostBuilder(string[] args) =>
-			Host.CreateDefaultBuilder(args)
-			.ConfigureWebHostDefaults(webBuilder =>
-		{
-			webBuilder.ConfigureKestrel(serverOptions =>
-			{
-				serverOptions.ListenLocalhost(5000);
-			})
-			.UseStartup<Startup>()
-			.UseElectron(args);
-		});
-
-	/* 	public static void Main(string[] args)
-		{
-			CreateWebHostBuilder(args)
-				.Build()
-	//			.LoadSample("sample/ELIApp2Drv.txt")
-				.Run();
-		}
-
-
-		private static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-			WebHost.CreateDefaultBuilder(args)
-				.ConfigureLogging(f => f.AddConsole())
-				.UseKestrel(options => {
-					options.ListenLocalhost(5000); //HTTP port
-				})
+		public static IHostBuilder CreateHostBuilder(string[] args) => Host.CreateDefaultBuilder(args)
+			.ConfigureWebHostDefaults(webBuilder => webBuilder
+				.ConfigureLogging( builder => builder.AddConsole())
+				.ConfigureKestrel(serverOptions => serverOptions.ListenLocalhost(5000))
 				.UseStartup<Startup>()
-				.UseElectron(args);
-
-				*/
+				.UseElectron(args)
+			);
 
 		private static IHost LoadSample(this IHost host, string fileName)
 		{
