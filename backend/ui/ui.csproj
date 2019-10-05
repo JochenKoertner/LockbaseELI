@@ -22,8 +22,8 @@
 		<PackageReference Include="System.Reactive.Linq" Version="4.1.6" />
 		<PackageReference Include="System.Reactive.Interfaces" Version="4.1.6" />
 		
-		<PackageReference Include="System.Net.Mqtt" Version="0.5.42-beta" />
-		<PackageReference Include="System.Net.Mqtt.Server" Version="0.5.42-beta" />
+		<PackageReference Include="System.Net.Mqtt" Version="0.6.0-beta" />
+		<PackageReference Include="System.Net.Mqtt.Server" Version="0.6.0-beta" />
 		<PackageReference Include="ElectronNET.API" Version="5.22.14" />
 	</ItemGroup>
 
