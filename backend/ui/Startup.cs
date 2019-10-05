@@ -23,26 +23,13 @@ namespace ui
 	{
 		readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
-		private readonly ILogger<Startup> _logger;
-
-		private readonly IConfiguration _configuration;
+		private readonly IConfiguration configuration;
 		
 
-		public Startup(IWebHostEnvironment env)
+		public Startup(IConfiguration configuration)
 		{
-			var builder = new ConfigurationBuilder()
-				.AddJsonFile("appsettings.json", optional: false)
-				.AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
-				.AddEnvironmentVariables();
-			this._configuration = builder.Build();
-			// .ConfigureLogging(f => f.AddConsole())
-			// 	.UseKestrel(options => {
-			// 		options.ListenLocalhost(5000); //HTTP port
-			// 	})
-			// 	_configuration = configuration;
-			// 	_logger = loggerFactory.CreateLogger<Startup>();
+			this.configuration = configuration;
 		}
-
 
 		public void ConfigureServices(IServiceCollection services)
 		{
@@ -78,8 +65,8 @@ namespace ui
 			services
 				.AddSignalR(options => { options.KeepAliveInterval = TimeSpan.FromSeconds(5); })
 				.AddMessagePackProtocol();
-			
-			services.AddMqttService(_configuration);
+
+			services.AddMqttService(this.configuration);
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

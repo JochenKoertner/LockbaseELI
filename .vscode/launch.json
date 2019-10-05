@@ -36,6 +36,12 @@
 			},
 			"sourceFileMap": {
 				"/Views": "${workspaceFolder}/Views"
+			},
+			"logging": {
+				"engineLogging": false,
+				"moduleLoad" : false,
+				"programOutput": true,
+				"exceptions": true
 			}
 		},
 		{

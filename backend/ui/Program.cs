@@ -24,8 +24,12 @@ namespace ui
 
 		public static IHostBuilder CreateHostBuilder(string[] args) => Host.CreateDefaultBuilder(args)
 			.ConfigureWebHostDefaults(webBuilder => webBuilder
-				.ConfigureLogging( builder => builder.AddConsole())
-				.ConfigureKestrel(serverOptions => serverOptions.ListenLocalhost(5000))
+				.ConfigureLogging( builder => builder
+					.AddFilter("Microsoft", LogLevel.Warning)
+					.AddFilter("ui", LogLevel.Warning)
+					.AddFilter("Lockbase", LogLevel.Warning)
+					.AddConsole())
+				.UseKestrel()
 				.UseStartup<Startup>()
 				.UseElectron(args)
 			);
