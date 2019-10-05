@@ -18,7 +18,7 @@ namespace ui
 		{	
 			CreateHostBuilder(args)
 				.Build()
-				.LoadSample("sample/ELIApp2Drv.txt")
+				//.LoadSample("sample/ELIApp2Drv.txt")
 				.Run();
 		}
 
