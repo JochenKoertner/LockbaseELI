@@ -1,12 +1,12 @@
 using System;
-using Xunit; 
+using Xunit;
 
 using Lockbase.CoreDomain.ValueObjects;
-using System.Globalization;
 using Lockbase.CoreDomain.Enumerations;
 using System.Linq;
 
-namespace Lockbase.ui.UnitTest.CoreDomain {
+namespace Lockbase.Tests.CoreDomain
+{
 
 	public class TimePeriodDefinitionTest {
 

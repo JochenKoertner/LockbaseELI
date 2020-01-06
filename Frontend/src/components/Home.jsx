@@ -106,7 +106,7 @@ class Home extends Component {
 				 .then(data => this.setState({
 					 isLoading: false,
 					 doorList: data,
-					 door: data[1].items[1]
+					 door: null // data[1].items[1]
 				 }))
 			);
 

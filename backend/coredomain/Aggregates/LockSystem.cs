@@ -1,9 +1,8 @@
 using System;
-using Lockbase.CoreDomain.Entities;
-
 using System.Collections.Immutable;
 using System.Collections.Generic;
 using System.Linq;
+using Lockbase.CoreDomain.Entities;
 using Lockbase.CoreDomain.ValueObjects;
 
 namespace Lockbase.CoreDomain.Aggregates
