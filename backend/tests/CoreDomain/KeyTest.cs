@@ -3,7 +3,7 @@ using Xunit;
 
 using Lockbase.CoreDomain.Entities; 
 
-namespace Lockbase.ui.UnitTest.CoreDomain {
+namespace Lockbase.Tests.CoreDomain {
 
 	public class KeyTest {
 

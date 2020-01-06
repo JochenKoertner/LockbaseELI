@@ -1,12 +1,11 @@
-using System;
 using System.Linq;
 
-using Xunit; 
+using Xunit;
 using Lockbase.CoreDomain.Entities;
 using Lockbase.CoreDomain.ValueObjects;
-using System.Collections.Immutable;
 
-namespace Lockbase.ui.UnitTest.CoreDomain {
+namespace Lockbase.Tests.CoreDomain
+{
 
 	public class AccessPolicyTest {
 

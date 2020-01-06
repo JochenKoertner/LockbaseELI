@@ -26,7 +26,7 @@ namespace Lockbase.CoreDomain.ValueObjects  {
 
 			RegexOptions options = RegexOptions.IgnoreCase;
 
-			Match match = Regex.Matches(value, pattern, options).First();
+			Match match = Regex.Matches(value, pattern, options).Cast<Match>().First();
 
 
 			Group multiplierGroup = match.Groups["multiplier"];

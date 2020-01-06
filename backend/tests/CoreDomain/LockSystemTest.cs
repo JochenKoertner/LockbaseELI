@@ -10,7 +10,7 @@ using Lockbase.CoreDomain.ValueObjects;
 using System.IO;
 using System.Collections.Immutable;
 
-namespace Lockbase.ui.UnitTest.CoreDomain {
+namespace Lockbase.Tests.CoreDomain {
 
 	public class LockSystemTest {
 
@@ -234,7 +234,7 @@ namespace Lockbase.ui.UnitTest.CoreDomain {
 			var key = lockSystem.QueryKey("000000hqvs1lo");
 
 			var  policies = lockSystem.QueryPolicies(@lock, key);
-			Assert.Equal(1, policies.Count());
+			Assert.NotEmpty(policies);
 		}
 
 		[Fact]
@@ -256,7 +256,7 @@ namespace Lockbase.ui.UnitTest.CoreDomain {
 					new Either<LockAssignment, KeyAssignment>(new KeyAssignment(key, new []{@lock})));
 
 			var setAssignments = ImmutableHashSet<PolicyAssignment>.Empty.Add(assignA).Add(assignB);
-			Assert.Equal(1, setAssignments.Count());
+			Assert.NotEmpty(setAssignments);
 		}
 
 		[Fact]

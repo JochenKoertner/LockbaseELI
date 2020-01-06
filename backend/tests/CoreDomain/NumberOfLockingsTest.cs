@@ -3,7 +3,7 @@ using Xunit;
 
 using Lockbase.CoreDomain.ValueObjects;
 
-namespace Lockbase.ui.UnitTest.CoreDomain {
+namespace Lockbase.Tests.CoreDomain {
 
 	public class NumberOfLockingsTest {
 

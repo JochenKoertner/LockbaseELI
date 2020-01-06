@@ -1,43 +1,40 @@
 using System;
 using System.IO;
-using System.Net;
 using ElectronNET.API;
 using Lockbase.CoreDomain.ValueObjects;
-using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using ui.Common;
 
 namespace ui
 {
+	using Common;
+
 	public static class Program
 	{
 		public static void Main(string[] args)
 		{
-			CreateWebHostBuilder(args)
+			CreateHostBuilder(args)
 				.Build()
-	//			.LoadSample("sample/ELIApp2Drv.txt")
+				//.LoadSample("sample/ELIApp2Drv.txt")
 				.Run();
 		}
 
-
-		private static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-			WebHost.CreateDefaultBuilder(args)
-				.ConfigureLogging(f => f.AddConsole())
-				.UseKestrel(options => {
-					options.ListenLocalhost(5000); //HTTP port
-				})
+		public static IHostBuilder CreateHostBuilder(string[] args)
+		=> Host.CreateDefaultBuilder(args)
+			.ConfigureWebHostDefaults(webBuilder => webBuilder
+				.UseKestrel()
 				.UseStartup<Startup>()
-				.UseElectron(args);
+				.UseElectron(args)
+			);
 
-		private static IWebHost LoadSample(this IWebHost host, string fileName)
+		private static IHost LoadSample(this IHost host, string fileName)
 		{
 			var observer = host.Services.GetService<IObserver<Statement>>();
 			var brokerConfig = host.Services.GetService<IOptions<BrokerConfig>>().Value;
-			
-			foreach(var statement in File.ReadAllLines(fileName))
+
+			foreach (var statement in File.ReadAllLines(fileName))
 				observer.OnNext(new Statement(brokerConfig.Topic, 007, statement));
 
 			return host;

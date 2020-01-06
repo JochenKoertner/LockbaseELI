@@ -22,7 +22,7 @@ namespace Lockbase.CoreDomain.ValueObjects  {
 
 			RegexOptions options = RegexOptions.IgnoreCase;
 
-			Match match = Regex.Matches(value, pattern, options).First();
+			Match match = Regex.Matches(value, pattern, options).Cast<Match>().First();
 
 			Group negationGroup = match.Groups["negation"];
 			Group startTimeGroup = match.Groups["starttime"];
