@@ -10,7 +10,7 @@
 			"request": "launch",
 			"preLaunchTask": "build",
 			// If you have changed target frameworks, make sure to update the program path.
-			"program": "${workspaceFolder}/backend/ui/bin/Debug/netcoreapp3.0/ui.dll",
+			"program": "${workspaceFolder}/backend/ui/bin/Debug/netcoreapp3.1/ui.dll",
 			"args": [],
 			"cwd": "${workspaceFolder}/backend/ui",
 			"stopAtEntry": false,
