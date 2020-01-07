@@ -405,13 +405,14 @@ char* readFile(const char* file) {
         fseek(fp, 0, SEEK_END);
         fileLen = ftell(fp);
         fseek(fp, 0, SEEK_SET);
-        buf=(char *)malloc(fileLen);
+        buf=(char *)malloc(fileLen+1);
         bytesRead = (int)fread(buf, sizeof(char), fileLen, fp);
         if ( bytesRead != fileLen )
         {
             free(buf);
             return NULL;
         }
+        buf[fileLen] = '\0';
         fclose(fp);
         return buf;
     }
@@ -430,6 +431,7 @@ driver_info_t * new_driver(ELIDrv2App callBack) {
     new_driver->callback = callBack;
     new_driver->sessions = NULL;
     new_driver->config = readFile("../config.json");
+
     new_driver->port = 1883;
     new_driver->host = NULL;
     new_driver->productInfo = NULL;
