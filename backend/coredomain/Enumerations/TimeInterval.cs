@@ -1,32 +1,15 @@
-using System;
 using System.Diagnostics;
 
-namespace Lockbase.CoreDomain.Enumerations {
-
-   
-    public class IntRange {
-        public int Start { get; }
-        public int End { get; }
-
-        public IntRange(int start, int end)
-        {
-            this.Start = start;
-            this.End = end;
-        }
-    }
-
-    public class WeekDaySet {
-        
-    }
-
+namespace Lockbase.CoreDomain.Enumerations
+{
 	[DebuggerDisplay("{DebuggerDisplay,nq}")] // nq means no quote
-    public sealed class TimeInterval : Enumeration<TimeInterval>
+	public sealed class TimeInterval : Enumeration<TimeInterval>
 	{
-        public string Alias { get; }
+		public string Alias { get; }
 		private TimeInterval(int id, string name, string alias)
 			: base(id, name)
 		{
-            this.Alias = alias;
+			this.Alias = alias;
 		}
 
 		public bool IsTimesRange => (
@@ -48,9 +31,6 @@ namespace Lockbase.CoreDomain.Enumerations {
 		public static readonly TimeInterval Year = new TimeInterval(10, "Year", "Y");
 
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    	internal string DebuggerDisplay => Alias;
+		internal string DebuggerDisplay => Alias;
 	}
-
-
-
 }

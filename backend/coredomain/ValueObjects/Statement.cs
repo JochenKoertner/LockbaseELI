@@ -4,23 +4,18 @@ using System;
 namespace Lockbase.CoreDomain.ValueObjects
 {
 
-	public class Statement
+	public readonly struct Statement
 	{
-		
+		public readonly string Head;
+		public readonly string Tail;
+		public readonly string Topic;
+		public readonly int SessionId;
 
-		public Statement(string topic, int sessionId, string statement)
-		{
-			Topic = topic;
-			SessionId = sessionId;
-			int index = statement.IndexOf(',');
-			Head = statement.Substring(0, index);
-			Tail = statement.Substring(index + 1);
-		}
-
-		public string Head { get; private set; }
-		public string Tail { get; private set; }
-		public string Topic { get; private set; }
-		public int SessionId { get; private set; }
+		public Statement(string topic, int sessionId, string statement) 
+			=> (Topic, SessionId, Head, Tail) = 
+				(topic, sessionId, 
+				statement.Substring(0, statement.IndexOf(',')),
+				statement.Substring(statement.IndexOf(',') + 1));
 
 		public string Message => $"{Head},{Tail}";
 	}

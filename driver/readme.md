@@ -88,3 +88,19 @@ Für die Liste gibt es folgende Funktionen :
 ### `library.c`
  
 Hier ist der eigentliche Treiber Code implementiert. 
+
+
+## Patching von Paho.mqtt.c 
+
+Im `Develop` Branch sind meine Changes bereits integriert, allerdings will ich `master` lieber benutzen. 
+
+Deshalb muss ich derzeit zwei Patches durchführen.
+
+`src/CMakeLists.txt`
+
+`SET(LIBS_SYSTEM ws2_32 crypt32 RpcRT4)`
+
+und `src/WebSocket.c` 
+
+`#  define htonll(x) _byteswap_uint64(x)`
+`#  define ntohll(x) _byteswap_uint64(x)`

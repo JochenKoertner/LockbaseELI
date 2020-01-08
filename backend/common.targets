@@ -1,6 +1,5 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<PropertyGroup>
-		<TargetFramework>netcoreapp2.2</TargetFramework>
 		<VersionPrefix>1.0.33</VersionPrefix>
 		<VersionSuffix>dev-$([System.DateTime]::UtcNow.ToString(yyMMdd))</VersionSuffix>
 		<Company>Körtner&amp;Muth GmbH</Company>

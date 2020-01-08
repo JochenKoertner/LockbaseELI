@@ -30,6 +30,11 @@ Hierfür sind folgende Branches mit einer bestimmten Bedeutung hinterlegt.
 
 `master` und `develop` sollten clean sein. Am Anfang wird `gitflow start feature <name>` aufgerufen. 
 
+## Start eines neuen Releases 
+
+`master` und `develop` sollten clean sein. Am Anfang wird `gitflow start release <name>` aufgerufen. Am Ende wird dann 
+`gitflow finish release <name>` das Release freigegeben und mit einem Tag versehen. Das Resultat ist das `master` und `develop` kurzfristig synchron sind.
+
 ## Sync mit UpStream
 
 Im regelmäßigen Abständen wird der Fork unter `CaptainFuture/LockbaseELI`mit dem Upstream syncronisiert. Diese Synchronisierung läuft immer im Branch `master`. Für diesen vorgang ist es eine Vorraussetzung das ein Remote Repository unter dem Namen `upstream` bekannt gegeben wird. 

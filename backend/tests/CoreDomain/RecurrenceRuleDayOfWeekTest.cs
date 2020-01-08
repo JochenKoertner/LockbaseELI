@@ -1,12 +1,10 @@
 using System;
-using Xunit; 
-
-using Lockbase.CoreDomain.Entities;
+using Xunit;
 using Lockbase.CoreDomain.Enumerations;
 using Lockbase.CoreDomain.ValueObjects;
-using System.Linq;
 
-namespace Lockbase.ui.UnitTest.CoreDomain {
+namespace Lockbase.Tests.CoreDomain
+{
 
 	public class RecurrenceRuleDayOfWeekTest {
 

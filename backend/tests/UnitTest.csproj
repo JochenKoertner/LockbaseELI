@@ -1,14 +1,20 @@
-<Project Sdk="Microsoft.NET.Sdk">
-
-	<PropertyGroup>
-		<IsTestProject>true</IsTestProject>
-	</PropertyGroup>
+<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="Current">
 
 	<Import Project="../common.targets" />
 
+	<PropertyGroup>
+		<IsTestProject>true</IsTestProject>
+		<TargetFramework>netcoreapp3.1</TargetFramework>
+		<IsPackable>false</IsPackable>
+	</PropertyGroup>
+
+
 	<ItemGroup>
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.4.0" />
 		<PackageReference Include="xunit" Version="2.4.1" />
 		<PackageReference Include="xunit.runner.visualstudio" Version="2.4.1" />
+
+		<PackageReference Include="NETStandard.Library" Version="2.0.3" />
 	</ItemGroup>
 
 	<ItemGroup>

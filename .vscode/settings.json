@@ -1,13 +1,13 @@
 {
     "files.exclude": {
-        "**/bin": true,
-        "**/obj": true,
-        "**/node_modules": true,
         "**/.idea": true,
+        "**/bin": true,
         "**/ipch": true,
-        "frontend/build" : true,
+        "**/node_modules": true,
+        "**/obj": true,
         "driver/build": true,
-        "driver/cmake-build-debug": true
+        "driver/cmake-build-debug": true,
+        "frontend/build": true
     },
 
     "files.autoSave": "afterDelay",
