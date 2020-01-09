@@ -14,7 +14,7 @@
 #endif
 
 
-#define LbwELI_VERSION     "0.4.1848"
+#define LbwELI_VERSION     "0.4"
 #define Driver_VERSION      "0.9"
 #define PRODUCT_ID          "DemoDriver"
 
