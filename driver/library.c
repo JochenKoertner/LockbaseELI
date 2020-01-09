@@ -164,7 +164,7 @@ LBELI_EXPORT const char* ELICreate( const char* sLic, const char* sLbwELIRev, EL
 
 
 
-    return "EOK";
+    return "OK";
 }
 
 /*
@@ -252,7 +252,7 @@ LBELI_EXPORT const char* ELIOpen( const char* sUserList, const char* sSysID, con
     }
     
     static char buf[100];
-    sprintf(buf, "%s,%s,ACLR,%08X,'1'", "EOK", node->sSystem, node->session_id);
+    sprintf(buf, "%s,%s,ACLR,%08X,'1'", "OK", node->sSystem, node->session_id);
     return buf;
 }
 
@@ -283,7 +283,7 @@ LBELI_EXPORT const char* ELIClose( const char* sSysID, const char* sSessID ) {
         printf("mqtt_disconnect() => %i\n", ret);
         return "EUNKNOWN";
     }
-    return "EOK";
+    return "OK";
 }
 
 LBELI_EXPORT int ELIApp2Drv( const char* sSysID, const char *sJobID, const char* sJobData) {
