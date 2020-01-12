@@ -4,7 +4,7 @@
 #include <stdio.h>
 
 #if defined (WIN32)
-    #if defined(LbwELI_KMGmbH_EXPORTS)
+    #if defined(LbwELI_Demo_EXPORTS)
         #define LBELI_EXPORT __declspec(dllexport)
     #else
         #define  LBELI_EXPORT __declspec(dllimport)
