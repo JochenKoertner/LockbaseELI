@@ -121,6 +121,8 @@ add_library(${PROJECT_NAME} SHARED
   utils.c utils.h jsmn.c)
 target_link_libraries(${PROJECT_NAME} PahoMqtt ${LIBS_SYSTEM}  )
 
+set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "")
+
 ## Build Sample console Application --------------------------------
 
 project(LbELI_cli C)
