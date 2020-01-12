@@ -57,7 +57,7 @@ int main() {
     // initialise driver interface and register a callback function
     const char* retCode = ELICreate("lic", LbwELI_VERSION, myCallBack );
     printf("ELICreate(...) => '%s'\n\n", retCode);
-    if (strcmp(retCode, "EOK") != 0) {
+    if (strcmp(retCode, "OK") != 0) {
         return -1;
     }
 
@@ -67,10 +67,13 @@ int main() {
 
     // dump product-info to console
     const char* productId = PRODUCT_ID;
-    printf("ELIProductInfo('%s') => \n%s\n\n", productId, ELIProductInfo(productId));
+    const char* productInfos = ELIProductInfo(productId);
+    printf("ELIProductInfo('%s') => \n%s\n\n", productId, productInfos);
 
     // dump system-info to console
-    // printf("%s\n",ELISystemInfo("users"));
+    const char* users = "users";
+    const char* systemInfo = ELISystemInfo(users);
+    printf("ELISystemInfo('%s') => \n%s\n\n", users, systemInfo);
 
     // call ELIDriverUI
     // ELIDriverUI( "sessionID", "SID");
@@ -78,7 +81,7 @@ int main() {
     // open connection to hardware (in this case MQTT broker)
     const char* csv = ELIOpen("UserList", SYSTEM, CLIENT_ID);
     const char* errorCode = getField(csv, 1);
-    if (strcmp(errorCode, "EOK") == 0) {
+    if (strcmp(errorCode, "OK") == 0) {
         const char* session = getField(csv, 4);
 
         printf("ELIOpen(...) => '%s' (%s)\n", retCode, session);

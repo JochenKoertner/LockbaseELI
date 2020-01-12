@@ -9,6 +9,10 @@
 #include "driver.h"
 #include "utils.h"
 
+#define DRIVER_INFO  "driverInfo"
+#define PRODUCT_INFOS  "productInfos"
+#define SYSTEM_INFO  "systemInfo"
+
 void parseConfigFile(const char* json, char** host, long* port) {
 
     int i;
@@ -150,6 +154,43 @@ char* getEventTypesField(const char* keyName, jsmntok_t* token, const char* json
     return result;
 }
 
+bool parseJson(const char* json,  jsmn_parser *p, jsmntok_t* tokens, const unsigned int num_tokens, int *rr) {
+
+    jsmn_init(p);
+    if (json == NULL) return false;
+
+    int r = jsmn_parse(p, json, strlen(json), tokens, num_tokens);
+    if (r < 0) {
+        printf("Failed to parse JSON: %d\n", r);
+        return false;
+    }
+
+    /* Assume the top-level element is an object */
+    if (r < 1 || tokens[0].type != JSMN_OBJECT) {
+        printf("Object expected\n");
+        return false;
+    }
+    *rr = r;
+    return true;
+}
+
+// search given key of Object and return index
+bool searchKey(const char* json, const jsmntok_t *tokens, const char* sKey, int r, int *ii) {
+    int found = false;
+    int i;
+    /* Loop over all keys of the root object */
+    for (i = 1; i < r; i++) {
+        if (jsoneq(json, &tokens[i], sKey) == 0 && tokens[i + 1].type == JSMN_OBJECT) {
+            {
+                found = true;
+                break;
+            }
+        }
+    }
+    *ii = i;
+    return found;
+}
+
 
 void parseProductInfo(const char* json, const char* sProductID, char** productInfo) {
     free(*productInfo);
@@ -159,29 +200,11 @@ void parseProductInfo(const char* json, const char* sProductID, char** productIn
     jsmn_parser p;
     jsmntok_t t[128]; /* We expect no more than 128 tokens */
 
-    jsmn_init(&p);
-    if (json == NULL) return;
+    int isValid = parseJson(json, &p, t, sizeof(t)/sizeof(t[0]), &r);
+    if (!isValid) return;
 
-    r = jsmn_parse(&p, json, strlen(json), t, sizeof(t)/sizeof(t[0]));
-    if (r < 0) {
-        printf("Failed to parse JSON: %d\n", r);
-    }
-
-    /* Assume the top-level element is an object */
-    if (r < 1 || t[0].type != JSMN_OBJECT) {
-        printf("Object expected\n");
-    }
-
-    int found = false;
+    int found = searchKey(json, &t, PRODUCT_INFOS, r, &i);
     /* Loop over all keys of the root object */
-    for (i = 1; i < r; i++) {
-        if (jsoneq(json, &t[i], "productInfos") == 0 && t[i + 1].type == JSMN_OBJECT) {
-            {
-                found = true;
-                break;
-            }
-        }
-    }
 
     if (found) {
         const char* pi = json + t[i + 1].start;
@@ -293,6 +316,60 @@ void parseProductInfo(const char* json, const char* sProductID, char** productIn
 
 void parseSystemInfo(const char* json, char** systemInfo) {
     free(*systemInfo);
+
+    int i;
+    int r;
+    jsmn_parser p;
+    jsmntok_t t[128]; /* We expect no more than 128 tokens */
+
+    int isValid = parseJson(json, &p, t, sizeof(t)/sizeof(t[0]), &r);
+    if (!isValid) return;
+
+    int found = searchKey(json, &t, SYSTEM_INFO, r, &i);
+    if (found) {
+        const char* pi = json + t[i + 1].start;
+        jsmn_init(&p);
+        r = jsmn_parse(&p, pi, t[i+1].end - t[i+1].start, t, sizeof(t)/sizeof(t[0]));
+        if (r < 0) {
+            printf("Failed to parse JSON: %d\n", r);
+            return;
+        }
+
+        const char* SYSTEM = "System";
+        const char* PRODUCTID = "ProductId";
+        const char* NAME = "Name";
+        const char* ACLR = "ACLR";
+        const char* ENABLED = "Enabled";
+
+        for (i = 1; i < r; i++) {
+            if (jsoneq(pi, &t[i], SYSTEM) == 0) {
+                char *system = getStringField(SYSTEM, &t[i + 1], pi);
+                *systemInfo = concatStrings(*systemInfo, system, ',');
+                free(system);
+                i++;
+            } else if (jsoneq(pi, &t[i], PRODUCTID) == 0) {
+                char *productId = getStringField(PRODUCTID, &t[i + 1], pi);
+                *systemInfo = concatStrings(*systemInfo, productId, ',');
+                free(productId);
+                i++;
+            } else if (jsoneq(pi, &t[i], NAME) == 0) {
+                char *name = getStringField(PRODUCTID, &t[i + 1], pi);
+                *systemInfo = concatStrings(*systemInfo, name, ',');
+                free(name);
+                i++;
+            } else if (jsoneq(pi, &t[i], ACLR) == 0) {
+                char *aclr = getStringField(ACLR, &t[i + 1], pi);
+                *systemInfo = concatStrings(*systemInfo, aclr, ',');
+                free(aclr);
+                i++;
+            }  else if (jsoneq(pi, &t[i], ENABLED) == 0) {
+                char *enabled = getBoolField(ENABLED, &t[i + 1], pi);
+                *systemInfo = concatStrings(*systemInfo, enabled, ',');
+                free(enabled);
+                i++;
+            }
+        }
+    }
 }
 
 void parseDriverInfo(const char* json, char** driverInfo) {
@@ -303,35 +380,19 @@ void parseDriverInfo(const char* json, char** driverInfo) {
     jsmn_parser p;
     jsmntok_t t[128]; /* We expect no more than 128 tokens */
 
-    jsmn_init(&p);
-    if (json == NULL) return;
+    int isValid = parseJson(json, &p, t, sizeof(t)/sizeof(t[0]), &r);
+    if (!isValid) return;
 
-    r = jsmn_parse(&p, json, strlen(json), t, sizeof(t)/sizeof(t[0]));
-    if (r < 0) {
-        printf("Failed to parse JSON: %d\n", r);
-    }
-
-    /* Assume the top-level element is an object */
-    if (r < 1 || t[0].type != JSMN_OBJECT) {
-        printf("Object expected\n");
-    }
-
-    int found = false;
+    int found = searchKey(json, &t, DRIVER_INFO, r, &i);
     /* Loop over all keys of the root object */
-    for (i = 1; i < r; i++) {
-        if (jsoneq(json, &t[i], "driverInfo") == 0 && t[i + 1].type == JSMN_OBJECT) {
-            {
-                found = true;
-                break;
-            }
-        }
-    }
 
     if (found) {
         const char* pi = json + t[i + 1].start;
-        r = jsmn_parse(&p, pi, t[i+1].end - t[i+1].end, t, sizeof(t)/sizeof(t[0]));
+        jsmn_init(&p);
+        r = jsmn_parse(&p, pi, t[i+1].end - t[i+1].start, t, sizeof(t)/sizeof(t[0]));
         if (r < 0) {
             printf("Failed to parse JSON: %d\n", r);
+            return;
         }
 
         const char* MANUFACTURER = "Manufacturer";
@@ -357,37 +418,34 @@ void parseDriverInfo(const char* json, char** driverInfo) {
 
         for (i = 1; i < r; i++) {
 
-            if (jsoneq(json, &t[i], MANUFACTURER) == 0) {
-                char *manufacturer = getStringField(MANUFACTURER, &t[i + 1], json);
+            if (jsoneq(pi, &t[i], MANUFACTURER) == 0) {
+                char *manufacturer = getStringField(MANUFACTURER, &t[i + 1], pi);
                 *driverInfo = concatStrings(*driverInfo, manufacturer, NEWLINE);
                 free(manufacturer);
                 i++;
-            } else if (jsoneq(json, &t[i], AUTHOR) == 0) {
-                char *author = getStringField(AUTHOR, &t[i + 1], json);
+            } else if (jsoneq(pi, &t[i], AUTHOR) == 0) {
+                char *author = getStringField(AUTHOR, &t[i + 1], pi);
                 *driverInfo = concatStrings(*driverInfo, author, NEWLINE);
                 free(author);
                 i++;
-            } else if (jsoneq(json, &t[i], COPYRIGHT) == 0) {
-                char *copyright = getStringField(COPYRIGHT, &t[i + 1], json);
+            } else if (jsoneq(pi, &t[i], COPYRIGHT) == 0) {
+                char *copyright = getStringField(COPYRIGHT, &t[i + 1], pi);
                 *driverInfo = concatStrings(*driverInfo, copyright, NEWLINE);
                 free(copyright);
                 i++;
-            } else if (jsoneq(json, &t[i], UI) == 0) {
-                char *ui = getStringField(UI, &t[i + 1], json);
+            } else if (jsoneq(pi, &t[i], UI) == 0) {
+                char *ui = getStringField(UI, &t[i + 1], pi);
                 *driverInfo = concatStrings(*driverInfo, ui, NEWLINE);
                 free(ui);
                 i++;
-            }  else if (jsoneq(json, &t[i], PRODUCTS) == 0) {
-                char* productIds = getIdArrayField(PRODUCTS, &t[i+1], json);
+            }  else if (jsoneq(pi, &t[i], PRODUCTS) == 0) {
+                char* productIds = getIdArrayField(PRODUCTS, &t[i+1], pi);
                 *driverInfo = concatStrings(*driverInfo, productIds, NEWLINE);
                 free(productIds);
                 i++;
             }
         }
-
     }
-
-
 }
 
 

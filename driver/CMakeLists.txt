@@ -127,7 +127,7 @@ project(LbELI_cli C)
 
 add_executable(${PROJECT_NAME}  main.c)
 
-target_link_libraries(${PROJECT_NAME} LbwELI.KMGmbH ${LIBS_SYSTEM} )
+target_link_libraries(${PROJECT_NAME} LbwELI.Demo ${LIBS_SYSTEM} )
 
 IF(WIN32)
   file( GENERATE OUTPUT "./config.json" CONTENT "{ \"host\" : \"10.0.2.2\", \"port\": 1883 }"  )

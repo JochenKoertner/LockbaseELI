@@ -217,21 +217,8 @@ LBELI_EXPORT const char* ELIProductInfo( const char* sProductID ) {
 }
 
 LBELI_EXPORT const char* ELISystemInfo( const char* sUsers ) {
-
-    char* pointer = NULL;
-    parseSystemInfo(driverInfo->config, &pointer);
+    parseSystemInfo(driverInfo->config, &driverInfo->systemInfo);
     return driverInfo->systemInfo;
-
-    // send message to broker
-    // connect();
-    // publish(PAYLOAD);
-    // wait for response (PAYLOAD)
-    // disconnect();
-    /*return
-            u8"[ID:Sys1],[ID:ProductID],[TXT:Name],[ACLR],['0':disable|'1':enable]\n"
-            u8"[ID:Sys2],[ID:ProductID],[TXT:Name],[ACLR],['0':disable|'1':enable]\n"
-            u8",[ID:Product1],,[ACLR]\n"
-            u8",[ID:Product2],,[ACLR]\n"; */
 }
 
 LBELI_EXPORT const char* ELIOpen( const char* sUserList, const char* sSysID, const char* sExtData) {
