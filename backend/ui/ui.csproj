@@ -42,9 +42,17 @@
 		</Content>
 	</ItemGroup>
 
+    <Target Name="BuildClientAssets" 
+        Condition="'$(Configuration)' == 'Release' " 
+        BeforeTargets="Publish">
+        <Message Text="Yarn Build on release" />
+        <Exec Command="yarn build" WorkingDirectory="../../Frontend" />
+    </Target>
+
+
 	<Target Name="PublishFrontend" AfterTargets="PrepareForPublish">
 		<ItemGroup>
-			<ClientFiles Include="../../Frontend\build\**" />
+			<ClientFiles Include="../../Frontend/build\**" />
 			<ContentWithTargetPath Include="@(ClientFiles->'%(FullPath)')" TargetPath="clientApp/%(ClientFiles.RecursiveDir)%(Filename)%(Extension)" CopyToPublishDirectory="PreserveNewest" />
 		</ItemGroup>
 	</Target>
