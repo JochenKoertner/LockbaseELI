@@ -52,11 +52,31 @@ Change path to `/backend/ui` path.
 `dotnet restore`
 `dotnet build`
 
+### MacOS
 
 `export ASPNETCORE_ENVIRONMENT=Development`
 `export ASPNETCORE_CONTENTROOT=../../../../../frontend`
 `dotnet run`
 
+### Windows
+`$Env:ASPNETCORE_ENVIRONMENT = "Development"`
+`$Env:ASPNETCORE_CONTENTROOT = "../../../../../frontend"`
+
+
+## Build Deployment
+
+This Builds a single executable that don't needs any netcore installed.
+`dotnet publish -o deploy -c Debug -r win-x64 /p:PublishSingleFile=true`
+
 ## Build the driver 
 
 Change path to `/driver/build` path. 
+
+## Windows Defender Firewall Regeln scripten 
+
+Get-Command -module Netsecurity 
+Get-NetFirewallRule
+Show-NetFirewallRule
+
+
+

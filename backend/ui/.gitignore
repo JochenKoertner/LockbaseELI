@@ -20,6 +20,7 @@
 x64/
 x86/
 build/
+deploy/
 bld/
 bin/
 Bin/
