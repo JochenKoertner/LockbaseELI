@@ -4,7 +4,7 @@
     * Demo Standalone cli Tool (jk)
 	* Port SetUp Windows Defender (jk)
 	* ~~dll Name `LbwELI.Demo.dll` ändern~~ (cf)
-	* config.json Static einbinden statt file (cf)
+	* ~~config.json Static einbinden statt file~~ (cf)
 	* ~~SystemInfo aus Json parsen~~ (cf)
 	* Backend  Distribute ohne dotnet core (cf)
 	* Frontend Deploy ohne nodejs ? (cf) 

@@ -13,6 +13,62 @@
 #define PRODUCT_INFOS  "productInfos"
 #define SYSTEM_INFO  "systemInfo"
 
+
+char* getJsonDocument() {
+    return strdup(
+    "{"
+        "\"host\" : \"localhost\","
+        "\"port\" : 1883,"
+
+        "\"driverInfo\" : {"
+            "\"Manufacturer\" : \"KMGmbH, de:Körtner & Muth GmbH\","
+            "\"Products\" : [ \"DemoDriver\"],"
+            "\"DriverAuthor\" : \"de:Captain Future\","
+            "\"DriverCopyright\" : \"Copyright (c) 2019\","
+            "\"DriverUI\" : \"Start Browser\""
+        "},"
+        "\"productInfos\" : {"
+            "\"DemoDriver\" :  {"
+                "\"ProductName\" : \"The LOCKBASE ELI Simulator, de:Der LOCKBASE ELI Simulator\","
+                "\"ProgrammingTarget\" : 1,"
+                "\"DeviceCapacity\" : 1000,"
+                "\"TimePeriodCapacity\" : 1000,"
+                "\"EventTypes\" : ["
+                    "[\"ESUA\",\"security\","
+                            "\":Unauthorized Access:An unauthorized access attempt has occurred,de:Unberechtigter Zutrittsversuch:Es wurde der Zutriit mit einem unberechtigen Schlüssel versucht\""
+                    "],"
+                    "[\"ETBL\",\"technical\","
+                            "\":Battery low:The battery charge level is low,de:Batterie leer:Der Ladestand der Batterie ist niedrig\""
+                    "],"
+                    "[\"ETPO\",\"technical\","
+                            "\":Power off:The power supply is interrupted,de:Kein Strom:Die Stromversorgung ist unterbrochen\""
+                    "],"
+                    "[\"ETMR\",\"technical\","
+                            "\":Maintenance:The device requires maintenance,de:Wartung:Das Gerät benötigt Wartung\""
+                    "],"
+                    "[\"EAAA\",\"access\","
+                            "\":Authorized access:Access was granted to an authorized key,de:Berechtigter Zutritt:Einem berechtigten Schlüssel würde Zutritt gewährt\""
+                    "]"
+                "],"
+                "\"OnlineSystem\" : true,"
+                "\"DefaultAccess\" : false,"
+                "\"AccessByNmbOfLockings\" : false,"
+                "\"AccessByFloatingPeriod\" : false,"
+                "\"TimePeriodRecurrence\" : [ \"RecIntID1\",\"RecIntID2\" ],"
+                "\"EventUpdateInterval\" : 1,"
+                "\"AccessUpdateInterval\" : 1"
+            "}"
+        "},"
+        "\"systemInfo\" : {"
+            "\"System\" : \"ELIDemo\","
+            "\"ProductId\" : \"ELIDemo\","
+            "\"Name\": \"LOCKBASE ELI Simulation\","
+            "\"ACLR\": \"AL\","
+            "\"Enabled\" : true"
+        "}"
+    "}");
+}
+
 void parseConfigFile(const char* json, char** host, long* port) {
 
     int i;
@@ -488,7 +544,8 @@ driver_info_t * new_driver(ELIDrv2App callBack) {
 
     new_driver->callback = callBack;
     new_driver->sessions = NULL;
-    new_driver->config = readFile("../config.json");
+    new_driver->config = getJsonDocument();
+            // readFile("../config.json");
 
     new_driver->port = 1883;
     new_driver->host = NULL;
@@ -515,3 +572,4 @@ void free_driver(driver_info_t * driver) {
     free(driver->driverInfo);
     free(driver);
 }
+

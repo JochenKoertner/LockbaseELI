@@ -103,7 +103,7 @@ add_library(${PROJECT_NAME} ${SOURCES_PAHO} )
 
 ## Build Driver Dynamic Library ------------------------------------
 
-project(LbwELI.KMGmbH C)
+project(LbwELI.Demo C)
 
 IF(WIN32)
     ADD_DEFINITIONS(-D_CRT_NONSTDC_NO_DEPRECATE)
