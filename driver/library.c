@@ -145,6 +145,7 @@ int mqtt_receive_msg(const char* topic, int timeout, char** payload) {
 */
 
 LBELI_EXPORT const char* ELICreate( const char* sLic, const char* sLbwELIRev, ELIDrv2App callback ) {
+    printf("__v__ELICreate()\n");
     if (strcmp(sLbwELIRev, LbwELI_VERSION) != 0) {
         return u8"EREV,"
                 LbwELI_VERSION;
@@ -161,9 +162,7 @@ LBELI_EXPORT const char* ELICreate( const char* sLic, const char* sLbwELIRev, EL
     return "EREV\n"
             u8"[ID:Error],[TXT:DrvELIRev]";
     }*/
-
-
-
+    printf("__^__ELICreate()\n");
     return "OK";
 }
 
@@ -173,10 +172,12 @@ LBELI_EXPORT const char* ELICreate( const char* sLic, const char* sLbwELIRev, EL
 * even if the constructor did not returned EOK.
 */
 LBELI_EXPORT void ELIDestroy() {
+    printf("__v__ELIDestroy()\n");
     mqtt_destroy();
 
     free_driver(driverInfo);
     driverInfo = NULL;
+    printf("__^__ELIDestroy()\n");
 }
 
 /*
@@ -188,6 +189,7 @@ LBELI_EXPORT void ELIDestroy() {
 */
 
 LBELI_EXPORT const char* ELIDriverInfo() {
+    printf("__v__ELIDriverInfo()\n");
     parseDriverInfo(driverInfo->config, &driverInfo->driverInfo);
     return driverInfo->driverInfo;
 }
@@ -198,6 +200,7 @@ LBELI_EXPORT const char* ELIDriverInfo() {
 */
 
 LBELI_EXPORT void ELIDriverUI(const char* SessID, const char* SID) {
+    printf("__v__ELIDriverUI()\n");
     printf("Start Browser  SessID='%s'  SID='%s'\n", SessID, SID);
 }
 
@@ -211,18 +214,19 @@ LBELI_EXPORT void ELIDriverUI(const char* SessID, const char* SID) {
 */
 
 LBELI_EXPORT const char* ELIProductInfo( const char* sProductID ) {
-
+    printf("__v__ELIProductInfo()\n");
     parseProductInfo(driverInfo->config, sProductID, &driverInfo->productInfo);
     return driverInfo->productInfo;
 }
 
 LBELI_EXPORT const char* ELISystemInfo( const char* sUsers ) {
+    printf("__v__ELISystemInfo()\n");
     parseSystemInfo(driverInfo->config, &driverInfo->systemInfo);
     return driverInfo->systemInfo;
 }
 
 LBELI_EXPORT const char* ELIOpen( const char* sUserList, const char* sSysID, const char* sExtData) {
-
+    printf("__v__ELIOpen(%s)\n",sSysID);
     // connect to the broker
     int rc = mqtt_connect();
     if (rc != MQTTCLIENT_SUCCESS) {
@@ -238,13 +242,14 @@ LBELI_EXPORT const char* ELIOpen( const char* sUserList, const char* sSysID, con
         return "EUNKNOWN,,,,'0'";
     }
     
+    printf("__^__ELIOpen(%s)\n",sSessID);
     static char buf[100];
     sprintf(buf, "%s,%s,ACLR,%08X,'1'", "OK", node->sSystem, node->session_id);
     return buf;
 }
 
 LBELI_EXPORT const char* ELIClose( const char* sSysID, const char* sSessID ) {
-
+    printf("__v__ELIClose(%s)\n",sSessID);
     int session_id = string_to_session_id(sSessID);
 
     node_t * node = find_session(driverInfo->sessions, session_id);
@@ -270,12 +275,13 @@ LBELI_EXPORT const char* ELIClose( const char* sSysID, const char* sSessID ) {
         printf("mqtt_disconnect() => %i\n", ret);
         return "EUNKNOWN";
     }
+    printf("__^__ELIClose(%s)\n",sSessID);
     return "OK";
 }
 
 LBELI_EXPORT int ELIApp2Drv( const char* sSysID, const char *sJobID, const char* sJobData) {
-
-    int session_id = string_to_session_id(sSysID);
+    printf("__v__ELIApp2Drv(%s, %s, %n)\n",sSysID,sJobID, strlen(sJobData));
+  /*  int session_id = string_to_session_id(sSysID);
 
     node_t * node = find_session(driverInfo->sessions, session_id);
     if (!node)
@@ -290,6 +296,8 @@ LBELI_EXPORT int ELIApp2Drv( const char* sSysID, const char *sJobID, const char*
         printf("not publish to %s retcode %d \n", node->sSystem, rc);
         return -1;
     }
+
+*/
 
     /*   "response" cames separatly and asynchron via ELIDrv2App
     char* payload = NULL;
@@ -310,5 +318,6 @@ LBELI_EXPORT int ELIApp2Drv( const char* sSysID, const char *sJobID, const char*
     free(payload);
      */
 
+    printf("__^__ELIApp2Drv(%s)\n",sSysID);
     return 0;
 }
