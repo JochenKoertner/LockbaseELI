@@ -5,16 +5,30 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "LLDB Extension",
             "type": "lldb",
             "request": "custom",
-            "name": "Custom launch",
             "targetCreateCommands": [
                 "target create ${workspaceFolder}/build/LbELI_cli"
             ],
             "processCreateCommands": [
                 "settings set target.run-args value1 value2 value3",
                 "process launch"
-            ]
+            ],
+            "preLaunchTask": "build"
+        },
+        {
+            "name": "C/C++ Extension",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/LbELI_cli",
+            "args": [],
+            "stopAtEntry": true,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "lldb",
+            "miDebuggerPath": "/Applications/Xcode.app/Contents/Developer/usr/bin/lldb-mi"
         }
     ]
 }
