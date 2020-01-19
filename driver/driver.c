@@ -54,7 +54,7 @@ char* getJsonDocument() {
                 "\"DefaultAccess\" : false,"
                 "\"AccessByNmbOfLockings\" : false,"
                 "\"AccessByFloatingPeriod\" : false,"
-                "\"TimePeriodRecurrence\" : [ \"RecIntID1\",\"RecIntID2\" ],"
+                "\"TimePeriodRecurrence\" : \"DW\","
                 "\"EventUpdateInterval\" : 1,"
                 "\"AccessUpdateInterval\" : 1"
             "}"
@@ -355,7 +355,7 @@ void parseProductInfo(const char* json, const char* sProductID, char** productIn
                     free(accessByFloatingPeriod);
                     i++;
                 } else if (jsoneq(json, &t[i], TIMEPERIOD_RECURRENCE) == 0) {
-                    char* timePeriodRecurrence = getIdArrayField(TIMEPERIOD_RECURRENCE, &t[i+1], json);
+                    char* timePeriodRecurrence = getStringField(TIMEPERIOD_RECURRENCE, &t[i+1], json);
                     *productInfo = concatStrings(*productInfo, timePeriodRecurrence, NEWLINE);
                     free(timePeriodRecurrence);
                     i++;

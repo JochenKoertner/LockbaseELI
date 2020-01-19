@@ -1,7 +1,7 @@
 # Todo Liste 
 
 * 2020-01-09 
-    * Demo Standalone cli Tool (jk)
+    * ~~Demo Standalone cli Tool~~ (jk)
 	* Port SetUp Windows Defender (jk)
 	* ~~dll Name `LbwELI.Demo.dll` ändern~~ (cf)
 	* ~~config.json Static einbinden statt file~~ (cf)
@@ -9,3 +9,10 @@
 	* Backend  Distribute ohne dotnet core (cf)
 	* Frontend Deploy ohne nodejs ? (cf) 
 	* LE Command listet Events (Tür Öffnen) zurück (cf)
+
+* 2020-01-19
+    * Config anpassen (cf)
+    * SysID vs SessionID App2Drv (cf)
+    * C/C++ Compile in VSCode 
+    * C/C++ Debugging in VSCode
+
