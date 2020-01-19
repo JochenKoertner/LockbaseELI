@@ -61,6 +61,18 @@ node_t* find_session(node_t* head, int session_id ) {
     return NULL;
 }
 
+node_t* find_system(node_t* head, const char* sSystem ) {
+    node_t* current = head;
+
+    while (current != NULL) {
+        if (strcmp(current->sSystem, sSystem)==0)
+            return current;
+        current = current->next;
+    }
+
+    return NULL;
+}
+
 void remove_session(node_t** head, int session_id) {
 
     int i = 0;

@@ -280,24 +280,26 @@ LBELI_EXPORT const char* ELIClose( const char* sSysID, const char* sSessID ) {
 }
 
 LBELI_EXPORT int ELIApp2Drv( const char* sSysID, const char *sJobID, const char* sJobData) {
-    printf("__v__ELIApp2Drv(%s, %s, %n)\n",sSysID,sJobID, strlen(sJobData));
-  /*  int session_id = string_to_session_id(sSysID);
+    printf("__v__ELIApp2Drv(%s, %s, %d)\n",sSysID,sJobID, strlen(sJobData));
 
-    node_t * node = find_session(driverInfo->sessions, session_id);
+    node_t * node = find_system(driverInfo->sessions, sSysID);
     if (!node)
     {
-        printf("session %s unknown\n", sSysID);
+        printf("system %s unknown\n", sSysID);
         return -1;
     }
 
-    const char* message = create_event_payload("ELIApp2Drv", sSysID, sJobData);
+    int session_id = node->session_id;
+
+    char* sSessionID = session_id_to_string(session_id);
+
+    const char* message = create_event_payload("ELIApp2Drv", sSessionID, sJobData);
     int rc = mqtt_publish(node->sSystem, message, QoS_FireAndForget);
     if (rc != MQTTCLIENT_SUCCESS) {
         printf("not publish to %s retcode %d \n", node->sSystem, rc);
         return -1;
     }
 
-*/
 
     /*   "response" cames separatly and asynchron via ELIDrv2App
     char* payload = NULL;
