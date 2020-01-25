@@ -11,7 +11,7 @@
 		</CopyOutputSymbolsToPublishDirectory>
 		<!-- <PublishTrimmed>true</PublishTrimmed> -->
 		<PublishReadyToRun>true</PublishReadyToRun>
-		<PublishSingleFile>true</PublishSingleFile>
+		<PublishSingleFile Condition="'$(Configuration)' == 'Release'">true</PublishSingleFile>
 		<PublishReadyToRunShowWarnings>true</PublishReadyToRunShowWarnings>
 		<IsTransformWebConfigDisabled>true</IsTransformWebConfigDisabled>
 	</PropertyGroup>
