@@ -1,4 +1,12 @@
 {
-    "C_Cpp.configurationWarnings": "Disabled",
-    "cmake.configureOnOpen": false
+	"C_Cpp.configurationWarnings": "Disabled",
+	"cmake.configureOnOpen": false,
+
+	"files.autoSave": "afterDelay",
+	"files.autoSaveDelay": 5000,
+	"editor.renderWhitespace": "boundary",
+	"editor.detectIndentation": false,
+	"files.associations": {
+		"driver.h": "c"
+	}
 }
