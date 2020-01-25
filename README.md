@@ -66,7 +66,9 @@ Change path to `/backend/ui` path.
 ## Build Deployment
 
 This Builds a single executable that don't needs any netcore installed.
-`dotnet publish -o deploy -c Debug -r win-x64 /p:PublishSingleFile=true`
+`dotnet publish -o bin/deploy -c Release -r win-x64`
+
+`dotnet publish -o bin/deploy -c Release -r osx-x64`
 
 ## Build the driver 
 
