@@ -47,3 +47,12 @@ Invoke-Expression $buildCall
 #cmake -G $generator -DCMAKE_BUILD_TYPE=DEBUG -DCMAKE_C_COMPILER=$clang . 
 
 # "-DCMAKE_C_COMPILER=$clang -DCMAKE_MAKE_PROGRAMM=$make -DCMAKE_BUILD_TYPE=Debug . " 
+
+if( -not $? )
+{
+    $msg = $Error[0].Exception.Message
+    "Encountered error during cmake build. Error Message is $msg. Please check." 
+    exit
+}
+
+Move-Item ".\LbwELI.Demo.dll" "/LockbaseDemo/Lockbase" -Force
