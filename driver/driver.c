@@ -259,7 +259,7 @@ void parseProductInfo(const char* json, const char* sProductID, char** productIn
 	int isValid = parseJson(json, &p, t, sizeof(t)/sizeof(t[0]), &r);
 	if (!isValid) return;
 
-	int found = searchKey(json, &t, PRODUCT_INFOS, r, &i);
+	int found = searchKey(json, (const jsmntok_t *) &t, PRODUCT_INFOS, r, &i);
 	/* Loop over all keys of the root object */
 
 	if (found) {
@@ -381,7 +381,7 @@ void parseSystemInfo(const char* json, char** systemInfo) {
 	int isValid = parseJson(json, &p, t, sizeof(t)/sizeof(t[0]), &r);
 	if (!isValid) return;
 
-	int found = searchKey(json, &t, SYSTEM_INFO, r, &i);
+	int found = searchKey(json, (const jsmntok_t *) &t, SYSTEM_INFO, r, &i);
 	if (found) {
 		const char* pi = json + t[i + 1].start;
 		jsmn_init(&p);
@@ -439,7 +439,7 @@ void parseDriverInfo(const char* json, char** driverInfo) {
 	int isValid = parseJson(json, &p, t, sizeof(t)/sizeof(t[0]), &r);
 	if (!isValid) return;
 
-	int found = searchKey(json, &t, DRIVER_INFO, r, &i);
+	int found = searchKey(json, (const jsmntok_t *) &t, DRIVER_INFO, r, &i);
 	/* Loop over all keys of the root object */
 
 	if (found) {

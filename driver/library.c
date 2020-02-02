@@ -146,8 +146,7 @@ int mqtt_receive_msg(const char* topic, int timeout, char** payload) {
 LBELI_EXPORT const char* ELICreate( const char* sLic, const char* sLbwELIRev, ELIDrv2App callback ) {
 	printf("__v__ELICreate()\n");
 	if (strcmp(sLbwELIRev, LbwELI_VERSION) != 0) {
-		return u8"EREV,"
-				LbwELI_VERSION;
+		return u8"EREV,"LbwELI_VERSION;
 	}
 
 	driverInfo = new_driver(callback);
@@ -156,13 +155,8 @@ LBELI_EXPORT const char* ELICreate( const char* sLic, const char* sLbwELIRev, EL
 		return "EUNKNOWN";
 	}
 
-	/* check requested revision
-	if (sLbwELIRev > "1.2") {
-	return "EREV\n"
-			u8"[ID:Error],[TXT:DrvELIRev]";
-	}*/
 	printf("__^__ELICreate()\n");
-	return "OK";
+	return u8"OK,"LbwELI_VERSION;
 }
 
 /*

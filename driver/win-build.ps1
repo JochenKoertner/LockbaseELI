@@ -27,7 +27,7 @@ $genArgs += ('-DCMAKE_BUILD_TYPE={0}' -f $buildType);
 # $genArgs += '-DPAHO_WITH_SSL=FALSE';
 # $genArgs += '-DPAHO_BUILD_DOCUMENTATION=FALSE';
 # $genArgs += '-DPAHO_BUILD_SAMPLES=FALSE';
-$genArgs += '-DCMAKE_VERBOSE_MAKEFILE=TRUE';
+$genArgs += '-DCMAKE_VERBOSE_MAKEFILE=FALSE';
 
 $genArgs += ('{0}' -f $path);
 
