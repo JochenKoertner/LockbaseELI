@@ -35,19 +35,19 @@ char* getJsonDocument() {
 				"\"TimePeriodCapacity\" : 1000,"
 				"\"EventTypes\" : ["
 					"[\"ESUA\",\"security\","
-							"\":Unauthorized Access:An unauthorized access attempt has occurred,de:Unberechtigter Zutrittsversuch:Es wurde der Zutriit mit einem unberechtigen Schlüssel versucht\""
+							"\"':Unauthorized Access:An unauthorized access attempt has occurred,de:Unberechtigter Zutrittsversuch:Es wurde der Zutriit mit einem unberechtigen Schlüssel versucht'\""
 					"],"
 					"[\"ETBL\",\"technical\","
-							"\":Battery low:The battery charge level is low,de:Batterie leer:Der Ladestand der Batterie ist niedrig\""
+							"\"':Battery low:The battery charge level is low,de:Batterie leer:Der Ladestand der Batterie ist niedrig'\""
 					"],"
 					"[\"ETPO\",\"technical\","
-							"\":Power off:The power supply is interrupted,de:Kein Strom:Die Stromversorgung ist unterbrochen\""
+							"\"':Power off:The power supply is interrupted,de:Kein Strom:Die Stromversorgung ist unterbrochen'\""
 					"],"
 					"[\"ETMR\",\"technical\","
-							"\":Maintenance:The device requires maintenance,de:Wartung:Das Gerät benötigt Wartung\""
+							"\"':Maintenance:The device requires maintenance,de:Wartung:Das Gerät benötigt Wartung'\""
 					"],"
 					"[\"EAAA\",\"access\","
-							"\":Authorized access:Access was granted to an authorized key,de:Berechtigter Zutritt:Einem berechtigten Schlüssel würde Zutritt gewährt\""
+							"\"':Authorized access:Access was granted to an authorized key,de:Berechtigter Zutritt:Einem berechtigten Schlüssel würde Zutritt gewährt'\""
 					"]"
 				"],"
 				"\"OnlineSystem\" : true,"
@@ -217,9 +217,8 @@ char* getEventTypesField(const char* keyName, jsmntok_t* token, const char* json
 				int end = i + t[i].size;
 
 				char* items = concatStringArray(t, start, end, json + token->start);
-                // items = surroundDelimiter(items, surroundDelimiter);
-				list = concatStrings(list, items,CR);
-                list = concatStrings(list, "\t\t\t",';');
+				list = concatStrings(list, items,';');
+                //list = concatStrings(list, "\t\t\t",);
 				free(items);
 
 				i = end;
