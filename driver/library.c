@@ -144,7 +144,6 @@ int mqtt_receive_msg(const char* topic, int timeout, char** payload) {
 */
 
 LBELI_EXPORT const char* ELICreate( const char* sLic, const char* sLbwELIRev, ELIDrv2App callback ) {
-	printf("__v__ELICreate()\n");
 	if (strcmp(sLbwELIRev, LbwELI_VERSION) != 0) {
 		return u8"EREV,"LbwELI_VERSION;
 	}
@@ -155,7 +154,6 @@ LBELI_EXPORT const char* ELICreate( const char* sLic, const char* sLbwELIRev, EL
 		return "EUNKNOWN";
 	}
 
-	printf("__^__ELICreate()\n");
 	return u8"OK,"LbwELI_VERSION;
 }
 
@@ -165,12 +163,10 @@ LBELI_EXPORT const char* ELICreate( const char* sLic, const char* sLbwELIRev, EL
 * even if the constructor did not returned EOK.
 */
 LBELI_EXPORT void ELIDestroy() {
-	printf("__v__ELIDestroy()\n");
 	mqtt_destroy();
 
 	free_driver(driverInfo);
 	driverInfo = NULL;
-	printf("__^__ELIDestroy()\n");
 }
 
 /*
@@ -182,7 +178,6 @@ LBELI_EXPORT void ELIDestroy() {
 */
 
 LBELI_EXPORT const char* ELIDriverInfo() {
-	printf("__v__ELIDriverInfo()\n");
 	parseDriverInfo(driverInfo->config, &driverInfo->driverInfo);
 	return driverInfo->driverInfo;
 }
@@ -207,13 +202,11 @@ LBELI_EXPORT void ELIDriverUI(const char* SessID, const char* SID) {
 */
 
 LBELI_EXPORT const char* ELIProductInfo( const char* sProductID ) {
-	printf("__v__ELIProductInfo()\n");
 	parseProductInfo(driverInfo->config, sProductID, &driverInfo->productInfo);
 	return driverInfo->productInfo;
 }
 
 LBELI_EXPORT const char* ELISystemInfo( const char* sUsers ) {
-	printf("__v__ELISystemInfo()\n");
 	parseSystemInfo(driverInfo->config, &driverInfo->systemInfo);
 	return driverInfo->systemInfo;
 }
@@ -237,7 +230,7 @@ LBELI_EXPORT const char* ELIOpen( const char* sUserList, const char* sSysID, con
 	
 	printf("__^__ELIOpen(%s)\n",sSessID);
 	static char buf[100];
-	sprintf(buf, "%s,%s,ACLR,%08X,'1'", "OK", node->sSystem, node->session_id);
+	sprintf(buf, "%s,%s,AL,%08X,1", "OK", node->sSystem, node->session_id);
 	return buf;
 }
 
