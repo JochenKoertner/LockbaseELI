@@ -5,7 +5,7 @@
 #include "library.h"
 
 #define CLIENT_ID	"Alice"
-#define SYSTEM		"channel"
+#define SYSTEM		"ELIDemo"
 #define TIMEOUT		10000L
 
 #define JOB_ID		"4711"
@@ -56,7 +56,7 @@ int main() {
 	// initialise driver interface and register a callback function
 	const char* retCode = ELICreate("lic", LbwELI_VERSION, myCallBack );
 	printf("ELICreate(...) => '%s'\n\n", retCode);
-	if (strcmp(retCode, "OK") != 0) {
+	if (strcmp(retCode, "OK,0.4") != 0) {
 		return -1;
 	}
 
@@ -78,7 +78,7 @@ int main() {
 	// ELIDriverUI( "sessionID", "SID");
 
 	// open connection to hardware (in this case MQTT broker)
-	const char* csv = ELIOpen("UserList", SYSTEM, CLIENT_ID);
+	const char* csv = ELIOpen("jk", SYSTEM, CLIENT_ID);
 	const char* errorCode = getField(csv, 1);
 	if (strcmp(errorCode, "OK") == 0) {
 		const char* session = getField(csv, 4);
