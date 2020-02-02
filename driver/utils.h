@@ -7,6 +7,7 @@
 #include "jsmn/jsmn.h"
 
 #define NEWLINE 0x0A
+#define CR 0x0D
 
 static int jsoneq(const char *json, const jsmntok_t *tok, const char *s) {
     if (tok->type == JSMN_STRING && (int) strlen(s) == tok->end - tok->start &&

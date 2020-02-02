@@ -22,15 +22,15 @@ char* getJsonDocument() {
 
 		"\"driverInfo\" : {"
 			"\"Manufacturer\" : \"KMGmbH, de:Körtner & Muth GmbH\","
-			"\"Products\" : [ \"DemoDriver\"],"
+			"\"Products\" : [ \"ELIDemo\"],"
 			"\"DriverAuthor\" : \"de:Captain Future\","
 			"\"DriverCopyright\" : \"Copyright (c) 2019\","
 			"\"DriverUI\" : \"Start Browser\""
 		"},"
 		"\"productInfos\" : {"
-			"\"DemoDriver\" :  {"
+			"\"ELIDemo\" :  {"
 				"\"ProductName\" : \"The LOCKBASE ELI Simulator, de:Der LOCKBASE ELI Simulator\","
-				"\"ProgrammingTarget\" : 1,"
+				"\"ProgrammingTarget\" : 0,"
 				"\"DeviceCapacity\" : 1000,"
 				"\"TimePeriodCapacity\" : 1000,"
 				"\"EventTypes\" : ["
@@ -101,6 +101,26 @@ void parseConfigFile(const char* json, char** host, long* port) {
 	}
 }
 
+char* concatNewline(char* source) {
+    int lenSource = strlen(source);
+    char* result = malloc(lenSource+2);
+    strncpy(result, source, lenSource);
+    result[lenSource] = CR;
+    result[lenSource+1] = 0;
+    free(source);
+    return result;
+}
+
+char* surroundDelimiter(char* source, char delimiter) {
+    int lenSource = strlen(source);
+    char* result = malloc(lenSource+3);
+    strncpy(result+1, source, lenSource);
+    result[0] = delimiter;
+    result[lenSource+1] = delimiter;
+    result[lenSource+2] = 0;
+    free(source);
+    return result;
+}
 
 char* concatStrings(char* source, const char* appendStr, char separator) {
 
@@ -136,21 +156,21 @@ char* concatStringArray(jsmntok_t* t, int start, int end, const char* json) {
 
 
 char* getStringField(const char* keyName, jsmntok_t* token, const char* json) {
-	char* result=malloc(strlen(keyName)+3+(token->end-token->start)+1);
-	sprintf(result, "%s='%.*s'", keyName, token->end-token->start, json + token->start);
+	char* result=malloc(strlen(keyName)+4+(token->end-token->start)+1);
+	sprintf(result, "%s\t\t=\t%.*s", keyName, token->end-token->start, json + token->start);
 	return result;
 }
 
 char* getIntField(const char* keyName, jsmntok_t* token, const char* json) {
-	char* result=malloc(strlen(keyName)+1+(token->end-token->start)+1);
-	sprintf(result, "%s=%.*s", keyName, token->end-token->start, json + token->start);
+	char* result=malloc(strlen(keyName)+4+(token->end-token->start)+1);
+	sprintf(result, "%s\t\t=\t%.*s", keyName, token->end-token->start, json + token->start);
 	return result;
 }
 
 char* getBoolField(const char* keyName, jsmntok_t* token, const char* json) {
 	char* result=malloc(strlen(keyName)+4+1);
 	int flag = json[token->start] == 't' || json[token->start] == 'T';
-	sprintf(result, "%s='%i'", keyName, flag);
+	sprintf(result, "%s\t=\t%i", keyName, flag);
 	return result;
 }
 
@@ -197,7 +217,9 @@ char* getEventTypesField(const char* keyName, jsmntok_t* token, const char* json
 				int end = i + t[i].size;
 
 				char* items = concatStringArray(t, start, end, json + token->start);
-				list = concatStrings(list, items, ';');
+                // items = surroundDelimiter(items, surroundDelimiter);
+				list = concatStrings(list, items,CR);
+                list = concatStrings(list, "\t\t\t",';');
 				free(items);
 
 				i = end;
