@@ -161,6 +161,15 @@ char* getStringField(const char* keyName, jsmntok_t* token, const char* json) {
 	return result;
 }
 
+
+char* getString(jsmntok_t* token, const char* json) {
+	char* result=malloc((token->end-token->start)+1);
+	sprintf(result, "%.*s", token->end-token->start, json + token->start);
+	return result;
+}
+
+
+
 char* getIntField(const char* keyName, jsmntok_t* token, const char* json) {
 	char* result=malloc(strlen(keyName)+4+(token->end-token->start)+1);
 	sprintf(result, "%s\t\t=\t%.*s", keyName, token->end-token->start, json + token->start);
@@ -171,6 +180,12 @@ char* getBoolField(const char* keyName, jsmntok_t* token, const char* json) {
 	char* result=malloc(strlen(keyName)+4+1);
 	int flag = json[token->start] == 't' || json[token->start] == 'T';
 	sprintf(result, "%s\t=\t%i", keyName, flag);
+	return result;
+}
+char* getBool(jsmntok_t* token, const char* json) {
+	char* result=malloc(1+1);
+	int flag = json[token->start] == 't' || json[token->start] == 'T';
+	sprintf(result, "%i",flag);
 	return result;
 }
 
@@ -420,27 +435,27 @@ void parseSystemInfo(const char* json, char** systemInfo) {
 
 		for (i = 1; i < r; i++) {
 			if (jsoneq(pi, &t[i], SYSTEM) == 0) {
-				char *system = getStringField(SYSTEM, &t[i + 1], pi);
+				char *system = getString(&t[i + 1], pi);
 				*systemInfo = concatStrings(*systemInfo, system, ',');
 				free(system);
 				i++;
 			} else if (jsoneq(pi, &t[i], PRODUCTID) == 0) {
-				char *productId = getStringField(PRODUCTID, &t[i + 1], pi);
+				char *productId = getString(&t[i + 1], pi);
 				*systemInfo = concatStrings(*systemInfo, productId, ',');
 				free(productId);
 				i++;
 			} else if (jsoneq(pi, &t[i], NAME) == 0) {
-				char *name = getStringField(PRODUCTID, &t[i + 1], pi);
+				char *name = getString(&t[i + 1], pi);
 				*systemInfo = concatStrings(*systemInfo, name, ',');
 				free(name);
 				i++;
 			} else if (jsoneq(pi, &t[i], ACLR) == 0) {
-				char *aclr = getStringField(ACLR, &t[i + 1], pi);
+				char *aclr = getString(&t[i + 1], pi);
 				*systemInfo = concatStrings(*systemInfo, aclr, ',');
 				free(aclr);
 				i++;
 			}  else if (jsoneq(pi, &t[i], ENABLED) == 0) {
-				char *enabled = getBoolField(ENABLED, &t[i + 1], pi);
+				char *enabled = getBool(&t[i + 1], pi);
 				*systemInfo = concatStrings(*systemInfo, enabled, ',');
 				free(enabled);
 				i++;
