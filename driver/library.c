@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdbool.h>
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>
@@ -110,7 +111,6 @@ int mqtt_receive_msg(const char* topic, int timeout, char** payload) {
 	}
 
 	if (topicName) {
-
 		if (msg != NULL) {
 			*payload = strndup((char*)(msg->payload), msg->payloadlen);
 			// printf("Message received on topic %s is %.*s", topicName, msg->payloadlen, (char*)(msg->payload));
@@ -233,7 +233,17 @@ LBELI_EXPORT const char* ELIOpen( const char* sUserList, const char* sSysID, con
 		return "EUNKNOWN,,,,'0'";
 	}
 
-	node_t * node = new_session(&driverInfo->sessions, sUserList, sSysID, sExtData);
+	node_t * node = find_system(driverInfo->sessions, sSysID);
+	bool isNewSession = !node;
+	if (isNewSession)
+	{
+		printf("system %s unknown\n", sSysID);
+		node = new_session(&driverInfo->sessions, sUserList, sSysID, sExtData);
+	}
+	else {
+		update_session(node, sUserList, sExtData);
+	}
+
 	const char* sSessID = session_id_to_string(node->session_id);
 	const char* message = create_event_payload("ELIOpen", sSessID, "OPEN,sSystem,sExtData");
 	rc = mqtt_publish(sSysID, message, QoS_FireAndForget);
@@ -241,22 +251,46 @@ LBELI_EXPORT const char* ELIOpen( const char* sUserList, const char* sSysID, con
 		return "EUNKNOWN,,,,'0'";
 	}
 	
+	const char* sessionId = isNewSession ? "" : sSessID;
+
 	printf("__^__ELIOpen(%s)\n",sSessID);
 	static char buf[100];
-	sprintf(buf, "%s,%s,ACLR,%08X,'1'", "OK", node->sSystem, node->session_id);
+	sprintf(buf, "%s,%s,ACLR,%s,'%i'", "OK", node->sSystem, sessionId, node->state);
 	return buf;
 }
+
+/* 
+* By using the Close() function the application signals the end of a session to the driver. 
+* The function expects the system id and a session id defined by the application. The driver 
+* must store the session id with the system and return it in the next call of ELIOpen() for 
+* this system (s.a.).The ELIClose() function returns a CSV record of the following 
+* form:[ID:Error],[B64:ExtData]
+*
+* In case the function succeeds, the error field contains 'OK' and is (optionally) followed
+* by a binarydata block to store with the system in the application's database. In case an 
+* error occurs the errorfield contains one of the defined error codes (see 'Data Exchange, 
+* Jobs and Statements, Error Codes') and the following fields are omitted.
+*/
 
 LBELI_EXPORT const char* ELIClose( const char* sSysID, const char* sSessID ) {
 	printf("__v__ELIClose(%s)\n",sSessID);
 	int session_id = string_to_session_id(sSessID);
 
-	node_t * node = find_session(driverInfo->sessions, session_id);
+	node_t * node = find_system(driverInfo->sessions, sSysID);
 	if (!node)
 	{
-		printf("session %s unknown\n", sSessID);
+		printf("system %s unknown\n", sSysID);
 		return "EUNKNOWN";
 	}
+
+	node->last_session_id = session_id;
+
+	// node_t * node = find_session(driverInfo->sessions, session_id);
+	// if (!node)
+	// {
+	// 	printf("session %s unknown\n", sSessID);
+	// 	return "EUNKNOWN";
+	// }
 
 	const char* message = create_event_payload("ELIClose", sSessID, "CLOSE,session");
 	int rc = mqtt_publish(node->sSystem, message, QoS_FireAndForget);
@@ -266,7 +300,7 @@ LBELI_EXPORT const char* ELIClose( const char* sSysID, const char* sSessID ) {
 	}
 
 	// remove the session from the list
-	remove_session(&driverInfo->sessions, session_id);
+	// remove_session(&driverInfo->sessions, session_id);
 
 	// disconnet from mqtt broker
 	int ret = mqtt_disconnect();

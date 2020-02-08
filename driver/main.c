@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "library.h"
+#include "utils.h"
 
 #define CLIENT_ID	"Alice"
 #define SYSTEM		"channel"
@@ -76,6 +77,10 @@ int main() {
 
 	// call ELIDriverUI
 	// ELIDriverUI( "sessionID", "SID");
+
+
+	int mySession = rand();
+	printf("MySession '%08X' \n\n", mySession);
 
 	// open connection to hardware (in this case MQTT broker)
 	const char* csv = ELIOpen("UserList", SYSTEM, CLIENT_ID);
@@ -151,7 +156,8 @@ int main() {
 
 
 		// close connection to hardware (i.e. MQTT broker disconnect)
-		printf("ELIClose('%s','%s') => '%s'\n", SYSTEM, session, ELIClose(SYSTEM, session));
+		const char* mySessionId = session_id_to_string(mySession);
+		printf("ELIClose('%s','%s') => '%s'\n", SYSTEM, mySessionId, ELIClose(SYSTEM, mySessionId));
 	}
 	else 
 		printf("[%s]\n", errorCode);
