@@ -24,10 +24,10 @@ $genArgs = @('-G "{0}"' -f $generator )
 # $genArgs += ('-T "{0}"' -f "LLVM-vs2014");
 
 $genArgs += ('-DCMAKE_BUILD_TYPE={0}' -f $buildType);
-$genArgs += '-DPAHO_WITH_SSL=FALSE';
-$genArgs += '-DPAHO_BUILD_DOCUMENTATION=FALSE';
-$genArgs += '-DPAHO_BUILD_SAMPLES=FALSE';
-$genArgs += '-DCMAKE_VERBOSE_MAKEFILE=TRUE';
+# $genArgs += '-DPAHO_WITH_SSL=FALSE';
+# $genArgs += '-DPAHO_BUILD_DOCUMENTATION=FALSE';
+# $genArgs += '-DPAHO_BUILD_SAMPLES=FALSE';
+$genArgs += '-DCMAKE_VERBOSE_MAKEFILE=FALSE';
 
 $genArgs += ('{0}' -f $path);
 
@@ -37,9 +37,9 @@ $genCall = ('cmake {0}' -f ($genArgs -Join ' '));
 # Write-Host $genCall
 Invoke-Expression $genCall;
 
-$buildCall = 'cmake --build .';
+$buildCall = 'cmake --build . --target LbELI_cli -- -j 2';
 
-#Write-Host $buildCall
+# Write-Host $buildCall
 Invoke-Expression $buildCall
 
 # Call cmake 
@@ -55,4 +55,4 @@ if( -not $? )
     exit
 }
 
-Move-Item ".\LbwELI.Demo.dll" "/LockbaseDemo/Lockbase" -Force
+Copy-Item ".\LbwELI.Demo.dll" "/LockbaseDemo/Lockbase" -Force

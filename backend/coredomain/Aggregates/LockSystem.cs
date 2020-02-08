@@ -158,7 +158,8 @@ namespace Lockbase.CoreDomain.Aggregates
 				return DefineAssignmentKey(tail);
 			else if (head.Equals("OPEN") || head.Equals("CLOSE"))
 				return this;
-
+			else if (head.Equals("LE"))
+				return this;
 			throw new NotImplementedException(head);
 		}
 

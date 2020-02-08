@@ -19,7 +19,10 @@ namespace Lockbase.CoreDomain.Services
 		public void Receive(string topic, int sessionId, string message)
 		{
 			this.logger.LogInformation(message);
-			lockSystem.SetValue(x => x.DefineStatement(message));
+			foreach(var line in message.Split("\n"))
+			{
+				lockSystem.SetValue(x => x.DefineStatement(line));
+			}
 		}
 	}
 }

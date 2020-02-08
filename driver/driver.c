@@ -22,32 +22,32 @@ char* getJsonDocument() {
 
 		"\"driverInfo\" : {"
 			"\"Manufacturer\" : \"KMGmbH, de:Körtner & Muth GmbH\","
-			"\"Products\" : [ \"DemoDriver\"],"
+			"\"Products\" : [ \"ELIDemo\"],"
 			"\"DriverAuthor\" : \"de:Captain Future\","
 			"\"DriverCopyright\" : \"Copyright (c) 2019\","
 			"\"DriverUI\" : \"Start Browser\""
 		"},"
 		"\"productInfos\" : {"
-			"\"DemoDriver\" :  {"
+			"\"ELIDemo\" :  {"
 				"\"ProductName\" : \"The LOCKBASE ELI Simulator, de:Der LOCKBASE ELI Simulator\","
-				"\"ProgrammingTarget\" : 1,"
+				"\"ProgrammingTarget\" : 0,"
 				"\"DeviceCapacity\" : 1000,"
 				"\"TimePeriodCapacity\" : 1000,"
 				"\"EventTypes\" : ["
 					"[\"ESUA\",\"security\","
-							"\":Unauthorized Access:An unauthorized access attempt has occurred,de:Unberechtigter Zutrittsversuch:Es wurde der Zutriit mit einem unberechtigen Schlüssel versucht\""
+							"\"':Unauthorized Access:An unauthorized access attempt has occurred,de:Unberechtigter Zutrittsversuch:Es wurde der Zutriit mit einem unberechtigen Schlüssel versucht'\""
 					"],"
 					"[\"ETBL\",\"technical\","
-							"\":Battery low:The battery charge level is low,de:Batterie leer:Der Ladestand der Batterie ist niedrig\""
+							"\"':Battery low:The battery charge level is low,de:Batterie leer:Der Ladestand der Batterie ist niedrig'\""
 					"],"
 					"[\"ETPO\",\"technical\","
-							"\":Power off:The power supply is interrupted,de:Kein Strom:Die Stromversorgung ist unterbrochen\""
+							"\"':Power off:The power supply is interrupted,de:Kein Strom:Die Stromversorgung ist unterbrochen'\""
 					"],"
 					"[\"ETMR\",\"technical\","
-							"\":Maintenance:The device requires maintenance,de:Wartung:Das Gerät benötigt Wartung\""
+							"\"':Maintenance:The device requires maintenance,de:Wartung:Das Gerät benötigt Wartung'\""
 					"],"
 					"[\"EAAA\",\"access\","
-							"\":Authorized access:Access was granted to an authorized key,de:Berechtigter Zutritt:Einem berechtigten Schlüssel würde Zutritt gewährt\""
+							"\"':Authorized access:Access was granted to an authorized key,de:Berechtigter Zutritt:Einem berechtigten Schlüssel würde Zutritt gewährt'\""
 					"]"
 				"],"
 				"\"OnlineSystem\" : true,"
@@ -101,6 +101,26 @@ void parseConfigFile(const char* json, char** host, long* port) {
 	}
 }
 
+char* concatNewline(char* source) {
+    int lenSource = strlen(source);
+    char* result = malloc(lenSource+2);
+    strncpy(result, source, lenSource);
+    result[lenSource] = CR;
+    result[lenSource+1] = 0;
+    free(source);
+    return result;
+}
+
+char* surroundDelimiter(char* source, char delimiter) {
+    int lenSource = strlen(source);
+    char* result = malloc(lenSource+3);
+    strncpy(result+1, source, lenSource);
+    result[0] = delimiter;
+    result[lenSource+1] = delimiter;
+    result[lenSource+2] = 0;
+    free(source);
+    return result;
+}
 
 char* concatStrings(char* source, const char* appendStr, char separator) {
 
@@ -136,21 +156,36 @@ char* concatStringArray(jsmntok_t* t, int start, int end, const char* json) {
 
 
 char* getStringField(const char* keyName, jsmntok_t* token, const char* json) {
-	char* result=malloc(strlen(keyName)+3+(token->end-token->start)+1);
-	sprintf(result, "%s='%.*s'", keyName, token->end-token->start, json + token->start);
+	char* result=malloc(strlen(keyName)+4+(token->end-token->start)+1);
+	sprintf(result, "%s\t\t=\t%.*s", keyName, token->end-token->start, json + token->start);
 	return result;
 }
 
+
+char* getString(jsmntok_t* token, const char* json) {
+	char* result=malloc((token->end-token->start)+1);
+	sprintf(result, "%.*s", token->end-token->start, json + token->start);
+	return result;
+}
+
+
+
 char* getIntField(const char* keyName, jsmntok_t* token, const char* json) {
-	char* result=malloc(strlen(keyName)+1+(token->end-token->start)+1);
-	sprintf(result, "%s=%.*s", keyName, token->end-token->start, json + token->start);
+	char* result=malloc(strlen(keyName)+4+(token->end-token->start)+1);
+	sprintf(result, "%s\t\t=\t%.*s", keyName, token->end-token->start, json + token->start);
 	return result;
 }
 
 char* getBoolField(const char* keyName, jsmntok_t* token, const char* json) {
 	char* result=malloc(strlen(keyName)+4+1);
 	int flag = json[token->start] == 't' || json[token->start] == 'T';
-	sprintf(result, "%s='%i'", keyName, flag);
+	sprintf(result, "%s\t=\t%i", keyName, flag);
+	return result;
+}
+char* getBool(jsmntok_t* token, const char* json) {
+	char* result=malloc(1+1);
+	int flag = json[token->start] == 't' || json[token->start] == 'T';
+	sprintf(result, "%i",flag);
 	return result;
 }
 
@@ -197,7 +232,8 @@ char* getEventTypesField(const char* keyName, jsmntok_t* token, const char* json
 				int end = i + t[i].size;
 
 				char* items = concatStringArray(t, start, end, json + token->start);
-				list = concatStrings(list, items, ';');
+				list = concatStrings(list, items,';');
+                //list = concatStrings(list, "\t\t\t",);
 				free(items);
 
 				i = end;
@@ -259,7 +295,7 @@ void parseProductInfo(const char* json, const char* sProductID, char** productIn
 	int isValid = parseJson(json, &p, t, sizeof(t)/sizeof(t[0]), &r);
 	if (!isValid) return;
 
-	int found = searchKey(json, &t, PRODUCT_INFOS, r, &i);
+	int found = searchKey(json, (const jsmntok_t *) &t, PRODUCT_INFOS, r, &i);
 	/* Loop over all keys of the root object */
 
 	if (found) {
@@ -381,7 +417,7 @@ void parseSystemInfo(const char* json, char** systemInfo) {
 	int isValid = parseJson(json, &p, t, sizeof(t)/sizeof(t[0]), &r);
 	if (!isValid) return;
 
-	int found = searchKey(json, &t, SYSTEM_INFO, r, &i);
+	int found = searchKey(json, (const jsmntok_t *) &t, SYSTEM_INFO, r, &i);
 	if (found) {
 		const char* pi = json + t[i + 1].start;
 		jsmn_init(&p);
@@ -399,27 +435,27 @@ void parseSystemInfo(const char* json, char** systemInfo) {
 
 		for (i = 1; i < r; i++) {
 			if (jsoneq(pi, &t[i], SYSTEM) == 0) {
-				char *system = getStringField(SYSTEM, &t[i + 1], pi);
+				char *system = getString(&t[i + 1], pi);
 				*systemInfo = concatStrings(*systemInfo, system, ',');
 				free(system);
 				i++;
 			} else if (jsoneq(pi, &t[i], PRODUCTID) == 0) {
-				char *productId = getStringField(PRODUCTID, &t[i + 1], pi);
+				char *productId = getString(&t[i + 1], pi);
 				*systemInfo = concatStrings(*systemInfo, productId, ',');
 				free(productId);
 				i++;
 			} else if (jsoneq(pi, &t[i], NAME) == 0) {
-				char *name = getStringField(PRODUCTID, &t[i + 1], pi);
+				char *name = getString(&t[i + 1], pi);
 				*systemInfo = concatStrings(*systemInfo, name, ',');
 				free(name);
 				i++;
 			} else if (jsoneq(pi, &t[i], ACLR) == 0) {
-				char *aclr = getStringField(ACLR, &t[i + 1], pi);
+				char *aclr = getString(&t[i + 1], pi);
 				*systemInfo = concatStrings(*systemInfo, aclr, ',');
 				free(aclr);
 				i++;
 			}  else if (jsoneq(pi, &t[i], ENABLED) == 0) {
-				char *enabled = getBoolField(ENABLED, &t[i + 1], pi);
+				char *enabled = getBool(&t[i + 1], pi);
 				*systemInfo = concatStrings(*systemInfo, enabled, ',');
 				free(enabled);
 				i++;
@@ -439,7 +475,7 @@ void parseDriverInfo(const char* json, char** driverInfo) {
 	int isValid = parseJson(json, &p, t, sizeof(t)/sizeof(t[0]), &r);
 	if (!isValid) return;
 
-	int found = searchKey(json, &t, DRIVER_INFO, r, &i);
+	int found = searchKey(json, (const jsmntok_t *) &t, DRIVER_INFO, r, &i);
 	/* Loop over all keys of the root object */
 
 	if (found) {
