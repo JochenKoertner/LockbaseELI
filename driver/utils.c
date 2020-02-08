@@ -8,7 +8,8 @@
 
 
 char* session_id_to_string(int session_id) {
-	char  *buffer = malloc(9);
+	size_t needed = snprintf(NULL, 0, "%08X", session_id);
+	char  *buffer = malloc(needed+1);
 	sprintf(buffer, "%08X", session_id);
 	return buffer;
 }
