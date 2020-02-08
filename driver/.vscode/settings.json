@@ -7,6 +7,7 @@
 	"editor.renderWhitespace": "boundary",
 	"editor.detectIndentation": false,
 	"files.associations": {
-		"driver.h": "c"
-	}
+        "driver.h": "c",
+        "stdio.h": "c"
+    }
 }

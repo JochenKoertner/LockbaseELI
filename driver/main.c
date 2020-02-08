@@ -81,12 +81,14 @@ int main() {
 
 	int mySession = rand();
 	printf("MySession '%08X' \n\n", mySession);
+	const char* mySessionId = session_id_to_string(mySession);
 
 	// open connection to hardware (in this case MQTT broker)
 	const char* csv = ELIOpen("jk", SYSTEM, CLIENT_ID);
 	const char* errorCode = getField(csv, 1);
 	if (strcmp(errorCode, "OK") == 0) {
-		const char* session = getField(csv, 4);
+		const char* tmp = getField(csv, 4); //TODO funktioniert nicht bei ACLR,,1 !!
+		const char* session = tmp == errorCode ? "" : tmp;
 
 		printf("ELIOpen(...) => '%s' (%s)\n", retCode, session);
 
@@ -156,7 +158,7 @@ int main() {
 
 
 		// close connection to hardware (i.e. MQTT broker disconnect)
-		const char* mySessionId = session_id_to_string(mySession);
+	
 		printf("ELIClose('%s','%s') => '%s'\n", SYSTEM, mySessionId, ELIClose(SYSTEM, mySessionId));
 	}
 	else 

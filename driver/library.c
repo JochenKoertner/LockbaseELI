@@ -279,7 +279,9 @@ LBELI_EXPORT const char* ELIClose( const char* sSysID, const char* sSessID ) {
 	// 	return "EUNKNOWN";
 	// }
 
-	const char* message = create_event_payload("ELIClose", sSessID, "CLOSE,session");
+	const char* sessionID = session_id_to_string(node->session_id);
+
+	const char* message = create_event_payload("ELIClose", sessionID, "CLOSE,session");
 	int rc = mqtt_publish(node->sSystem, message, QoS_FireAndForget);
 	if (rc != MQTTCLIENT_SUCCESS) {
 		printf("not publish to %s retcode %d \n", node->sSystem, rc);
