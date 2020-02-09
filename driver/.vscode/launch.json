@@ -15,7 +15,7 @@
                 "settings set target.run-args value1 value2 value3",
                 "process launch"
             ],
-            "preLaunchTask": "build"
+			"preLaunchTask": "build"
         },
         {
             "name": "C/C++ Extension",
@@ -26,7 +26,7 @@
             "stopAtEntry": true,
             "cwd": "${workspaceFolder}",
             "environment": [],
-            "externalConsole": false,
+			"externalConsole": false,
             "MIMode": "lldb",
             "miDebuggerPath": "/Applications/Xcode.app/Contents/Developer/usr/bin/lldb-mi"
         }

@@ -1,11 +1,8 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-
 #include "utils.h"
-
 
 char* session_id_to_string(int session_id) {
 	size_t needed = snprintf(NULL, 0, "%08X", session_id);

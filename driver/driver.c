@@ -13,7 +13,6 @@
 #define PRODUCT_INFOS  "productInfos"
 #define SYSTEM_INFO  "systemInfo"
 
-
 char* getJsonDocument() {
 	return strdup(
 	"{"
@@ -608,4 +607,3 @@ void free_driver(driver_info_t * driver) {
 	free(driver->driverInfo);
 	free(driver);
 }
-

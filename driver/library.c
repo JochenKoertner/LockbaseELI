@@ -302,7 +302,7 @@ LBELI_EXPORT const char* ELIClose( const char* sSysID, const char* sSessID ) {
 }
 
 LBELI_EXPORT int ELIApp2Drv( const char* sSysID, const char *sJobID, const char* sJobData) {
-	printf("__v__ELIApp2Drv(%s, %s, %d)\n",sSysID,sJobID, strlen(sJobData));
+	// printf("__v__ELIApp2Drv(%s, %s, %d)\n",sSysID,sJobID, strlen(sJobData));
 
 	node_t * node = find_system(driverInfo->sessions, sSysID);
 	if (!node)
@@ -342,6 +342,6 @@ LBELI_EXPORT int ELIApp2Drv( const char* sSysID, const char *sJobID, const char*
 	free(payload);
 	 */
 
-	printf("__^__ELIApp2Drv(%s)\n",sSysID);
+	// printf("__^__ELIApp2Drv(%s)\n",sSysID);
 	return 0;
 }
