@@ -165,7 +165,7 @@ int main() {
 	const char* mySessionId = createSession();
 
 	printf("Press Any Key to Continue\n");
-	printf(" - 'I' => Initsequence (DL,DK,AK,...)");
+	printf(" - 'I' => Initsequence (DL,DK,AK,...)\n");
 	printf(" - 'D' => List Data (LD)\n");
 	printf(" - 'E' => List Events (LE)\n");
 	printf(" - 'Q' => Quit\n");

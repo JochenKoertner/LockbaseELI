@@ -25,15 +25,27 @@
           "cwd": "${workspaceRoot}/build"
         },
         "command": "cmake",
-        "args": [
-          "-G",
-          "'Unix Makefiles'",
-          "-DPAHO_WITH_SSL=FALSE",
-          "-DPAHO_BUILD_DOCUMENTATION=FALSE",
-          "-DPAHO_BUILD_SAMPLES=FALSE",
-          "-DCMAKE_VERBOSE_MAKEFILE=TRUE",
-          ".."
-        ]
+        "windows" : {
+            "args": [
+                "-G",
+                "'MinGW Makefiles'",
+                "-DCMAKE_BUILD_TYPE=Debug",
+                "-DCMAKE_VERBOSE_MAKEFILE=FALSE",
+                ".."
+            ]
+        },
+
+        "osx" : {
+            "args": [
+                "-G",
+                "'Unix Makefiles'",
+                "-DPAHO_WITH_SSL=FALSE",
+                "-DPAHO_BUILD_DOCUMENTATION=FALSE",
+                "-DPAHO_BUILD_SAMPLES=FALSE",
+                "-DCMAKE_VERBOSE_MAKEFILE=TRUE",
+                ".."
+            ]
+        }
       },
       {
         "label": "build",
@@ -44,7 +56,10 @@
         "command": "cmake",
         "args": [
           "--build",
-          "."
+          ".",
+          "--target", "LbELI_cli",
+          "--",
+          "--jobs=2"
         ],
         "group": {
           "kind": "build",
