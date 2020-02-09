@@ -6,6 +6,16 @@
 #define JSMN_HEADER
 #include "jsmn/jsmn.h"
 
+#if defined (WIN32)
+    #if defined(LbwELI_Demo_EXPORTS)
+        #define LBELI_EXPORT __declspec(dllexport)
+    #else
+        #define  LBELI_EXPORT __declspec(dllimport)
+    #endif
+#else
+    #define LBELI_EXPORT
+#endif
+
 #define NEWLINE 0x0A
 #define CR 0x0D
 
@@ -17,7 +27,7 @@ static int jsoneq(const char *json, const jsmntok_t *tok, const char *s) {
     return -1;
 }
 
-char* session_id_to_string(int session_id);
+LBELI_EXPORT char* session_id_to_string(int session_id);
 int string_to_session_id(const char* sSessID);
 char* formatUrl(const char* protocol, const char* host, long port);
 
