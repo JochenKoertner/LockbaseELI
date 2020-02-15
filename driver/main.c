@@ -141,14 +141,12 @@ int main() {
 	printf("PID: '%d'\n", getpid());
 
 	// initialise driver interface and register a callback function
-	const char* retCode = ELICreate("lic", LbwELI_VERSION, myCallBack );
+	const char* retCode = ELICreate("vbox", LbwELI_VERSION, myCallBack );
 	printf("ELICreate(...) => '%s'\n\n", retCode);
 	if (strcmp(retCode, "OK,0.4") != 0) {
 		return -1;
 	}
 
-	
-	driverInfo->host = strdup("10.0.2.2");
 	printf("MQTT on Host: '%s' Port: %d\n", driverInfo->host, driverInfo->port);
 
 
