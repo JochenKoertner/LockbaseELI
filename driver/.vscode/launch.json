@@ -5,6 +5,12 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
+			"type": "lldb",
+			"request": "attach",
+			"name": "Attach via lldb",
+			"program": "${workspaceFolder}//build/LbELI_cli"
+		},
+		{
 			"name": "LLDB Extension",
 			"type": "lldb",
 			"request": "custom",
