@@ -5,6 +5,7 @@
 
 #include "library.h"
 #include "utils.h"
+#include "driver.h"
 
 #define CLIENT_ID	"Alice"
 #define SYSTEM		"ELIDemo"
@@ -145,6 +146,11 @@ int main() {
 	if (strcmp(retCode, "OK,0.4") != 0) {
 		return -1;
 	}
+
+	
+	driverInfo->host = strdup("10.0.2.2");
+	printf("MQTT on Host: '%s' Port: %d\n", driverInfo->host, driverInfo->port);
+
 
 	// dump the driver-info to console
 	const char* driverInfo = ELIDriverInfo();
