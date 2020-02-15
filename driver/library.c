@@ -269,7 +269,6 @@ LBELI_EXPORT const char* ELIClose( const char* sSysID, const char* sSessID ) {
 		printf("system %s unknown\n", sSysID);
 		return "EUNKNOWN";
 	}
-
 	node->last_session_id = session_id;
 
 	// node_t * node = find_session(driverInfo->sessions, session_id);

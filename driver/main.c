@@ -182,7 +182,6 @@ int main() {
 
 				printf("ELIOpen(...) => '%s' (%s)\n", retCode, session);
 				send_initial_setup();
-				printf("ELIClose('%s','%s') => '%s'\n", SYSTEM, mySessionId, ELIClose(SYSTEM, mySessionId));
 			}
 			else {
 				printf("[%s]\n", errorCode);
@@ -196,10 +195,18 @@ int main() {
 		} 
 		// List Events command
 		else if ((ch == 'e') || (ch == 'E')) {
+			printf("List Events (LE,)\n");
+			ELIApp2Drv( SYSTEM, JOB_ID, "LE,");
 			printf("List Events (LE)\n");
+			ELIApp2Drv( SYSTEM, JOB_ID, "LE,20200213T142758Z");
+		} else if  ((ch == 'q') || (ch == 'Q'))  {
+			
 		}
 		ch = getch();
 	}
+	printf("Quit and Close\n");
+	printf("ELIClose('%s','%s') => '%s'\n", SYSTEM, mySessionId, ELIClose(SYSTEM, mySessionId));
+
 
 	// destroy the driver interface
 	ELIDestroy();

@@ -22,7 +22,7 @@ char* formatUrl(const char* protocol, const char* host, long port) {
 }
 
 char* create_event_payload(const char* eventName, const char* sSessID, const char* sText) {
-	static char buf[2000];
+	static char buf[5000];       //TODO
 	sprintf(buf,
 			u8"{ eventName: '%s', session_id : '%s', text : '%s' }",
 			eventName, sSessID, sText);
