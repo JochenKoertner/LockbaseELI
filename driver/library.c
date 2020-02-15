@@ -231,10 +231,12 @@ LBELI_EXPORT const char* ELIOpen( const char* sUserList, const char* sSysID, con
 		update_session(node, sUserList, sExtData);
 	}
 
-	const char* sSessID = session_id_to_string(node->session_id);
-	const char* message = create_event_payload("ELIOpen", sSessID, "OPEN,sSystem,sExtData");
+	char* sSessID = session_id_to_string(node->session_id);
+	char* message = create_event_payload("ELIOpen", sSessID, "OPEN,sSystem,sExtData");
 	rc = mqtt_publish(sSysID, message, QoS_FireAndForget);
+	free(message);
 	if (rc != MQTTCLIENT_SUCCESS) {
+		free(sSessID);
 		return "EUNKNOWN,,,,0";
 	}
 	
@@ -243,6 +245,7 @@ LBELI_EXPORT const char* ELIOpen( const char* sUserList, const char* sSysID, con
 	printf("__^__ELIOpen(%s)\n",sSessID);
 	static char buf[100];
 	sprintf(buf, "%s,%s,ACLR,%s,%i", "OK", node->sSystem, sessionId, node->state);
+	free(sSessID);
 	return buf;
 }
 
@@ -278,10 +281,12 @@ LBELI_EXPORT const char* ELIClose( const char* sSysID, const char* sSessID ) {
 	// 	return "EUNKNOWN";
 	// }
 
-	const char* sessionID = session_id_to_string(node->session_id);
+	char* sessionID = session_id_to_string(node->session_id);
 
-	const char* message = create_event_payload("ELIClose", sessionID, "CLOSE,session");
+	char* message = create_event_payload("ELIClose", sessionID, "CLOSE,session");
 	int rc = mqtt_publish(node->sSystem, message, QoS_FireAndForget);
+	free(message);
+	free(sessionID);
 	if (rc != MQTTCLIENT_SUCCESS) {
 		printf("not publish to %s retcode %d \n", node->sSystem, rc);
 		return "ECONNECTION";
@@ -314,8 +319,10 @@ LBELI_EXPORT int ELIApp2Drv( const char* sSysID, const char *sJobID, const char*
 
 	char* sSessionID = session_id_to_string(session_id);
 
-	const char* message = create_event_payload("ELIApp2Drv", sSessionID, sJobData);
+	char* message = create_event_payload("ELIApp2Drv", sSessionID, sJobData);
 	int rc = mqtt_publish(node->sSystem, message, QoS_FireAndForget);
+	free(message);
+	free(sSessionID);
 	if (rc != MQTTCLIENT_SUCCESS) {
 		printf("not publish to %s retcode %d \n", node->sSystem, rc);
 		return -1;
