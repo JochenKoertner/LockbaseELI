@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <process.h>
 
 #include "library.h"
 #include "utils.h"
@@ -136,6 +137,7 @@ const char* createSession() {
 }
 
 int main() {
+	printf("PID: '%d'\n", getpid());
 
 	// initialise driver interface and register a callback function
 	const char* retCode = ELICreate("lic", LbwELI_VERSION, myCallBack );
