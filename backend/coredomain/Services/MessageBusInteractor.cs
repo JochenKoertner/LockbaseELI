@@ -27,7 +27,7 @@ namespace Lockbase.CoreDomain.Services
 		}
 		public void Receive(string replyTo, int sessionId, string message)
 		{
-			this.logger.LogInformation($"Receive('{replyTo}', {sessionId}, ...)");
+			this.logger.LogInformation($"Receive('{replyTo}', {sessionId.ToString("X8")}, ...)");
 			foreach(var line in message.Split("\n"))
 			{
 				int index = line.IndexOf(',');

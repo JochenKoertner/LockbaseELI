@@ -26,7 +26,6 @@ namespace ui.Common
 	public class MqttBackgroundService : BackgroundService
 	{
 		private const string TOPIC_RESPONSE = "response";
-		private const string TOPIC_HEARTBEAT = "heartbeat";
 		private readonly BrokerConfig _brokerConfig;
 		private readonly ILogger<MqttBackgroundService> _logger;
 		private IMqttServer _mqttServer;
@@ -77,8 +76,8 @@ namespace ui.Common
 			var sessionState = await Connect(mqttClient, _brokerConfig.User);
 
 			await mqttClient.SubscribeAsync(_brokerConfig.Topic, MqttQualityOfService.ExactlyOnce); //QoS2
-			await mqttClient.SubscribeAsync(TOPIC_RESPONSE, MqttQualityOfService.ExactlyOnce); //QoS2
 
+			// Hier werden die Antworten zu dem Treiber per 'Publish' verschickt
 			var subscriptionStatement = this.observableStatement.Subscribe(
 				async statement =>
 					await Publish(
@@ -87,10 +86,7 @@ namespace ui.Common
 						sessionId: statement.SessionId, 
 						payload: statement.Message,
 						replyTo: TOPIC_RESPONSE,
-						qos: statement.Topic.Equals(TOPIC_HEARTBEAT) ? 
-							MqttQualityOfService.AtMostOnce 
-							: 
-							MqttQualityOfService.ExactlyOnce
+						qos: MqttQualityOfService.ExactlyOnce
 					)
 			);
 
@@ -99,7 +95,9 @@ namespace ui.Common
 				.MessageStream
 				.Subscribe(async msg => {
 					if (msg.Topic.Equals(_brokerConfig.Topic))
+					{
 						await HandleMessage(msg);
+					}
 					else 
 						_logger.LogInformation($"Publish {msg.Topic} '{Encoding.UTF8.GetString(msg.Payload)}'");
 				});
@@ -109,8 +107,6 @@ namespace ui.Common
 
 			while (!stoppingToken.IsCancellationRequested)
 			{
-				// all 30sec do some lookup for working 
-				this.statementObserver.OnNext(new Statement(TOPIC_HEARTBEAT, 4711, $"HC,{DateTime.UtcNow.ToShortTimeString()}"));
 				await Task.Delay(5000, stoppingToken);
 			}
 
