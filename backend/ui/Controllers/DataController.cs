@@ -39,8 +39,8 @@ namespace ui.Controllers
 
 			var @event = system.HasAccess(system.QueryKey(keyId), system.QueryLock(lockId), dateTime);
 
-			statementObserver.OnNext(new Statement(TOPIC_RESPONSE, 4711, 
-				$"EK,{@event.Lock.Id},{@event.Key.Id},{@event.IsOpen}"));
+			// statementObserver.OnNext(new Statement(TOPIC_RESPONSE, 4711, 
+			// 	$"EK,{@event.Lock.Id},{@event.Key.Id},{@event.IsOpen}"));
 
 			lockSystem.SetValue( x => x.AddEvent(@event));
 			return @event.IsOpen;

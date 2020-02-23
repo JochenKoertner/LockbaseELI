@@ -94,6 +94,7 @@ namespace ui.Common
 					)
 			);
 
+			// Hier kommen die Messages vom Treiber an und werden an 'HandleMessage' geroutet
 			var subscriptionChannel = mqttClient
 				.MessageStream
 				.Subscribe(async msg => {
@@ -140,6 +141,7 @@ namespace ui.Common
 			return base.StopAsync(cancellationToken);
 		}
 
+		// Handelt Messages vom Treiber
 		private async Task HandleMessage(MqttApplicationMessage msg)
 		{
 			var message = JsonConvert.DeserializeObject<Message>(Encoding.UTF8.GetString(msg.Payload));
@@ -163,6 +165,7 @@ namespace ui.Common
 
 		private async Task Publish(IMqttClient client, string topic, int sessionId, string payload, string replyTo, MqttQualityOfService qos)
 		{
+			_logger.LogInformation($"Topic: '{topic}', Session:{sessionId}, '{payload}'");
 			var message = new Message()
 			{
 				session_id = sessionId.ToString("X8"),
