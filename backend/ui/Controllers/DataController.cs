@@ -37,17 +37,13 @@ namespace ui.Controllers
 
 			LockSystem system = lockSystem; 
 
-			// TODO: Hier kann null zurückkommen besser IMaybe Monade 
-			var policy = system.QueryPolicies( 
-					system.QueryLock(lockId), 
-					system.QueryKey(keyId)).SingleOrDefault();
+			var @event = system.HasAccess(system.QueryKey(keyId), system.QueryLock(lockId), dateTime);
 
-			var result = policy.TimePeriodDefinitions.Aggregate(false,
-				(accu, current) => accu || CheckAccess.Check(current, dateTime));
+			statementObserver.OnNext(new Statement(TOPIC_RESPONSE, 4711, 
+				$"EK,{@event.Lock.Id},{@event.Key.Id},{@event.IsOpen}"));
 
-			statementObserver.OnNext(new Statement(TOPIC_RESPONSE, 4711, $"EK,{lockId},{keyId},{result}"));
-
-			return result;
+			lockSystem.SetValue( x => x.AddEvent(@event));
+			return @event.IsOpen;
 		}
 
 		[HttpGet("[action]")]
