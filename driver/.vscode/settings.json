@@ -10,7 +10,9 @@
         "stdio.h": "c",
         "stdlib.h": "c",
         "cdefs.h": "c",
-        "session_list.h": "c"
+        "session_list.h": "c",
+        "process.h": "c",
+        "library.h": "c"
     },
 	"files.exclude": {
 		"**/cmake-build-debug": true,

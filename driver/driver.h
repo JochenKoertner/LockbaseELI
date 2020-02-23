@@ -5,6 +5,16 @@
 #ifndef DRIVER_H
 #define DRIVER_H
 
+#if defined (WIN32)
+    #if defined(LbwELI_Demo_EXPORTS)
+        #define LBELI_EXPORT __declspec(dllexport)
+    #else
+        #define  LBELI_EXPORT __declspec(dllimport)
+    #endif
+#else
+    #define LBELI_EXPORT
+#endif
+
 typedef struct driver_info {
     ELIDrv2App  callback;
     MQTTClient client;
@@ -17,7 +27,7 @@ typedef struct driver_info {
     long port;
 } driver_info_t;
 
-extern driver_info_t * driverInfo;
+LBELI_EXPORT extern driver_info_t * driverInfo;
 
 driver_info_t * new_driver(ELIDrv2App callBack);
 void free_driver(driver_info_t * driver);

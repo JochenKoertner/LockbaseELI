@@ -22,11 +22,11 @@ char* formatUrl(const char* protocol, const char* host, long port) {
 }
 
 char* create_event_payload(const char* eventName, const char* sSessID, const char* sText) {
-	static char buf[5000];       //TODO
-	sprintf(buf,
-			u8"{ eventName: '%s', session_id : '%s', text : '%s' }",
-			eventName, sSessID, sText);
-	return buf;
+	const char * fmt = u8"{ eventName: '%s', session_id : '%s', text : '%s' }";
+	size_t needed = snprintf(NULL, 0, fmt, eventName, sSessID, sText);
+	char *buffer = malloc(needed+1);
+	sprintf(buffer, fmt, eventName, sSessID, sText);
+	return buffer;
 }
 
 #ifdef WIN32

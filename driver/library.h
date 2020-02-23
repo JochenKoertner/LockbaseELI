@@ -16,7 +16,7 @@
 
 #define LbwELI_VERSION     "0.4"
 #define Driver_VERSION      "0.9"
-#define PRODUCT_ID          "DemoDriver"
+#define PRODUCT_ID          "ELIDemo"
 
 
 typedef int (*ELIDrv2App)( const char* sSysID, const char* sJobID, const char* sJobData);
