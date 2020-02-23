@@ -197,14 +197,12 @@ int main() {
 		// List Data command
 		else if ((ch == 'd') || (ch == 'D')) {
 			printf("List Data (LD)\n");
-
+			ELIApp2Drv( SYSTEM, JOB_ID, "LD,");
 		} 
 		// List Events command
 		else if ((ch == 'e') || (ch == 'E')) {
 			printf("List Events (LE,)\n");
-			ELIApp2Drv( SYSTEM, JOB_ID, "LE,");
-			printf("List Events (LE)\n");
-			ELIApp2Drv( SYSTEM, JOB_ID, "LE,20200213T142758Z");
+			ELIApp2Drv( SYSTEM, JOB_ID, "LE,"); // 20200213T142758Z
 		} else if  ((ch == 'q') || (ch == 'Q'))  {
 			
 		}
