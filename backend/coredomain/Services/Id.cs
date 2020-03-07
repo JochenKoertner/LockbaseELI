@@ -8,35 +8,47 @@ namespace Lockbase.CoreDomain.Services
 
 	using Bytes = IEnumerable<byte>;
 
+	public enum TableIds {
+		Lock = 0x03,
+		Key = 0x02,
+
+		Event = 0x06 
+	}
+
 	public class Id {
         private readonly IDateTimeProvider timeProvider;
-
-		private readonly Lazy<DateTime> unixTime = 
-			new Lazy<DateTime>( () => new DateTime(1970, 1, 1));
 
         public Id(IDateTimeProvider timeProvider)
 		{
             this.timeProvider = timeProvider;
         }
 
-		public string NewId(Int32 tblId, Int32 ItemId) 
+		public string NewId(TableIds tblId, Int32 ItemId) 
 		{
-			var left = ItemId ^ (tblId << 24);
-			var right = (Int32)(this.timeProvider.Now.Subtract(unixTime.Value)).TotalSeconds;
-			var value = (long)left << 32 | (long)right;
+			var left = (ItemId ^ ((Int32)tblId << 24)).SwapEndianness();
+			var right = this.timeProvider.Now.UnixTime().SwapEndianness();
+			var value = (long)left << 32 | (uint)right;
 			return value.Base32HexEncodeShort();
-
-			// Int32 unixTimestamp = (Int32)(DateTime.UtcNow.Subtract(unixTime.Value).TotalSeconds);
-			// 2A000003 A005FD2F; 2684747055  // 3026418965162622255
-			// 0000000B 0E0C045C;  235668572
-
-			// 580000t00nuiu -> 2A000003 A005FD2F  2684747055
-			// 000002oe1g25o -> 0000000B 0E0C045C  235668572
-
-			// 1582963956 => 29.2.2020 08:12:36 => 0x5E5A1CF4
-			// 580000QUB8EF8 -> 2A0000035E5A1CF4 => 719680000
 		}
+	}
 
+	public static class DateTimeExtension {
+
+		private static DateTime DATE_1970 = new DateTime(1970, 1, 1); 
+		public static int UnixTime(this DateTime dateTime)
+		=> (int)(dateTime.Subtract(DATE_1970).TotalSeconds);
+	}
+
+	public static class Int32Extension {
+		public static int SwapEndianness(this int value)
+		{
+			var b1 = (value >> 0) & 0xff;
+			var b2 = (value >> 8) & 0xff;
+			var b3 = (value >> 16) & 0xff;
+			var b4 = (value >> 24) & 0xff;
+
+			return b1 << 24 | b2 << 16 | b3 << 8 | b4 << 0;
+		} 
 	}
 
 	public static class Base32HexExtension {
