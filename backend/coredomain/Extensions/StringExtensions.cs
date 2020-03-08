@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Text;
 
 namespace Lockbase.CoreDomain.Extensions
@@ -11,6 +12,9 @@ namespace Lockbase.CoreDomain.Extensions
             return Encoding.UTF8.GetString(data);
         }
 
+		public static string ToBase64(this string value)
+		=> System.Convert.ToBase64String(Encoding.UTF8.GetBytes(value));
+		
         public static string RemoveTrailingZero(this string value) {
             if (string.IsNullOrEmpty(value))
                 return value;
@@ -18,6 +22,11 @@ namespace Lockbase.CoreDomain.Extensions
                 value = value.Remove(value.Length - 1);
             return value;
         }
+
+		public static string Shorten(this string value) 
+		=> string.Concat(value.Take(5)
+            .Concat(Enumerable.Repeat('.', 3))
+            .Concat(value.TakeLast(5)));
 
 		public static int FromHex(this string hexValue) =>
 			int.Parse(hexValue, System.Globalization.NumberStyles.HexNumber);

@@ -4,6 +4,7 @@ using System.Linq;
 using Lockbase.CoreDomain;
 using Lockbase.CoreDomain.Aggregates;
 using Lockbase.CoreDomain.Entities;
+using Lockbase.CoreDomain.Enumerations;
 using Lockbase.CoreDomain.Extensions;
 using Lockbase.CoreDomain.Services;
 using Lockbase.CoreDomain.ValueObjects;
@@ -52,7 +53,7 @@ namespace ui.Controllers
 			// 	$"EK,{@event.Lock.Id},{@event.Key.Id},{@event.IsOpen}"));
 
 			lockSystem.SetValue( x => x.AddEvent(@event));
-			return @event.IsOpen;
+			return @event.EventType == EventType.Authorized_Access;
 		}
 
 		[HttpGet("[action]")]

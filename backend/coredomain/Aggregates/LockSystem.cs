@@ -6,6 +6,7 @@ using Lockbase.CoreDomain.Entities;
 using Lockbase.CoreDomain.ValueObjects;
 using Lockbase.CoreDomain.Extensions;
 using Lockbase.CoreDomain.Services;
+using Lockbase.CoreDomain.Enumerations;
 
 namespace Lockbase.CoreDomain.Aggregates
 {
@@ -223,7 +224,7 @@ namespace Lockbase.CoreDomain.Aggregates
 		public LockSystem AddEvent(Event @event) =>
            WithEvents(this.events.Add(@event));
 
-        public bool HasAccess(Key key, Lock @lock, DateTime dateTime)
+        public EventType HasAccess(Key key, Lock @lock, DateTime dateTime)
         {
             if (!this.keys.ContainsKey(key.Id)) throw new ArgumentException($"Key '{key.Id}' not found!");
             if (!this.locks.ContainsKey(@lock.Id)) throw new ArgumentException($"Lock '{@lock.Id}' not found!");
@@ -231,7 +232,9 @@ namespace Lockbase.CoreDomain.Aggregates
             var definitions = QueryPolicies(@lock, key)
                 .SelectMany(policy => policy.TimePeriodDefinitions);
 
-			return CheckAccess.Check(definitions, dateTime);
+			return CheckAccess.Check(definitions, dateTime) 
+				? 
+				EventType.Authorized_Access : EventType.Unauthorized_Access;
         }
 
 		#endregion 
