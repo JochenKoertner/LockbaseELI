@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text.RegularExpressions; 
 
 using Lockbase.CoreDomain.Enumerations;
+using Lockbase.CoreDomain.Extensions;
 
 namespace Lockbase.CoreDomain.ValueObjects  {
 	
