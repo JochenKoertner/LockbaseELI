@@ -10,7 +10,25 @@
                 "${workspaceFolder}/ui/ui.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
-            ],
+			],
+			"group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": "$msCompile"
+		},
+		{
+            "label": "test",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "test",
+                "${workspaceFolder}/tests/UnitTest.csproj"
+			],
+			"group": {
+                "kind": "test",
+                "isDefault": true
+            },
             "problemMatcher": "$msCompile"
         },
         {
@@ -28,8 +46,8 @@
         {
             "label": "watch",
             "command": "dotnet",
-            "type": "process",
-            "args": [
+			"type": "process",
+			"args": [
                 "watch",
                 "run",
                 "${workspaceFolder}/ui/ui.csproj",

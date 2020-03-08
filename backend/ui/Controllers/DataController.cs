@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Lockbase.CoreDomain;
 using Lockbase.CoreDomain.Aggregates;
+using Lockbase.CoreDomain.Entities;
+using Lockbase.CoreDomain.Extensions;
+using Lockbase.CoreDomain.Services;
 using Lockbase.CoreDomain.ValueObjects;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -17,16 +20,18 @@ namespace ui.Controllers
 		private readonly AtomicValue<LockSystem> lockSystem;
 		private readonly ILogger<DataController> logger;
 		private readonly IObserver<Statement> statementObserver;
-
+		private readonly Id idGenerator;
 
 		public DataController(
 			AtomicValue<LockSystem> lockSystem, 
 			ILogger<DataController> logger, 
-			IObserver<Statement> statementObserver)
+			IObserver<Statement> statementObserver,
+			Id idGenerator)
 		{
 			this.lockSystem = lockSystem;
 			this.logger = logger;
 			this.statementObserver = statementObserver;
+			this.idGenerator = idGenerator;
 		}
 
 		// https://localhost:5001/api/data/check?keyId=233&lockid=34434&dateTime=2010-12-09T08:00:00.000Z	
@@ -37,7 +42,11 @@ namespace ui.Controllers
 
 			LockSystem system = lockSystem; 
 
-			var @event = system.HasAccess(system.QueryKey(keyId), system.QueryLock(lockId), dateTime);
+			Key key = system.QueryKey(keyId);
+			Lock @lock = system.QueryLock(lockId);
+
+            var @event = new Event(this.idGenerator.NewId(TableIds.Event, system.Events.Count()+1), 
+				dateTime, key, @lock, system.HasAccess(key, @lock, dateTime));
 
 			// statementObserver.OnNext(new Statement(TOPIC_RESPONSE, 4711, 
 			// 	$"EK,{@event.Lock.Id},{@event.Key.Id},{@event.IsOpen}"));

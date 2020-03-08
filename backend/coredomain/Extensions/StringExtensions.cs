@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace Lockbase.CoreDomain
+namespace Lockbase.CoreDomain.Extensions
 {
     public static class StringExtensions
     {

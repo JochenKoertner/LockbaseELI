@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Lockbase.CoreDomain.Entities;
 using Lockbase.CoreDomain.ValueObjects;
+using Lockbase.CoreDomain.Extensions;
+using Lockbase.CoreDomain.Services;
 
 namespace Lockbase.CoreDomain.Aggregates
 {
@@ -22,8 +24,8 @@ namespace Lockbase.CoreDomain.Aggregates
         private readonly IImmutableSet<PolicyAssignment> assignments;
         private readonly IImmutableList<Event> events;
 
-
-
+		public IEnumerable<Event> Events => events;
+		
         public LockSystem() : this(
             ImmutableDictionary<string, Key>.Empty,
             ImmutableDictionary<string, Lock>.Empty,
@@ -221,7 +223,7 @@ namespace Lockbase.CoreDomain.Aggregates
 		public LockSystem AddEvent(Event @event) =>
            WithEvents(this.events.Add(@event));
 
-        public Event HasAccess(Key key, Lock @lock, DateTime dateTime)
+        public bool HasAccess(Key key, Lock @lock, DateTime dateTime)
         {
             if (!this.keys.ContainsKey(key.Id)) throw new ArgumentException($"Key '{key.Id}' not found!");
             if (!this.locks.ContainsKey(@lock.Id)) throw new ArgumentException($"Lock '{@lock.Id}' not found!");
@@ -229,8 +231,7 @@ namespace Lockbase.CoreDomain.Aggregates
             var definitions = QueryPolicies(@lock, key)
                 .SelectMany(policy => policy.TimePeriodDefinitions);
 
-            return new Event(Guid.NewGuid().ToString(), 
-				dateTime, key, @lock, CheckAccess.Check(definitions, dateTime));
+			return CheckAccess.Check(definitions, dateTime);
         }
 
 		#endregion 

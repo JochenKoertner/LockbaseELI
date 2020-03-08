@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Lockbase.CoreDomain;
+using Lockbase.CoreDomain.Extensions;
 using Lockbase.CoreDomain.Services;
 using Lockbase.CoreDomain.ValueObjects;
 using Microsoft.AspNetCore.SignalR;

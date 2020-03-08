@@ -9,6 +9,7 @@ using Lockbase.CoreDomain.Aggregates;
 using Lockbase.CoreDomain.ValueObjects;
 using System.IO;
 using System.Collections.Immutable;
+using Lockbase.CoreDomain.Extensions;
 
 namespace Lockbase.Tests.CoreDomain {
 
@@ -141,7 +142,7 @@ namespace Lockbase.Tests.CoreDomain {
 			
 			var friday = new DateTime(2019,2,15,12,0,0);  // Freitag Mittag ok 
 			Assert.True(system
-				.HasAccess(klaus, torwest, friday).IsOpen);
+				.HasAccess(klaus, torwest, friday));
 		}
 
 		[Fact]

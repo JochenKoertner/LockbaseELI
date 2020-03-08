@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Lockbase.CoreDomain
+namespace Lockbase.CoreDomain.Extensions
 {
     public static class EnumerableExtensions
 	{

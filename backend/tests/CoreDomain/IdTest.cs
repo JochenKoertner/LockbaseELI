@@ -3,6 +3,8 @@ using Lockbase.CoreDomain.Services;
 using Xunit; 
 using FakeItEasy;
 using Lockbase.CoreDomain.Contracts;
+using Lockbase.CoreDomain;
+using Lockbase.CoreDomain.Extensions;
 
 namespace Lockbase.Tests.CoreDomain {
 
