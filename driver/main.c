@@ -14,7 +14,7 @@
 // const char* sSysID, const char* sJobID, const char* sJobData
 int myCallBack( const char* sSysID, const char*  sJobID, const char* sJobData) {
 	printf("myCallBack: Session '%s' Job #%s ('%s') \n", sSysID, sJobID, sJobData);
-	return 42;
+	return 0;
 }
 
 #if defined (WIN32)
@@ -197,6 +197,10 @@ int main() {
 		// List Events command
 		else if ((ch == 'e') || (ch == 'E')) {
 			printf("List Events (LE)\n");
+		//	App2Drv() LD 
+		//	while timeout < 100 
+		//	   wait;
+			
 		}
 		ch = getch();
 	}
