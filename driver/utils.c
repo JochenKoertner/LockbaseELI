@@ -21,12 +21,12 @@ char* formatUrl(const char* protocol, const char* host, long port) {
 	return address;
 }
 
-char* create_event_payload(const char* eventName, const char* sSessID, const char* sText) {
-	static char buf[2000];
-	sprintf(buf,
-			u8"{ eventName: '%s', session_id : '%s', text : '%s' }",
-			eventName, sSessID, sText);
-	return buf;
+char* create_event_payload(const char* eventName, const char* sSessID, const char* sText, const char* sReplyTo) {
+	const char * fmt = u8"{ eventName: '%s', session_id : '%s', text : '%s', reply_to : '%s' }";
+	size_t needed = snprintf(NULL, 0, fmt, eventName, sSessID, sText, sReplyTo);
+	char *buffer = malloc(needed+1);
+	sprintf(buffer, fmt, eventName, sSessID, sText, sReplyTo);
+	return buffer;
 }
 
 #ifdef WIN32

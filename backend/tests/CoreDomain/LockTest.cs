@@ -9,11 +9,11 @@ namespace Lockbase.Tests.CoreDomain {
 
 		[Fact]
 		public void TestLockCreation() {
-			Lock entity = new Lock("000000t00nuiu","W1",null, "Tor West");
+			Lock entity = new Lock("000000t00nuiu","100",null, "Meeting Room, Administration");
 			Assert.Equal("000000t00nuiu", entity.Id);
-			Assert.Equal("W1", entity.Name);
+			Assert.Equal("100", entity.Name);
 			Assert.Null(entity.AppId);
-			Assert.Equal("Tor West", entity.ExtData);
+			Assert.Equal("Meeting Room, Administration", entity.ExtData);
 		}
 
 		[Fact]

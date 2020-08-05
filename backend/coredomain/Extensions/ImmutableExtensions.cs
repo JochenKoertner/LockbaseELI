@@ -2,7 +2,8 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 
-namespace Lockbase.CoreDomain {
+namespace Lockbase.CoreDomain.Extensions
+{
 
     public static class ImmutableExtensions {
 

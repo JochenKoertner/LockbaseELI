@@ -16,6 +16,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Hosting;
 
 using ui.Common;
+using Lockbase.ui.Resources;
+using Lockbase.CoreDomain.Contracts;
 
 namespace ui
 {
@@ -47,7 +49,9 @@ namespace ui
 				.AddSingleton<ISubject<Statement>,ReplaySubject<Statement>>()
 				.AddSingleton<IObservable<Statement>>(sp => sp.GetService<ISubject<Statement>>().AsObservable())
 				.AddSingleton<IObserver<Statement>>(sp => sp.GetService<ISubject<Statement>>())
-				.AddSingleton<IMessageBusInteractor,MessageBusInteractor>();
+				.AddSingleton<IMessageBusInteractor,MessageBusInteractor>()
+				.AddSingleton<IDateTimeProvider>(new DateTimeProvider())
+				.AddSingleton<Id>(sp => new Id(sp.GetService<IDateTimeProvider>()));
 
 			services.AddCors(options => 
 			{

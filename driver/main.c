@@ -1,9 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <process.h>
 
 #include "library.h"
 #include "utils.h"
+#include "driver.h"
 
 #define CLIENT_ID	"Alice"
 #define SYSTEM		"ELIDemo"
@@ -136,13 +138,17 @@ const char* createSession() {
 }
 
 int main() {
+	printf("PID: '%d'\n", getpid());
 
 	// initialise driver interface and register a callback function
-	const char* retCode = ELICreate("lic", LbwELI_VERSION, myCallBack );
+	const char* retCode = ELICreate("vbox", LbwELI_VERSION, myCallBack );
 	printf("ELICreate(...) => '%s'\n\n", retCode);
 	if (strcmp(retCode, "OK,0.4") != 0) {
 		return -1;
 	}
+
+	printf("MQTT on Host: '%s' Port: %d\n", driverInfo->host, driverInfo->port);
+
 
 	// dump the driver-info to console
 	const char* driverInfo = ELIDriverInfo();
@@ -182,7 +188,6 @@ int main() {
 
 				printf("ELIOpen(...) => '%s' (%s)\n", retCode, session);
 				send_initial_setup();
-				printf("ELIClose('%s','%s') => '%s'\n", SYSTEM, mySessionId, ELIClose(SYSTEM, mySessionId));
 			}
 			else {
 				printf("[%s]\n", errorCode);
@@ -192,7 +197,7 @@ int main() {
 		// List Data command
 		else if ((ch == 'd') || (ch == 'D')) {
 			printf("List Data (LD)\n");
-
+			ELIApp2Drv( SYSTEM, JOB_ID, "LD,");
 		} 
 		// List Events command
 		else if ((ch == 'e') || (ch == 'E')) {
@@ -200,10 +205,16 @@ int main() {
 		//	App2Drv() LD 
 		//	while timeout < 100 
 		//	   wait;
+			printf("List Events (LE,)\n");
+			ELIApp2Drv( SYSTEM, JOB_ID, "LE,"); // 20200213T142758Z
+		} else if  ((ch == 'q') || (ch == 'Q'))  {
 			
 		}
 		ch = getch();
 	}
+	printf("Quit and Close\n");
+	printf("ELIClose('%s','%s') => '%s'\n", SYSTEM, mySessionId, ELIClose(SYSTEM, mySessionId));
+
 
 	// destroy the driver interface
 	ELIDestroy();
