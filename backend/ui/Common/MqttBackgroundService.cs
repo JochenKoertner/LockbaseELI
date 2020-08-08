@@ -76,6 +76,9 @@ namespace ui.Common
 
 			var sessionState = await Connect(mqttClient, _brokerConfig.User);
 
+			_logger.LogInformation($"MQTT Create Client (User:'{_brokerConfig.User}', Topic:'{_brokerConfig.Topic}')");
+			
+
 			await mqttClient.SubscribeAsync(_brokerConfig.Topic, MqttQualityOfService.ExactlyOnce); //QoS2
 
 			// Hier werden die Antworten zu dem Treiber per 'Publish' verschickt
@@ -120,7 +123,7 @@ namespace ui.Common
 
 		public override Task StartAsync(CancellationToken cancellationToken)
 		{
-			_logger.LogInformation("Start MQTT-Broker");
+			_logger.LogInformation($"Start MQTT-Broker (Port:{_brokerConfig.Port})");
 			_mqttServer = MqttServer.Create(_brokerConfig.Port);
 			_mqttServer.Start();
 			return base.StartAsync(cancellationToken);

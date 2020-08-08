@@ -13,6 +13,12 @@
 
 #define JOB_ID		"4711"
 
+#if defined (WIN32)
+	#define LICENCE  "vbox"
+#else
+	#define LICENCE "lic"
+#endif
+
 // const char* sSysID, const char* sJobID, const char* sJobData
 int myCallBack( const char* sSysID, const char*  sJobID, const char* sJobData) {
 	printf("myCallBack: Session '%s' Job #%s ('%s') \n", sSysID, sJobID, sJobData);
@@ -151,7 +157,7 @@ int main() {
 	printf("PID: '%d'\n", getpid());
 
 	// initialise driver interface and register a callback function
-	const char* retCode = ELICreate("vbox", LbwELI_VERSION, myCallBack );
+	const char* retCode = ELICreate(LICENCE, LbwELI_VERSION, myCallBack );
 	printf("ELICreate(...) => '%s'\n\n", retCode);
 	if (strcmp(retCode, "OK,0.4") != 0) {
 		return -1;

@@ -12,8 +12,6 @@
 #include "session_list.h"
 #include "driver.h"
 
-// #define ADDRESS		"tcp://localhost:1883"
-// #define ADDRESS		"tcp://10.0.2.2:1883"
 #define CLIENT_ID		"Alice"
 
 #define TIMEOUT				1000L
@@ -150,7 +148,8 @@ LBELI_EXPORT const char* ELICreate( const char* sLic, const char* sLbwELIRev, EL
 	}
 
 	driverInfo = new_driver(callback);
-	const char* url = strncasecmp(sLic,"vbox", 0) == 0 
+
+	const char* url = strcasecmp(sLic,"vbox") == 0 
 		? "tcp://10.0.2.2:1883" : formatUrl("tcp", driverInfo->host, driverInfo->port);
 	int ret = mqtt_create(url);
 	if (ret != MQTTCLIENT_SUCCESS) {
