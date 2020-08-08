@@ -74,6 +74,8 @@ This Builds a single executable that don't needs any netcore installed.
 
 Change path to `/driver/build` path. 
 
+For Mac Build call `../mac-build.sh` 
+
 ## Windows Defender Firewall Regeln scripten 
 
 Get-Command -module Netsecurity 
