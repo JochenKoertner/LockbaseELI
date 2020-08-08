@@ -16,7 +16,7 @@
         ],
         "problemMatcher": [
           "$msCompile"
-        ]
+		]
       },
       {
         "label": "cmake",
@@ -45,7 +45,10 @@
                 "-DCMAKE_VERBOSE_MAKEFILE=TRUE",
                 ".."
             ]
-        }
+		},
+		 "dependsOn": [
+			"clean"
+		  ]
       },
       {
         "label": "build",

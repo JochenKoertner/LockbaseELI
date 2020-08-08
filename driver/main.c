@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <process.h>
+// #include <process.h>
 
 #include "library.h"
 #include "utils.h"
@@ -28,6 +28,16 @@ char getch() {
 	system("/bin/stty cooked");
 	return ch;
 }
+#endif
+
+#if defined (WIN32)
+	#include <windows.h>
+	void sleep(unsigned seconds)
+	{
+		Sleep(seconds * 1000);
+	}
+#else
+	#include <unistd.h>
 #endif
 
 const char* getField(const char* line, int num)
@@ -147,7 +157,7 @@ int main() {
 		return -1;
 	}
 
-	printf("MQTT on Host: '%s' Port: %d\n", driverInfo->host, driverInfo->port);
+	printf("MQTT on Host: '%s' Port: %ld\n", driverInfo->host, driverInfo->port);
 
 
 	// dump the driver-info to console
@@ -202,11 +212,14 @@ int main() {
 		// List Events command
 		else if ((ch == 'e') || (ch == 'E')) {
 			printf("List Events (LE)\n");
+			sleep(2);  // wait 2sec
 		//	App2Drv() LD 
 		//	while timeout < 100 
 		//	   wait;
 			printf("List Events (LE,)\n");
 			ELIApp2Drv( SYSTEM, JOB_ID, "LE,"); // 20200213T142758Z
+			sleep(2);  // wait 2sec
+			
 		} else if  ((ch == 'q') || (ch == 'Q'))  {
 			
 		}

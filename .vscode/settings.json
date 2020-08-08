@@ -7,7 +7,9 @@
 		"**/obj": true,
 		"driver/build": true,
 		"driver/cmake-build-debug": true,
-		"frontend/build": true
+		"frontend/build": true,
+		"frontend/yarn-error.log": true,
+		"frontend/audit.log": true
 	},
 
 	"files.autoSave": "afterDelay",
