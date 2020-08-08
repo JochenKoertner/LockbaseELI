@@ -62,6 +62,7 @@ file(GLOB SOURCES_PAHO
         ${PROJECT_SOURCE_DIR}/MQTTProtocolClient.c
         ${PROJECT_SOURCE_DIR}/MQTTProtocolOut.c
         ${PROJECT_SOURCE_DIR}/MQTTClient.c
+        ${PROJECT_SOURCE_DIR}/MQTTTime.c
         )
 file(GLOB INCLUDE_PAHO
         ${PROJECT_SOURCE_DIR}/Base64.h
@@ -87,6 +88,8 @@ file(GLOB INCLUDE_PAHO
         ${PROJECT_SOURCE_DIR}/MQTTProtocolClient.h
         ${PROJECT_SOURCE_DIR}/MQTTProtocolOut.h
         ${PROJECT_SOURCE_DIR}/MQTTClient.h
+        ${PROJECT_SOURCE_DIR}/MQTTTime.h
+		${PROJECT_SOURCE_DIR}/MQTTExportDeclarations.h
         )
 
 configure_file( 
