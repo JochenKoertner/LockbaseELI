@@ -4,7 +4,7 @@
 #include <stdio.h>
 
 #if defined (WIN32)
-    #if defined(LbwELI_KMGmbH_EXPORTS)
+    #if defined(LbwELI_Demo_EXPORTS)
         #define LBELI_EXPORT __declspec(dllexport)
     #else
         #define  LBELI_EXPORT __declspec(dllimport)
@@ -14,9 +14,9 @@
 #endif
 
 
-#define LbwELI_VERSION     "0.4.1848"
+#define LbwELI_VERSION     "0.4"
 #define Driver_VERSION      "0.9"
-#define PRODUCT_ID          "DemoDriver"
+#define PRODUCT_ID          "ELIDemo"
 
 
 typedef int (*ELIDrv2App)( const char* sSysID, const char* sJobID, const char* sJobData);

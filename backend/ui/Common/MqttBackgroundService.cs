@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Lockbase.CoreDomain;
+using Lockbase.CoreDomain.Extensions;
 using Lockbase.CoreDomain.Services;
 using Lockbase.CoreDomain.ValueObjects;
 using Microsoft.AspNetCore.SignalR;
@@ -26,7 +27,6 @@ namespace ui.Common
 	public class MqttBackgroundService : BackgroundService
 	{
 		private const string TOPIC_RESPONSE = "response";
-		private const string TOPIC_HEARTBEAT = "heartbeat";
 		private readonly BrokerConfig _brokerConfig;
 		private readonly ILogger<MqttBackgroundService> _logger;
 		private IMqttServer _mqttServer;
@@ -76,9 +76,12 @@ namespace ui.Common
 
 			var sessionState = await Connect(mqttClient, _brokerConfig.User);
 
-			await mqttClient.SubscribeAsync(_brokerConfig.Topic, MqttQualityOfService.ExactlyOnce); //QoS2
-			await mqttClient.SubscribeAsync(TOPIC_RESPONSE, MqttQualityOfService.ExactlyOnce); //QoS2
+			_logger.LogInformation($"MQTT Create Client (User:'{_brokerConfig.User}', Topic:'{_brokerConfig.Topic}')");
+			
 
+			await mqttClient.SubscribeAsync(_brokerConfig.Topic, MqttQualityOfService.ExactlyOnce); //QoS2
+
+			// Hier werden die Antworten zu dem Treiber per 'Publish' verschickt
 			var subscriptionStatement = this.observableStatement.Subscribe(
 				async statement =>
 					await Publish(
@@ -87,18 +90,18 @@ namespace ui.Common
 						sessionId: statement.SessionId, 
 						payload: statement.Message,
 						replyTo: TOPIC_RESPONSE,
-						qos: statement.Topic.Equals(TOPIC_HEARTBEAT) ? 
-							MqttQualityOfService.AtMostOnce 
-							: 
-							MqttQualityOfService.ExactlyOnce
+						qos: MqttQualityOfService.ExactlyOnce
 					)
 			);
 
+			// Hier kommen die Messages vom Treiber an und werden an 'HandleMessage' geroutet
 			var subscriptionChannel = mqttClient
 				.MessageStream
 				.Subscribe(async msg => {
 					if (msg.Topic.Equals(_brokerConfig.Topic))
+					{
 						await HandleMessage(msg);
+					}
 					else 
 						_logger.LogInformation($"Publish {msg.Topic} '{Encoding.UTF8.GetString(msg.Payload)}'");
 				});
@@ -108,8 +111,6 @@ namespace ui.Common
 
 			while (!stoppingToken.IsCancellationRequested)
 			{
-				// all 30sec do some lookup for working 
-				this.statementObserver.OnNext(new Statement(TOPIC_HEARTBEAT, 4711, $"HC,{DateTime.UtcNow.ToShortTimeString()}"));
 				await Task.Delay(5000, stoppingToken);
 			}
 
@@ -122,7 +123,7 @@ namespace ui.Common
 
 		public override Task StartAsync(CancellationToken cancellationToken)
 		{
-			_logger.LogInformation("Start MQTT-Broker");
+			_logger.LogInformation($"Start MQTT-Broker (Port:{_brokerConfig.Port})");
 			_mqttServer = MqttServer.Create(_brokerConfig.Port);
 			_mqttServer.Start();
 			return base.StartAsync(cancellationToken);
@@ -140,6 +141,7 @@ namespace ui.Common
 			return base.StopAsync(cancellationToken);
 		}
 
+		// Handelt Messages vom Treiber
 		private async Task HandleMessage(MqttApplicationMessage msg)
 		{
 			var message = JsonConvert.DeserializeObject<Message>(Encoding.UTF8.GetString(msg.Payload));
@@ -163,6 +165,7 @@ namespace ui.Common
 
 		private async Task Publish(IMqttClient client, string topic, int sessionId, string payload, string replyTo, MqttQualityOfService qos)
 		{
+			_logger.LogInformation($"Topic: '{topic}', Session:{sessionId}, '{payload}'");
 			var message = new Message()
 			{
 				session_id = sessionId.ToString("X8"),

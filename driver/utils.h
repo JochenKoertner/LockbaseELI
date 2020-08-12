@@ -6,9 +6,20 @@
 #define JSMN_HEADER
 #include "jsmn/jsmn.h"
 
-#define NEWLINE 0x0A
+#if defined (WIN32)
+    #if defined(LbwELI_Demo_EXPORTS)
+        #define LBELI_EXPORT __declspec(dllexport)
+    #else
+        #define  LBELI_EXPORT __declspec(dllimport)
+    #endif
+#else
+    #define LBELI_EXPORT
+#endif
 
-static int jsoneq(const char *json, jsmntok_t *tok, const char *s) {
+#define NEWLINE 0x0A
+#define CR 0x0D
+
+static int jsoneq(const char *json, const jsmntok_t *tok, const char *s) {
     if (tok->type == JSMN_STRING && (int) strlen(s) == tok->end - tok->start &&
         strncmp(json + tok->start, s, tok->end - tok->start) == 0) {
         return 0;
@@ -16,11 +27,11 @@ static int jsoneq(const char *json, jsmntok_t *tok, const char *s) {
     return -1;
 }
 
-char* session_id_to_string(int session_id);
+LBELI_EXPORT char* session_id_to_string(int session_id);
 int string_to_session_id(const char* sSessID);
 char* formatUrl(const char* protocol, const char* host, long port);
 
-char* create_event_payload(const char* eventName, const char* sSessID, const char* sText);
+char* create_event_payload(const char* eventName, const char* sSessID, const char* sText, const char* sReplyTo);
 void parse_payload(const char* json, char** sessionId, char** text);
 
 char* string_alloc(const char* source, int len);

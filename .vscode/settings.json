@@ -1,17 +1,23 @@
 {
-    "files.exclude": {
-        "**/.idea": true,
-        "**/bin": true,
-        "**/ipch": true,
-        "**/node_modules": true,
-        "**/obj": true,
-        "driver/build": true,
-        "driver/cmake-build-debug": true,
-        "frontend/build": true
-    },
+	"files.exclude": {
+		"**/.idea": true,
+		"**/bin": true,
+		"**/ipch": true,
+		"**/node_modules": true,
+		"**/obj": true,
+		"driver/build": true,
+		"driver/cmake-build-debug": true,
+		"frontend/build": true,
+		"frontend/yarn-error.log": true,
+		"frontend/audit.log": true
+	},
 
-    "files.autoSave": "afterDelay",
-    "files.autoSaveDelay": 5000,
-    "editor.renderWhitespace": "boundary",
-    "editor.detectIndentation": false
+	"files.autoSave": "afterDelay",
+	"files.autoSaveDelay": 5000,
+	"editor.renderWhitespace": "boundary",
+	"editor.detectIndentation": false,
+	"files.associations": {
+        "driver.h": "c",
+        "session_list.h": "c"
+    }
 }

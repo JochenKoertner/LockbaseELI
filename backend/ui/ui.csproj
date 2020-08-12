@@ -5,6 +5,15 @@
 	<PropertyGroup>
 		<TargetFramework>netcoreapp3.1</TargetFramework>
 		<AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+		<SpaRoot>..\..\frontend\</SpaRoot>
+		<DefaultItemExcludes>$(DefaultItemExcludes);$(SpaRoot)node_modules\**</DefaultItemExcludes>
+		<CopyOutputSymbolsToPublishDirectory Condition="'$(Configuration)' == 'Release'">false
+		</CopyOutputSymbolsToPublishDirectory>
+		<!-- <PublishTrimmed>true</PublishTrimmed> -->
+		<PublishReadyToRun>true</PublishReadyToRun>
+		<PublishSingleFile Condition="'$(Configuration)' == 'Release'">true</PublishSingleFile>
+		<PublishReadyToRunShowWarnings>true</PublishReadyToRunShowWarnings>
+		<IsTransformWebConfigDisabled>true</IsTransformWebConfigDisabled>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -29,6 +38,13 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<!-- Don't publish the SPA source files, but do show them in the project files list -->
+		<Content Remove="$(SpaRoot)**" />
+		<None Remove="$(SpaRoot)**" />
+		<None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<DotNetCliToolReference Include="ElectronNET.CLI" Version="0.0.9" />
 	</ItemGroup>
 
@@ -36,17 +52,27 @@
 		<ProjectReference Include="../coredomain/coredomain.csproj" />
 		<Content Include="sample\*.txt" >
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<CopyToPublishDirectory>Never</CopyToPublishDirectory>
 		</Content>
 		<Content Update="electron.manifest.json">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
+		<Content Remove="appsettings.Development.json" />
 	</ItemGroup>
 
-	<Target Name="PublishFrontend" AfterTargets="PrepareForPublish">
+	<Target Name="PublishRunWebpack" AfterTargets="ComputeFilesToPublish">
+		<!-- As part of publishing, ensure the JS resources are freshly built in production mode -->
+		<Exec WorkingDirectory="$(SpaRoot)" Command="yarn install" />
+		<Exec WorkingDirectory="$(SpaRoot)" Command="yarn build" />
+
+		<!-- Include the newly-built files in the publish output -->
 		<ItemGroup>
-			<ClientFiles Include="../../Frontend\build\**" />
-			<ContentWithTargetPath Include="@(ClientFiles->'%(FullPath)')" TargetPath="clientApp/%(ClientFiles.RecursiveDir)%(Filename)%(Extension)" CopyToPublishDirectory="PreserveNewest" />
+			<DistFiles Include="$(SpaRoot)build\**" />
+			<ResolvedFileToPublish Include="@(DistFiles->'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">
+				<RelativePath>ClientApp\%(RecursiveDir)%(Filename)%(Extension)</RelativePath>
+				<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+				<ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+			</ResolvedFileToPublish>
 		</ItemGroup>
 	</Target>
-
 </Project>

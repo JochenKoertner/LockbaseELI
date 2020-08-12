@@ -1,7 +1,8 @@
 using System;
 using Xunit; 
 
-using Lockbase.CoreDomain.Entities; 
+using Lockbase.CoreDomain.Entities;
+using Lockbase.CoreDomain.Extensions;
 
 namespace Lockbase.Tests.CoreDomain {
 
@@ -13,7 +14,7 @@ namespace Lockbase.Tests.CoreDomain {
 			Assert.Equal("000000hqvs1lo", entity.Id);
 			Assert.Equal("103-1", entity.Name);
 			Assert.Null(entity.AppId);
-			Assert.Equal("Fender, Klaus", entity.ExtData);
+			Assert.Equal("Fender, Klaus", entity.ExtData);			
 		}
 
 		[Fact]

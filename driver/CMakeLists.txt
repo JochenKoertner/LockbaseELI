@@ -10,6 +10,8 @@ IF (WIN32)
     set(WinSDKVersion "10.0.15063.0")
     set(WinSDKPath "C:/wintoolchain/Windows Kits/10")
     set(MACHINE "x64")
+
+    
 ENDIF()
 
 set(CMAKE_C_STANDARD 11)
@@ -18,15 +20,16 @@ set(CMAKE_C_STANDARD 11)
 project(PahoMqtt C)
 
 IF(WIN32)
-  ADD_DEFINITIONS(-D_WINSOCK_DEPRECATED_NO_WARNINGS -D_CRT_SECURE_NO_DEPRECATE -DWIN32_LEAN_AND_MEAN -D_WINSOCK_DEPRECATED_NO_WARNINGS -MD)
+    ADD_DEFINITIONS(-D_WINSOCK_DEPRECATED_NO_WARNINGS -D_CRT_SECURE_NO_DEPRECATE -DWIN32_LEAN_AND_MEAN -D_WINSOCK_DEPRECATED_NO_WARNINGS -MD)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wl,--no-warn-search-mismatch")
 ELSEIF(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
-  ADD_DEFINITIONS(-DOSX)
+    ADD_DEFINITIONS(-DOSX)
 ENDIF()
 
 ## build settings
 set(PAHO_VERSION_MAJOR 1)
-set(PAHO_VERSION_MINOR 2)
-set(PAHO_VERSION_PATCH 1)
+set(PAHO_VERSION_MINOR 3)
+set(PAHO_VERSION_PATCH 5)
 set(CLIENT_VERSION ${PAHO_VERSION_MAJOR}.${PAHO_VERSION_MINOR}.${PAHO_VERSION_PATCH})
 
 string(TIMESTAMP BUILD_TIMESTAMP UTC)
@@ -59,6 +62,7 @@ file(GLOB SOURCES_PAHO
         ${PROJECT_SOURCE_DIR}/MQTTProtocolClient.c
         ${PROJECT_SOURCE_DIR}/MQTTProtocolOut.c
         ${PROJECT_SOURCE_DIR}/MQTTClient.c
+        ${PROJECT_SOURCE_DIR}/MQTTTime.c
         )
 file(GLOB INCLUDE_PAHO
         ${PROJECT_SOURCE_DIR}/Base64.h
@@ -84,6 +88,8 @@ file(GLOB INCLUDE_PAHO
         ${PROJECT_SOURCE_DIR}/MQTTProtocolClient.h
         ${PROJECT_SOURCE_DIR}/MQTTProtocolOut.h
         ${PROJECT_SOURCE_DIR}/MQTTClient.h
+        ${PROJECT_SOURCE_DIR}/MQTTTime.h
+		${PROJECT_SOURCE_DIR}/MQTTExportDeclarations.h
         )
 
 configure_file( 
@@ -103,7 +109,7 @@ add_library(${PROJECT_NAME} ${SOURCES_PAHO} )
 
 ## Build Driver Dynamic Library ------------------------------------
 
-project(LbwELI.KMGmbH C)
+project(LbwELI.Demo C)
 
 IF(WIN32)
     ADD_DEFINITIONS(-D_CRT_NONSTDC_NO_DEPRECATE)
@@ -121,13 +127,15 @@ add_library(${PROJECT_NAME} SHARED
   utils.c utils.h jsmn.c)
 target_link_libraries(${PROJECT_NAME} PahoMqtt ${LIBS_SYSTEM}  )
 
+set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "")
+
 ## Build Sample console Application --------------------------------
 
 project(LbELI_cli C)
 
 add_executable(${PROJECT_NAME}  main.c)
 
-target_link_libraries(${PROJECT_NAME} LbwELI.KMGmbH ${LIBS_SYSTEM} )
+target_link_libraries(${PROJECT_NAME} LbwELI.Demo ${LIBS_SYSTEM} )
 
 IF(WIN32)
   file( GENERATE OUTPUT "./config.json" CONTENT "{ \"host\" : \"10.0.2.2\", \"port\": 1883 }"  )
