@@ -4,7 +4,7 @@ import Dropdown from 'react-dropdown';
 
 import DateFnsAdapter from '@date-io/date-fns'
 
-import { HubConnectionBuilder, LogLevel } from '@aspnet/signalr';
+import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
 
 import Button from '@material-ui/core/Button';
 import Snackbar from '@material-ui/core/Snackbar';
