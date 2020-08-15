@@ -2,8 +2,7 @@ import React, { Component } from 'react';
 import { Col, Grid, Row, Label } from 'react-bootstrap';
 import Dropdown from 'react-dropdown';
 
-import DateFnsUtils from '@date-io/date-fns'
-import format from 'date-fns/format'
+import DateFnsAdapter from '@date-io/date-fns'
 
 import { HubConnectionBuilder, LogLevel } from '@aspnet/signalr';
 
@@ -45,13 +44,14 @@ const localeMap = {
 	it: itLocale,
 };
 
-class ExtDateFnsUtils extends DateFnsUtils {
+class ExtDateFnsUtils extends DateFnsAdapter {
     getDatePickerHeaderText(date) {
-				return format(date, 'd MMMM', {locale: this.locale})
+			  const dateFns = new DateFnsAdapter({ locale: this.locale});
+				return dateFns.format(date, 'd MMMM')
     }
 }
 
-const dfns = new DateFnsUtils();
+const dfns = new DateFnsAdapter();
 
 class Home extends Component {
 	displayName = Home.name
