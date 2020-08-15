@@ -23,7 +23,6 @@
 		"bootstrap": "3.4.1",
 		"date-fns": "^2.15.0",
 		"fstream": "^1.0.12",
-		"moment": "^2.24.0",
 		"package": "^1.0.1",
 		"prop-types": "15.7.2",
 		"react": "^16.8.6",

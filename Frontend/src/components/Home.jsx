@@ -4,7 +4,6 @@ import Dropdown from 'react-dropdown';
 
 import DateFnsUtils from '@date-io/date-fns'
 import format from 'date-fns/format'
-import moment from 'moment'
 
 import { HubConnectionBuilder, LogLevel } from '@aspnet/signalr';
 
@@ -47,9 +46,6 @@ const localeMap = {
 };
 
 class ExtDateFnsUtils extends DateFnsUtils {
-    startOfMonth(date) {
-        return moment(date).startOf('month').toDate();
-    }
     getDatePickerHeaderText(date) {
 				return format(date, 'd MMMM', {locale: this.locale})
     }
