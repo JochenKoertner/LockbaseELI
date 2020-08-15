@@ -19,7 +19,6 @@
 		"@types/tapable": "^1.0.4",
 		"@types/unist": "2.0.3",
 		"bootstrap": "3.4.1",
-		"core-js": "3.0.1",
 		"date-fns": "2.0.0-alpha.27",
 		"fstream": "^1.0.12",
 		"material-ui-pickers": "^2.2.4",
