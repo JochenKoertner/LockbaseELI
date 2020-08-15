@@ -12,8 +12,8 @@ import Button from '@material-ui/core/Button';
 import Snackbar from '@material-ui/core/Snackbar';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
+import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 
-import { MuiPickersUtilsProvider } from 'material-ui-pickers';
 
 import frLocale from 'date-fns/locale/fr';
 import deLocale from 'date-fns/locale/de';
@@ -51,7 +51,7 @@ class ExtDateFnsUtils extends DateFnsUtils {
         return moment(date).startOf('month').toDate();
     }
     getDatePickerHeaderText(date) {
-        return format(date, 'd MMMM', {locale: this.locale})
+				return format(date, 'd MMMM', {locale: this.locale})
     }
 }
 
@@ -151,7 +151,7 @@ class Home extends Component {
 
 	toggleDoor() {
 		console.log(`Toggle Door ${this.state.door.lockId} - ${this.state.person.keyId} - ${this.state.selectedDate}`)
-		var dateString = dfns.format(this.state.selectedDate, "yyyy-MM-dd'T'HH:mmZ")   
+		var dateString = dfns.format(this.state.selectedDate, "yyyy-MM-dd'T'HH:mm")
 		console.log(dateString)
 		fetch(`api/data/check?keyId=${this.state.person.keyId}&lockId=${this.state.door.lockId}&dateTime=${dateString}`)
 			.then( response => response.json())
@@ -321,7 +321,7 @@ class Home extends Component {
 									</Col>
 									<Col xs={6}>
 										<TimeSelection intl={this.props.intl} selectedDate={selectedDate} 
-											handleDateChange={this.handleDateChange} />
+											handleDateChange={this.handleDateChange} /> 
 									</Col>
 								</Row>
 							</MuiPickersUtilsProvider>
