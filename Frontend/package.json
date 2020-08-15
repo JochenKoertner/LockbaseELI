@@ -53,9 +53,18 @@
 		"not op_mini all"
 	],
 	"devDependencies": {
+		"@babel/core": "^7.0.0",
+		"@babel/plugin-syntax-export-namespace-from": "^7.0.0",
+		"@babel/plugin-syntax-jsx": "^7.0.0",
+		"@babel/plugin-transform-react-constant-elements": "^7.0.0",
+		"@babel/plugin-transform-react-pure-annotations": "^7.0.0",
+		"@babel/plugin-transform-unicode-escapes": "^7.0.0",
+		"@babel/preset-env": "^7.0.0",
+		"babel-preset-jest": "^26.3.0",
 		"caniuse-lite": "^1.0.30001114",
 		"electron-packager": "^13.1.1",
 		"jquery": "^3.4.1",
+		"json5": "1.0.1",
 		"node-sass": "^4.14.1",
 		"react-scripts": "^3.4.3",
 		"typescript": "3.4.5"
