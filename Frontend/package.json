@@ -22,7 +22,6 @@
 		"core-js": "3.0.1",
 		"date-fns": "2.0.0-alpha.27",
 		"fstream": "^1.0.12",
-		"jquery": "^3.4.1",
 		"material-ui-pickers": "^2.2.4",
 		"moment": "^2.24.0",
 		"package": "^1.0.1",
@@ -56,6 +55,7 @@
 	"devDependencies": {
 		"caniuse-lite": "^1.0.30001114",
 		"electron-packager": "^13.1.1",
+		"jquery": "^3.4.1",
 		"node-sass": "^4.14.1",
 		"react-scripts": "^3.4.3",
 		"typescript": "3.4.5"
