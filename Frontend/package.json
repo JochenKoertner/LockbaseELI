@@ -26,7 +26,6 @@
 		"moment": "^2.24.0",
 		"package": "^1.0.1",
 		"prop-types": "15.7.2",
-		"querystringify": "^2.1.1",
 		"react": "^16.8.6",
 		"react-bootstrap": "^0.31.5",
 		"react-dom": "^16.8.6",
