@@ -1,4 +1,5 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
+
 import { Col, Grid, Row, Label } from 'react-bootstrap';
 import Dropdown from 'react-dropdown';
 
@@ -20,9 +21,9 @@ import itLocale from 'date-fns/locale/it';
 import enLocale from 'date-fns/locale/en-US';
 
 import { injectIntl } from 'react-intl';
+import {useIntl} from 'react-intl';
 
 // https://codepen.io/ecurbelo/pen/GKjAx
-
 
 import Door from './Door';
 import DoorCaption from './DoorCaption';
@@ -53,11 +54,25 @@ class ExtDateFnsUtils extends DateFnsAdapter {
 
 const dfns = new DateFnsAdapter();
 
-class Home extends Component {
-	displayName = Home.name
+function Home(props) {
 
-	
-		
+	const [isLoading,setIsLoading] = useState(false);
+	const [isOpen,setIsOpen] = useState(null);
+	const [personList,setPersonList] = useState(null);
+	const [person,setPerson] = useState(null);
+	const [doorList,setDoorList] = useState(null);
+	const [door,setDoor] = useState(null);
+	const [selectedDate,setSelectedDate] = useState(dfns.setMinutes(new Date(), (Math.round(dfns.getMinutes(new Date()) / 15)) * 15));
+	const [open,setOpen] = useState(null);
+	const [transition,setTransition] = useState(0);
+	const [hubConnection,setHubConnection] = useState(
+			new HubConnectionBuilder()
+				.withUrl('/signalr')
+				.configureLogging(LogLevel.Information)
+				.build());
+
+
+	/*
 	constructor(props) {
 		super(props);
 
@@ -88,37 +103,39 @@ class Home extends Component {
 		this.onSelectRoom = this.onSelectRoom.bind(this);
 
 	}
+	*/
 
-	componentDidMount() {
-		this.setState({isLoading: true})
+	useEffect( () => {
+		setIsLoading(true)
+		console.log('component mounted')
 		fetch('api/data/persons')
 			.then(response => response.json())
-			.then(data => this.setState({
-					personList: data,
-					person: data[0]
-				 }))
+			.then(data => {
+					setPersonList(data);
+					setPerson(data[0]);
+				 })
 			.then( () => fetch('api/data/doors')
 				 .then(response => response.json())
-				 .then(data => this.setState({
-					 isLoading: false,
-					 doorList: data,
-					 door: null // data[1].items[1]
-				 }))
+				 .then(data => {
+					 setIsLoading(false);
+					 setDoorList(data);
+					 setDoor(null);
+				 })
 			);
 
-		const hubConnection = new HubConnectionBuilder()
-			.withUrl('/signalr')
-			.configureLogging(LogLevel.Information)
-			.build();
+			// useEffect( () => {
+			// 	const connection = props.hubConnection
+			// 		.start()
+			// 		.then( () => console.log('Connection started'))
+			// 		.catch( err => console.log('Error while establishing connection'));
+				
+			// 	return () => {
+			// 		console.log('Connection closed');
+			// 	}
+			// }, [props.hubConnection])
 
-		this.setState({hubConnection}, () => {
-			this.state.hubConnection
-				.start()
-				.then( () => console.log('Connection started'))
-				.catch( err => console.log('Error while establishing connection'));
-		});
-
-		hubConnection.on('BroadcastMessage', (receivedMessage) => {
+		
+	/*	hubConnection.on('BroadcastMessage', (receivedMessage) => {
 			console.log(receivedMessage.message);
 
 			fetch('api/data/persons')
@@ -134,65 +151,54 @@ class Home extends Component {
 					 door: data[1].items[1]
 				 }))
 			);
-		});
-	}
+		}); */
+	},[])
 	
-	handleClose = (event, reason) => {
+	const handleClose = (event, reason) => {
 		if (reason === 'clickaway') {
 			return;
 		}
 
-		this.setState({ open: null });
+		setOpen(null);
 	};
 
-	toggleDoor() {
-		console.log(`Toggle Door ${this.state.door.lockId} - ${this.state.person.keyId} - ${this.state.selectedDate}`)
-		var dateString = dfns.format(this.state.selectedDate, "yyyy-MM-dd'T'HH:mm")
+	const toggleDoor = () => {
+		console.log(`Toggle Door ${door.lockId} - ${person.keyId} - ${selectedDate}`)
+		var dateString = dfns.format(selectedDate, "yyyy-MM-dd'T'HH:mm")
 		console.log(dateString)
-		fetch(`api/data/check?keyId=${this.state.person.keyId}&lockId=${this.state.door.lockId}&dateTime=${dateString}`)
+		fetch(`api/data/check?keyId=${person.keyId}&lockId=${door.lockId}&dateTime=${dateString}`)
 			.then( response => response.json())
 			.then( ok => {
 				console.log(` response with ${ok}`)
 				if (ok) {
-					this.setState(function(state) {
-						let transition;
-						if (typeof state.isOpen !== 'undefined') {
-							if (state.isOpen) {
-								transition = 1;
-							} else
-							{
-								transition = 2;
-							}
+					let newTransition;
+					if (typeof isOpen !== 'undefined') {
+						if (isOpen) {
+							newTransition = 1;
+						} else {
+							newTransition = 2;
 						}
-						else
-						{
-							transition = 0;
-						}
-						return {
-							isOpen: !state.isOpen,
-							open: true,
-							transition: transition,
-						}
-					})
+					}	else {
+						newTransition = 0;
+					}
+					setIsOpen(!isOpen);
+					setOpen(true);
+					setTransition(newTransition);
+
 					//var audio = document.getElementById('door-sound');
 					//audio.play();
-				}
-				else {
-					this.setState(function(state) {
-						return {
-							open: false
-						}
-					})
+				} else {
+					setOpen(false)
 				}
 			});
 	}
 
-	handleDateChange = date => {
-		this.setState({selectedDate: dfns.setMinutes(date, (Math.round(dfns.getMinutes(date) / 5)) * 5)});
+	const handleDateChange = (date) => {
+		setSelectedDate(dfns.setMinutes(date, (Math.round(dfns.getMinutes(date) / 5)) * 5));
 	}
 
-	onSelectDoor(selected) {
-		const onlyDoors = this.state.doorList
+	const onSelectDoor = (selected) => {
+		const onlyDoors = doorList
 			.map(x => {
 				if (x.type === 'group') {
 					return x.items
@@ -202,28 +208,21 @@ class Home extends Component {
 			.reduce((a, b) => a.concat(b), []);
 
 		const index = onlyDoors.findIndex(x => x.value === selected.value);
-		this.setState({ door: onlyDoors[index] });
+		setDoor(onlyDoors[index]);
 	}
 
-	onSelectPerson(selected) {
-		
-		const index = this.state.personList.findIndex(x => x.value === selected.value);
-		this.setState({ person: this.state.personList[index] });
+	const onSelectPerson = (selected) => {
+		const index = personList.findIndex(x => x.value === selected.value);
+		setPerson(personList[index]);
 	}
 
-	onSelectRoom(roomId) {
-		this.onSelectDoor({value: roomId});
+	const onSelectRoom = (roomId) => {
+		onSelectDoor({value: roomId});
 	}
 
-	render() {
-
-		if (this.state.isLoading) {
-			return <p>Loading ...</p>;
-		}
-
-		const { selectedDate } = this.state;
-
-		return (
+	return (
+		isLoading ? (<p>Loading ...</p>) :
+		(
 			<LanguageContext.Consumer>
 				{ language => (
 					<Grid>
@@ -232,107 +231,114 @@ class Home extends Component {
 							vertical: 'bottom',
 							horizontal: 'center',
 							}}
-							open={this.state.open}
+							open={open}
 							autoHideDuration={2000}
-							onClose={this.handleClose}
+							onClose={handleClose}
 							ContentProps={{
 							'aria-describedby': 'message-id',
 							}}
-							message={<span id="message-id">{(this.state.door) ? this.state.door.label : "xxx" } kann geöffnet werden!</span>}
+							message={<span id="message-id">{(door) ? door.label : "xxx" } kann {open} geöffnet werden!</span>}
 							action={[
 								<IconButton
 									key="close"
 									aria-label="Close"
 									color="inherit"
-									onClick={this.handleClose}
+									onClick={handleClose}
 								>
 								<CloseIcon />
 							</IconButton>,
 							]}
 						/>
 
-						<Door doorId={(this.state.door) ? this.state.door.image : "nothing"} isOpen={this.state.isOpen} transition={this.state.transition}/>
+						<Door doorId={(door) ? door.image : "nothing"} isOpen={isOpen} transition={transition}/>
 						
-						<DoorCaption doorName={(this.state.door) ? this.state.door.label : "nothing"}></DoorCaption>
+						<DoorCaption doorName={(door) ? door.label : "nothing"}></DoorCaption>
 
 					<Row className="grid-content">
 						<Col xs={4} className="col-content-aside col-content-left">
 							<Label>
-								{this.props.intl.formatMessage(messages.homeLabelPerson)}
+								{props.intl.formatMessage(messages.homeLabelPerson)}
 							</Label>
 							<Dropdown arrowClosed={arrowClosed} arrowOpen={arrowOpen}
-								options={this.state.personList} onChange={this.onSelectPerson} value={this.state.person} />
+								options={personList} onChange={onSelectPerson} value={person} />
 
-							<InfoBox label={this.props.intl.formatMessage(messages.homeLabelDepartment)}>
-								{(this.state.person) ? this.state.person.department : "nothing"}
+							<InfoBox label={props.intl.formatMessage(messages.homeLabelDepartment)}>
+								{(person) ? person.department : "nothing"}
 							</InfoBox>
 
-							<ColorInfoBox label={this.props.intl.formatMessage(messages.homeLabelKeyId)}
-								color={(this.state.person) && (this.state.person.color) ? this.state.person.color : undefined}>
-								{(this.state.person) ? `${this.state.person.value} (${this.state.person.keyId})` : null} 
+							<ColorInfoBox label={props.intl.formatMessage(messages.homeLabelKeyId)}
+								color={(person) && (person.color) ? person.color : undefined}>
+								{(person) ? `${person.value} (${person.keyId})` : null} 
 							</ColorInfoBox>
 
-							<Label>{this.props.intl.formatMessage(messages.homeLabelDoor)}</Label>
+							<Label>{props.intl.formatMessage(messages.homeLabelDoor)}</Label>
 							<Dropdown arrowClosed={arrowClosed} arrowOpen={arrowOpen}
-								options={this.state.doorList} onChange={this.onSelectDoor} value={this.state.door} />
+								options={doorList} onChange={onSelectDoor} value={door} />
 
-							<InfoBox label={this.props.intl.formatMessage(messages.homeLabelBuilding)}>
-								{(this.state.door) ? this.state.door.building : null}
+							<InfoBox label={props.intl.formatMessage(messages.homeLabelBuilding)}>
+								{(door) ? door.building : null}
 							</InfoBox>
 
-							<ColorInfoBox label={this.props.intl.formatMessage(messages.homeLabelLockId)}
-								color={(this.state.door) && (this.state.door.color) ? this.state.door.color : undefined}>
-								{(this.state.door) ? `${this.state.door.value} (${this.state.door.lockId})` : null}
+							<ColorInfoBox label={props.intl.formatMessage(messages.homeLabelLockId)}
+								color={(door) && (door.color) ? door.color : undefined}>
+								{(door) ? `${door.value} (${door.lockId})` : null}
 							</ColorInfoBox>
 						</Col>
 						
 						<Col xs={4} className="col-content-center" >
 							<GroundPlan 
-								selectedRoom={(this.state.door) ? this.state.door.value: null} 
-								onClick={this.onSelectRoom}
-								doors={this.state.doorList} />
+								selectedRoom={(door) ? door.value: null} 
+								onClick={onSelectRoom}
+								doors={doorList} />
 						</Col>
 
 						<Col xs={4} className="col-content-aside col-content-right">
 
-							<InfoBox label={this.props.intl.formatMessage(messages.homeLabelDoorState)}
-								icon={this.state.isOpen ? "lock-open" : "lock"} >
-								{this.state.isOpen ? 
-									this.props.intl.formatMessage(messages.homeDoorOpenState): 
-									this.props.intl.formatMessage(messages.homeDoorCloseState)}
+							<InfoBox label={props.intl.formatMessage(messages.homeLabelDoorState)}
+								icon={isOpen ? "lock-open" : "lock"} >
+								{isOpen ? 
+									props.intl.formatMessage(messages.homeDoorOpenState): 
+									props.intl.formatMessage(messages.homeDoorCloseState)}
 							</InfoBox>
 							<MuiPickersUtilsProvider utils={ExtDateFnsUtils} locale={localeMap[language.language.value]}>
 								<Row>
 									<Col xs={6}>
-										<Label>{this.props.intl.formatMessage(messages.homeLabelDate)}</Label>
+										<Label>{props.intl.formatMessage(messages.homeLabelDate)}</Label>
 									</Col>
 									<Col xs={6}>
-										<Label>{this.props.intl.formatMessage(messages.homeLabelTime)}</Label>
+										<Label>{props.intl.formatMessage(messages.homeLabelTime)}</Label>
 									</Col>
 								</Row>
 								<Row>
 									<Col xs={6}>
-										<DateSelection intl={this.props.intl} selectedDate={selectedDate} 
-										handleDateChange={this.handleDateChange} />
+										<DateSelection intl={props.intl} selectedDate={selectedDate} 
+										handleDateChange={handleDateChange} />
 									</Col>
 									<Col xs={6}>
-										<TimeSelection intl={this.props.intl} selectedDate={selectedDate} 
-											handleDateChange={this.handleDateChange} /> 
+										<TimeSelection intl={props.intl} selectedDate={selectedDate} 
+											handleDateChange={handleDateChange} /> 
 									</Col>
 								</Row>
 							</MuiPickersUtilsProvider>
 							
-								<Button variant="contained" color="primary" onClick={this.toggleDoor}>
-									{this.props.intl.formatMessage(messages.homeButtonCheck)}
-								</Button>
+							<Button variant="contained" color="primary" onClick={toggleDoor}>
+								{props.intl.formatMessage(messages.homeButtonCheck)}
+							</Button>
 						</Col>
 					</Row>
 				</Grid>
 			)}
 			</LanguageContext.Consumer>
-		);
-	}
+		));
 };
 
-export default injectIntl(Home, {withRef:true});
+Home.displayName = 'Home'
+export default injectIntl(Home); 
+
+/*export const withHooksHOC = (Component: any) => {
+  return (props: any) => {
+    
+    return <Home width={screenWidth} {...props} />;
+  };
+};*/
 
