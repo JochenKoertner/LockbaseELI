@@ -13,14 +13,12 @@ import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 
-
 import frLocale from 'date-fns/locale/fr';
 import deLocale from 'date-fns/locale/de';
 import esLocale from 'date-fns/locale/es';
 import itLocale from 'date-fns/locale/it';
 import enLocale from 'date-fns/locale/en-US';
 
-import { injectIntl } from 'react-intl';
 import {useIntl} from 'react-intl';
 
 // https://codepen.io/ecurbelo/pen/GKjAx
@@ -54,7 +52,9 @@ class ExtDateFnsUtils extends DateFnsAdapter {
 
 const dfns = new DateFnsAdapter();
 
-function Home(props) {
+const Home = props => {
+
+	const intl = useIntl();
 
 	const [isLoading,setIsLoading] = useState(false);
 	const [isOpen,setIsOpen] = useState(null);
@@ -73,29 +73,14 @@ function Home(props) {
 
 
 	/*
-	constructor(props) {
-		super(props);
-
-		// https://www.robinwieruch.de/react-fetching-data/
+			// https://www.robinwieruch.de/react-fetching-data/
 
 
 		// Zeit auf 15 Minuten Intervall abrunden
 		var date = new Date();
 		date = dfns.setMinutes(date, (Math.round(dfns.getMinutes(date) / 15)) * 15);
 
-		this.state = {
-			isLoading: false,
-			personList: null,
-			doorList: null,
-			isOpen: null,
-			person: null,
-			door: null,
-			selectedDate: date,
-			open: null,
-			transition: 0,
-			hubConnection: null,
-		};
-
+	
 		this.toggleDoor = this.toggleDoor.bind(this);
 		this.onSelectDoor = this.onSelectDoor.bind(this);
 		this.onSelectPerson = this.onSelectPerson.bind(this);
@@ -107,7 +92,6 @@ function Home(props) {
 
 	useEffect( () => {
 		setIsLoading(true)
-		console.log('component mounted')
 		fetch('api/data/persons')
 			.then(response => response.json())
 			.then(data => {
@@ -257,29 +241,29 @@ function Home(props) {
 					<Row className="grid-content">
 						<Col xs={4} className="col-content-aside col-content-left">
 							<Label>
-								{props.intl.formatMessage(messages.homeLabelPerson)}
+								{intl.formatMessage(messages.homeLabelPerson)}
 							</Label>
 							<Dropdown arrowClosed={arrowClosed} arrowOpen={arrowOpen}
 								options={personList} onChange={onSelectPerson} value={person} />
 
-							<InfoBox label={props.intl.formatMessage(messages.homeLabelDepartment)}>
+							<InfoBox label={intl.formatMessage(messages.homeLabelDepartment)}>
 								{(person) ? person.department : "nothing"}
 							</InfoBox>
 
-							<ColorInfoBox label={props.intl.formatMessage(messages.homeLabelKeyId)}
+							<ColorInfoBox label={intl.formatMessage(messages.homeLabelKeyId)}
 								color={(person) && (person.color) ? person.color : undefined}>
 								{(person) ? `${person.value} (${person.keyId})` : null} 
 							</ColorInfoBox>
 
-							<Label>{props.intl.formatMessage(messages.homeLabelDoor)}</Label>
+							<Label>{intl.formatMessage(messages.homeLabelDoor)}</Label>
 							<Dropdown arrowClosed={arrowClosed} arrowOpen={arrowOpen}
 								options={doorList} onChange={onSelectDoor} value={door} />
 
-							<InfoBox label={props.intl.formatMessage(messages.homeLabelBuilding)}>
+							<InfoBox label={intl.formatMessage(messages.homeLabelBuilding)}>
 								{(door) ? door.building : null}
 							</InfoBox>
 
-							<ColorInfoBox label={props.intl.formatMessage(messages.homeLabelLockId)}
+							<ColorInfoBox label={intl.formatMessage(messages.homeLabelLockId)}
 								color={(door) && (door.color) ? door.color : undefined}>
 								{(door) ? `${door.value} (${door.lockId})` : null}
 							</ColorInfoBox>
@@ -294,35 +278,35 @@ function Home(props) {
 
 						<Col xs={4} className="col-content-aside col-content-right">
 
-							<InfoBox label={props.intl.formatMessage(messages.homeLabelDoorState)}
+							<InfoBox label={intl.formatMessage(messages.homeLabelDoorState)}
 								icon={isOpen ? "lock-open" : "lock"} >
 								{isOpen ? 
-									props.intl.formatMessage(messages.homeDoorOpenState): 
-									props.intl.formatMessage(messages.homeDoorCloseState)}
+									intl.formatMessage(messages.homeDoorOpenState): 
+									intl.formatMessage(messages.homeDoorCloseState)}
 							</InfoBox>
 							<MuiPickersUtilsProvider utils={ExtDateFnsUtils} locale={localeMap[language.language.value]}>
 								<Row>
 									<Col xs={6}>
-										<Label>{props.intl.formatMessage(messages.homeLabelDate)}</Label>
+										<Label>{intl.formatMessage(messages.homeLabelDate)}</Label>
 									</Col>
 									<Col xs={6}>
-										<Label>{props.intl.formatMessage(messages.homeLabelTime)}</Label>
+										<Label>{intl.formatMessage(messages.homeLabelTime)}</Label>
 									</Col>
 								</Row>
 								<Row>
 									<Col xs={6}>
-										<DateSelection intl={props.intl} selectedDate={selectedDate} 
+										<DateSelection intl={intl} selectedDate={selectedDate} 
 										handleDateChange={handleDateChange} />
 									</Col>
 									<Col xs={6}>
-										<TimeSelection intl={props.intl} selectedDate={selectedDate} 
+										<TimeSelection intl={intl} selectedDate={selectedDate} 
 											handleDateChange={handleDateChange} /> 
 									</Col>
 								</Row>
 							</MuiPickersUtilsProvider>
 							
 							<Button variant="contained" color="primary" onClick={toggleDoor}>
-								{props.intl.formatMessage(messages.homeButtonCheck)}
+								{intl.formatMessage(messages.homeButtonCheck)}
 							</Button>
 						</Col>
 					</Row>
@@ -333,12 +317,4 @@ function Home(props) {
 };
 
 Home.displayName = 'Home'
-export default injectIntl(Home); 
-
-/*export const withHooksHOC = (Component: any) => {
-  return (props: any) => {
-    
-    return <Home width={screenWidth} {...props} />;
-  };
-};*/
-
+export default Home;
