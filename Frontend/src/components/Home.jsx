@@ -19,7 +19,7 @@ import esLocale from 'date-fns/locale/es';
 import itLocale from 'date-fns/locale/it';
 import enLocale from 'date-fns/locale/en-US';
 
-import {useIntl} from 'react-intl';
+import {FormattedMessage, useIntl} from 'react-intl';
 
 // https://codepen.io/ecurbelo/pen/GKjAx
 
@@ -71,6 +71,17 @@ const Home = props => {
 				.configureLogging(LogLevel.Information)
 				.build());
 
+	const DoorMessage = () => {
+		return (
+			<FormattedMessage id="home.snackbarTxt" 
+			  values={{
+					person: <b>{person.label}</b>,
+					door: <b>{door.label}</b>,
+					state: (isOpen ? 'open' : 'closed')
+				}} 
+			></FormattedMessage>
+		)
+	}
 
 	/*
 			// https://www.robinwieruch.de/react-fetching-data/
@@ -165,14 +176,26 @@ const Home = props => {
 					}	else {
 						newTransition = 0;
 					}
-					setIsOpen(!isOpen);
-					setOpen(true);
-					setTransition(newTransition);
+					setIsOpen(!isOpen)
+					setOpen(true)
+					setTransition(newTransition)
 
 					//var audio = document.getElementById('door-sound');
 					//audio.play();
 				} else {
-					setOpen(false)
+					let newTransition;
+					if (typeof isOpen !== 'undefined') {
+						if (isOpen) {
+							newTransition = 2;
+						} else {
+							newTransition = 1;
+						}
+					}	else {
+						newTransition = 0;
+					}
+					setIsOpen(!isOpen)
+					setOpen(true)
+					setTransition(newTransition)
 				}
 			});
 	}
@@ -191,13 +214,17 @@ const Home = props => {
 			})
 			.reduce((a, b) => a.concat(b), []);
 
-		const index = onlyDoors.findIndex(x => x.value === selected.value);
-		setDoor(onlyDoors[index]);
+		const index = onlyDoors.findIndex(x => x.value === selected.value)
+		setIsOpen(false)
+		setTransition(0)
+		setDoor(onlyDoors[index])
 	}
 
 	const onSelectPerson = (selected) => {
 		const index = personList.findIndex(x => x.value === selected.value);
-		setPerson(personList[index]);
+		setIsOpen(false)
+		setTransition(0)
+		setPerson(personList[index])
 	}
 
 	const onSelectRoom = (roomId) => {
@@ -219,9 +246,9 @@ const Home = props => {
 							autoHideDuration={2000}
 							onClose={handleClose}
 							ContentProps={{
-							'aria-describedby': 'message-id',
+							'aria-describedby': 'home.snackbarTxt',
 							}}
-							message={<span id="message-id">{(door) ? door.label : "xxx" } kann {open} geöffnet werden!</span>}
+						message={<DoorMessage />}
 							action={[
 								<IconButton
 									key="close"
@@ -284,6 +311,7 @@ const Home = props => {
 									intl.formatMessage(messages.homeDoorOpenState): 
 									intl.formatMessage(messages.homeDoorCloseState)}
 							</InfoBox>
+
 							<MuiPickersUtilsProvider utils={ExtDateFnsUtils} locale={localeMap[language.language.value]}>
 								<Row>
 									<Col xs={6}>

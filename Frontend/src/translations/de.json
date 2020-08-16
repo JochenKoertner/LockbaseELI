@@ -13,5 +13,7 @@
     "home.labelTime": "Uhrzeit",
     "home.buttonCheck": "Jetzt testen",
     "home.doorOpenState": "Geöffnet",
-    "home.doorCloseState": "Geschlossen"
+	"home.doorCloseState": "Geschlossen",
+	
+	"home.snackbarTxt" : "{door} kann von {person} {state, select, open {geöffnet} closed {geschlossen}} werden!"
 }
