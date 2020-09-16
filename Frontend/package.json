@@ -23,6 +23,7 @@
 		"bootstrap": "3.4.1",
 		"date-fns": "^2.15.0",
 		"fstream": "^1.0.12",
+		"http-proxy": "^1.18.1",
 		"package": "^1.0.1",
 		"prop-types": "15.7.2",
 		"react": "^16.13.1",

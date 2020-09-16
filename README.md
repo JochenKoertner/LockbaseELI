@@ -24,6 +24,7 @@ The SubDirectorys are
 ## Build the frontend
 
 Change path to /frontend
+`cd ./frontend`
 
 `yarn build`
 
