@@ -1,19 +1,17 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
+
 import { Col, Grid, Row, Label } from 'react-bootstrap';
 import Dropdown from 'react-dropdown';
 
-import DateFnsUtils from '@date-io/date-fns'
-import format from 'date-fns/format'
-import moment from 'moment'
+import DateFnsAdapter from '@date-io/date-fns'
 
-import { HubConnectionBuilder, LogLevel } from '@aspnet/signalr';
+import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
 
 import Button from '@material-ui/core/Button';
 import Snackbar from '@material-ui/core/Snackbar';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
-
-import { MuiPickersUtilsProvider } from 'material-ui-pickers';
+import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 
 import frLocale from 'date-fns/locale/fr';
 import deLocale from 'date-fns/locale/de';
@@ -21,10 +19,9 @@ import esLocale from 'date-fns/locale/es';
 import itLocale from 'date-fns/locale/it';
 import enLocale from 'date-fns/locale/en-US';
 
-import { injectIntl } from 'react-intl';
+import {FormattedMessage, useIntl} from 'react-intl';
 
 // https://codepen.io/ecurbelo/pen/GKjAx
-
 
 import Door from './Door';
 import DoorCaption from './DoorCaption';
@@ -46,45 +43,55 @@ const localeMap = {
 	it: itLocale,
 };
 
-class ExtDateFnsUtils extends DateFnsUtils {
-    startOfMonth(date) {
-        return moment(date).startOf('month').toDate();
-    }
+class ExtDateFnsUtils extends DateFnsAdapter {
     getDatePickerHeaderText(date) {
-        return format(date, 'd MMMM', {locale: this.locale})
+			  const dateFns = new DateFnsAdapter({ locale: this.locale});
+				return dateFns.format(date, 'd MMMM')
     }
 }
 
-const dfns = new DateFnsUtils();
+const dfns = new DateFnsAdapter();
 
-class Home extends Component {
-	displayName = Home.name
+const Home = props => {
 
-	
-		
-	constructor(props) {
-		super(props);
+	const intl = useIntl();
 
-		// https://www.robinwieruch.de/react-fetching-data/
+	const [isLoading,setIsLoading] = useState(false);
+	const [isOpen,setIsOpen] = useState(null);
+	const [personList,setPersonList] = useState(null);
+	const [person,setPerson] = useState(null);
+	const [doorList,setDoorList] = useState(null);
+	const [door,setDoor] = useState(null);
+	const [selectedDate,setSelectedDate] = useState(dfns.setMinutes(new Date(), (Math.round(dfns.getMinutes(new Date()) / 15)) * 15));
+	const [open,setOpen] = useState(null);
+	const [transition,setTransition] = useState(0);
+	const [hubConnection,setHubConnection] = useState(
+			new HubConnectionBuilder()
+				.withUrl('/signalr')
+				.configureLogging(LogLevel.Information)
+				.build());
+
+	const DoorMessage = () => {
+		return (
+			<FormattedMessage id="home.snackbarTxt" 
+			  values={{
+					person: <b>{person.label}</b>,
+					door: <b>{door.label}</b>,
+					state: (isOpen ? 'open' : 'closed')
+				}} 
+			></FormattedMessage>
+		)
+	}
+
+	/*
+			// https://www.robinwieruch.de/react-fetching-data/
 
 
 		// Zeit auf 15 Minuten Intervall abrunden
 		var date = new Date();
 		date = dfns.setMinutes(date, (Math.round(dfns.getMinutes(date) / 15)) * 15);
 
-		this.state = {
-			isLoading: false,
-			personList: null,
-			doorList: null,
-			isOpen: null,
-			person: null,
-			door: null,
-			selectedDate: date,
-			open: null,
-			transition: 0,
-			hubConnection: null,
-		};
-
+	
 		this.toggleDoor = this.toggleDoor.bind(this);
 		this.onSelectDoor = this.onSelectDoor.bind(this);
 		this.onSelectPerson = this.onSelectPerson.bind(this);
@@ -92,37 +99,38 @@ class Home extends Component {
 		this.onSelectRoom = this.onSelectRoom.bind(this);
 
 	}
+	*/
 
-	componentDidMount() {
-		this.setState({isLoading: true})
+	useEffect( () => {
+		setIsLoading(true)
 		fetch('api/data/persons')
 			.then(response => response.json())
-			.then(data => this.setState({
-					personList: data,
-					person: data[0]
-				 }))
+			.then(data => {
+					setPersonList(data);
+					setPerson(data[0]);
+				 })
 			.then( () => fetch('api/data/doors')
 				 .then(response => response.json())
-				 .then(data => this.setState({
-					 isLoading: false,
-					 doorList: data,
-					 door: null // data[1].items[1]
-				 }))
+				 .then(data => {
+					 setIsLoading(false);
+					 setDoorList(data);
+					 setDoor(null);
+				 })
 			);
 
-		const hubConnection = new HubConnectionBuilder()
-			.withUrl('/signalr')
-			.configureLogging(LogLevel.Information)
-			.build();
+			// useEffect( () => {
+			// 	const connection = props.hubConnection
+			// 		.start()
+			// 		.then( () => console.log('Connection started'))
+			// 		.catch( err => console.log('Error while establishing connection'));
+				
+			// 	return () => {
+			// 		console.log('Connection closed');
+			// 	}
+			// }, [props.hubConnection])
 
-		this.setState({hubConnection}, () => {
-			this.state.hubConnection
-				.start()
-				.then( () => console.log('Connection started'))
-				.catch( err => console.log('Error while establishing connection'));
-		});
-
-		hubConnection.on('BroadcastMessage', (receivedMessage) => {
+		
+	/*	hubConnection.on('BroadcastMessage', (receivedMessage) => {
 			console.log(receivedMessage.message);
 
 			fetch('api/data/persons')
@@ -138,65 +146,66 @@ class Home extends Component {
 					 door: data[1].items[1]
 				 }))
 			);
-		});
-	}
+		}); */
+	},[])
 	
-	handleClose = (event, reason) => {
+	const handleClose = (event, reason) => {
 		if (reason === 'clickaway') {
 			return;
 		}
 
-		this.setState({ open: null });
+		setOpen(null);
 	};
 
-	toggleDoor() {
-		console.log(`Toggle Door ${this.state.door.lockId} - ${this.state.person.keyId} - ${this.state.selectedDate}`)
-		var dateString = dfns.format(this.state.selectedDate, "yyyy-MM-dd'T'HH:mmZ")   
+	const toggleDoor = () => {
+		console.log(`Toggle Door ${door.lockId} - ${person.keyId} - ${selectedDate}`)
+		var dateString = dfns.format(selectedDate, "yyyy-MM-dd'T'HH:mm")
 		console.log(dateString)
-		fetch(`api/data/check?keyId=${this.state.person.keyId}&lockId=${this.state.door.lockId}&dateTime=${dateString}`)
+		fetch(`api/data/check?keyId=${person.keyId}&lockId=${door.lockId}&dateTime=${dateString}`)
 			.then( response => response.json())
 			.then( ok => {
 				console.log(` response with ${ok}`)
 				if (ok) {
-					this.setState(function(state) {
-						let transition;
-						if (typeof state.isOpen !== 'undefined') {
-							if (state.isOpen) {
-								transition = 1;
-							} else
-							{
-								transition = 2;
-							}
+					let newTransition;
+					if (typeof isOpen !== 'undefined') {
+						if (isOpen) {
+							newTransition = 1;
+						} else {
+							newTransition = 2;
 						}
-						else
-						{
-							transition = 0;
-						}
-						return {
-							isOpen: !state.isOpen,
-							open: true,
-							transition: transition,
-						}
-					})
+					}	else {
+						newTransition = 0;
+					}
+					setIsOpen(!isOpen)
+					setOpen(true)
+					setTransition(newTransition)
+
 					//var audio = document.getElementById('door-sound');
 					//audio.play();
-				}
-				else {
-					this.setState(function(state) {
-						return {
-							open: false
+				} else {
+					let newTransition;
+					if (typeof isOpen !== 'undefined') {
+						if (isOpen) {
+							newTransition = 2;
+						} else {
+							newTransition = 1;
 						}
-					})
+					}	else {
+						newTransition = 0;
+					}
+					setIsOpen(!isOpen)
+					setOpen(true)
+					setTransition(newTransition)
 				}
 			});
 	}
 
-	handleDateChange = date => {
-		this.setState({selectedDate: dfns.setMinutes(date, (Math.round(dfns.getMinutes(date) / 5)) * 5)});
+	const handleDateChange = (date) => {
+		setSelectedDate(dfns.setMinutes(date, (Math.round(dfns.getMinutes(date) / 5)) * 5));
 	}
 
-	onSelectDoor(selected) {
-		const onlyDoors = this.state.doorList
+	const onSelectDoor = (selected) => {
+		const onlyDoors = doorList
 			.map(x => {
 				if (x.type === 'group') {
 					return x.items
@@ -205,29 +214,26 @@ class Home extends Component {
 			})
 			.reduce((a, b) => a.concat(b), []);
 
-		const index = onlyDoors.findIndex(x => x.value === selected.value);
-		this.setState({ door: onlyDoors[index] });
+		const index = onlyDoors.findIndex(x => x.value === selected.value)
+		setIsOpen(false)
+		setTransition(0)
+		setDoor(onlyDoors[index])
 	}
 
-	onSelectPerson(selected) {
-		
-		const index = this.state.personList.findIndex(x => x.value === selected.value);
-		this.setState({ person: this.state.personList[index] });
+	const onSelectPerson = (selected) => {
+		const index = personList.findIndex(x => x.value === selected.value);
+		setIsOpen(false)
+		setTransition(0)
+		setPerson(personList[index])
 	}
 
-	onSelectRoom(roomId) {
-		this.onSelectDoor({value: roomId});
+	const onSelectRoom = (roomId) => {
+		onSelectDoor({value: roomId});
 	}
 
-	render() {
-
-		if (this.state.isLoading) {
-			return <p>Loading ...</p>;
-		}
-
-		const { selectedDate } = this.state;
-
-		return (
+	return (
+		isLoading ? (<p>Loading ...</p>) :
+		(
 			<LanguageContext.Consumer>
 				{ language => (
 					<Grid>
@@ -236,107 +242,107 @@ class Home extends Component {
 							vertical: 'bottom',
 							horizontal: 'center',
 							}}
-							open={this.state.open}
+							open={open}
 							autoHideDuration={2000}
-							onClose={this.handleClose}
+							onClose={handleClose}
 							ContentProps={{
-							'aria-describedby': 'message-id',
+							'aria-describedby': 'home.snackbarTxt',
 							}}
-							message={<span id="message-id">{(this.state.door) ? this.state.door.label : "xxx" } kann geöffnet werden!</span>}
+						message={<DoorMessage />}
 							action={[
 								<IconButton
 									key="close"
 									aria-label="Close"
 									color="inherit"
-									onClick={this.handleClose}
+									onClick={handleClose}
 								>
 								<CloseIcon />
 							</IconButton>,
 							]}
 						/>
 
-						<Door doorId={(this.state.door) ? this.state.door.image : "nothing"} isOpen={this.state.isOpen} transition={this.state.transition}/>
+						<Door doorId={(door) ? door.image : "nothing"} isOpen={isOpen} transition={transition}/>
 						
-						<DoorCaption doorName={(this.state.door) ? this.state.door.label : "nothing"}></DoorCaption>
+						<DoorCaption doorName={(door) ? door.label : "nothing"}></DoorCaption>
 
 					<Row className="grid-content">
 						<Col xs={4} className="col-content-aside col-content-left">
 							<Label>
-								{this.props.intl.formatMessage(messages.homeLabelPerson)}
+								{intl.formatMessage(messages.homeLabelPerson)}
 							</Label>
 							<Dropdown arrowClosed={arrowClosed} arrowOpen={arrowOpen}
-								options={this.state.personList} onChange={this.onSelectPerson} value={this.state.person} />
+								options={personList} onChange={onSelectPerson} value={person} />
 
-							<InfoBox label={this.props.intl.formatMessage(messages.homeLabelDepartment)}>
-								{(this.state.person) ? this.state.person.department : "nothing"}
+							<InfoBox label={intl.formatMessage(messages.homeLabelDepartment)}>
+								{(person) ? person.department : "nothing"}
 							</InfoBox>
 
-							<ColorInfoBox label={this.props.intl.formatMessage(messages.homeLabelKeyId)}
-								color={(this.state.person) && (this.state.person.color) ? this.state.person.color : undefined}>
-								{(this.state.person) ? `${this.state.person.value} (${this.state.person.keyId})` : null} 
+							<ColorInfoBox label={intl.formatMessage(messages.homeLabelKeyId)}
+								color={(person) && (person.color) ? person.color : undefined}>
+								{(person) ? `${person.value} (${person.keyId})` : null} 
 							</ColorInfoBox>
 
-							<Label>{this.props.intl.formatMessage(messages.homeLabelDoor)}</Label>
+							<Label>{intl.formatMessage(messages.homeLabelDoor)}</Label>
 							<Dropdown arrowClosed={arrowClosed} arrowOpen={arrowOpen}
-								options={this.state.doorList} onChange={this.onSelectDoor} value={this.state.door} />
+								options={doorList} onChange={onSelectDoor} value={door} />
 
-							<InfoBox label={this.props.intl.formatMessage(messages.homeLabelBuilding)}>
-								{(this.state.door) ? this.state.door.building : null}
+							<InfoBox label={intl.formatMessage(messages.homeLabelBuilding)}>
+								{(door) ? door.building : null}
 							</InfoBox>
 
-							<ColorInfoBox label={this.props.intl.formatMessage(messages.homeLabelLockId)}
-								color={(this.state.door) && (this.state.door.color) ? this.state.door.color : undefined}>
-								{(this.state.door) ? `${this.state.door.value} (${this.state.door.lockId})` : null}
+							<ColorInfoBox label={intl.formatMessage(messages.homeLabelLockId)}
+								color={(door) && (door.color) ? door.color : undefined}>
+								{(door) ? `${door.value} (${door.lockId})` : null}
 							</ColorInfoBox>
 						</Col>
 						
 						<Col xs={4} className="col-content-center" >
 							<GroundPlan 
-								selectedRoom={(this.state.door) ? this.state.door.value: null} 
-								onClick={this.onSelectRoom}
-								doors={this.state.doorList} />
+								selectedRoom={(door) ? door.value: null} 
+								onClick={onSelectRoom}
+								doors={doorList} />
 						</Col>
 
 						<Col xs={4} className="col-content-aside col-content-right">
 
-							<InfoBox label={this.props.intl.formatMessage(messages.homeLabelDoorState)}
-								icon={this.state.isOpen ? "lock-open" : "lock"} >
-								{this.state.isOpen ? 
-									this.props.intl.formatMessage(messages.homeDoorOpenState): 
-									this.props.intl.formatMessage(messages.homeDoorCloseState)}
+							<InfoBox label={intl.formatMessage(messages.homeLabelDoorState)}
+								icon={isOpen ? "lock-open" : "lock"} >
+								{isOpen ? 
+									intl.formatMessage(messages.homeDoorOpenState): 
+									intl.formatMessage(messages.homeDoorCloseState)}
 							</InfoBox>
+
 							<MuiPickersUtilsProvider utils={ExtDateFnsUtils} locale={localeMap[language.language.value]}>
 								<Row>
 									<Col xs={6}>
-										<Label>{this.props.intl.formatMessage(messages.homeLabelDate)}</Label>
+										<Label>{intl.formatMessage(messages.homeLabelDate)}</Label>
 									</Col>
 									<Col xs={6}>
-										<Label>{this.props.intl.formatMessage(messages.homeLabelTime)}</Label>
+										<Label>{intl.formatMessage(messages.homeLabelTime)}</Label>
 									</Col>
 								</Row>
 								<Row>
 									<Col xs={6}>
-										<DateSelection intl={this.props.intl} selectedDate={selectedDate} 
-										handleDateChange={this.handleDateChange} />
+										<DateSelection intl={intl} selectedDate={selectedDate} 
+										handleDateChange={handleDateChange} />
 									</Col>
 									<Col xs={6}>
-										<TimeSelection intl={this.props.intl} selectedDate={selectedDate} 
-											handleDateChange={this.handleDateChange} />
+										<TimeSelection intl={intl} selectedDate={selectedDate} 
+											handleDateChange={handleDateChange} /> 
 									</Col>
 								</Row>
 							</MuiPickersUtilsProvider>
 							
-								<Button variant="contained" color="primary" onClick={this.toggleDoor}>
-									{this.props.intl.formatMessage(messages.homeButtonCheck)}
-								</Button>
+							<Button variant="contained" color="primary" onClick={toggleDoor}>
+								{intl.formatMessage(messages.homeButtonCheck)}
+							</Button>
 						</Col>
 					</Row>
 				</Grid>
 			)}
 			</LanguageContext.Consumer>
-		);
-	}
+		));
 };
 
-export default injectIntl(Home, {withRef:true});
-
+Home.displayName = 'Home'
+export default Home;

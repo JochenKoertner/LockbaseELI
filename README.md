@@ -24,6 +24,7 @@ The SubDirectorys are
 ## Build the frontend
 
 Change path to /frontend
+`cd ./frontend`
 
 `yarn build`
 
@@ -35,6 +36,18 @@ Start React App for proxy usage on port 3000.
 `yarn add package eslint-utils`
 `yarn add package fstream`
 `yarn add package lodash.template`
+
+### Install all packages again in node_modules/
+
+`yarn install`
+`yarn upgrade`
+
+For the purpose of reducing deduplication use package `yarn-deduplicate`
+(https://medium.com/@bnaya/yarn-deduplicate-the-hero-we-need-f4497a362128)
+
+`yarn yarn-deduplicate -s fewer yarn.lock`
+`yarn install`
+
 
 ### Update yarn complete 
 

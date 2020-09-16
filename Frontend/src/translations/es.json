@@ -13,5 +13,7 @@
     "home.labelTime": "hora del día",
     "home.buttonCheck": "prueba ahora",
     "home.doorOpenState": "abierto",
-    "home.doorCloseState": "cerrado"
+	"home.doorCloseState": "cerrado",
+	
+	"home.snackbarTxt" : "{door} possible {state, select, open {abierto} closed {cerrado}} de {person}!"
 }

@@ -1,7 +1,6 @@
 import * as React from 'react';
 
-import { DatePicker } from 'material-ui-pickers';
-import { TimePicker } from 'material-ui-pickers';
+import { DatePicker, TimePicker } from '@material-ui/pickers';
 
 import { messages } from './../translations/messages';
 
