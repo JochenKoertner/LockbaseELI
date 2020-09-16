@@ -13,5 +13,6 @@
     "home.labelTime": "Time",
     "home.buttonCheck": "Now check",
     "home.doorOpenState": "Opened",
-    "home.doorCloseState": "Closed"
+	"home.doorCloseState": "Closed", 
+	"home.snackbarTxt" : "{door} possible can be {state, select, open {opened} closed {closed}} by {person}!"
 }
