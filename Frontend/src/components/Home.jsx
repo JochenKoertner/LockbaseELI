@@ -5,6 +5,8 @@ import Dropdown from 'react-dropdown';
 
 import DateFnsAdapter from '@date-io/date-fns'
 
+import _ from 'lodash'
+
 import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
 
 import Button from '@material-ui/core/Button';
@@ -81,7 +83,11 @@ const Home = props => {
 
 	useEffect(() => {
 
-		loadData()
+		const debouncedLoadData = _.debounce(() => {
+			loadData();
+		}, 1000)
+
+		debouncedLoadData()
 
 		// Set the initial SignalR Hub Connection.
 		const createHubConnection = async () => {
@@ -96,7 +102,7 @@ const Home = props => {
 				console.log('Connection started')
 
 				hubConnect.on('BroadcastMessage', (msg) => {
-					loadData()
+					debouncedLoadData()
 				})
 			}
 			catch (err) {
