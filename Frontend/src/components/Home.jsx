@@ -19,7 +19,7 @@ import esLocale from 'date-fns/locale/es';
 import itLocale from 'date-fns/locale/it';
 import enLocale from 'date-fns/locale/en-US';
 
-import {FormattedMessage, useIntl} from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 // https://codepen.io/ecurbelo/pen/GKjAx
 
@@ -44,10 +44,10 @@ const localeMap = {
 };
 
 class ExtDateFnsUtils extends DateFnsAdapter {
-    getDatePickerHeaderText(date) {
-			  const dateFns = new DateFnsAdapter({ locale: this.locale});
-				return dateFns.format(date, 'd MMMM')
-    }
+	getDatePickerHeaderText(date) {
+		const dateFns = new DateFnsAdapter({ locale: this.locale });
+		return dateFns.format(date, 'd MMMM')
+	}
 }
 
 const dfns = new DateFnsAdapter();
@@ -56,29 +56,25 @@ const Home = props => {
 
 	const intl = useIntl();
 
-	const [isLoading,setIsLoading] = useState(false);
-	const [isOpen,setIsOpen] = useState(null);
-	const [personList,setPersonList] = useState(null);
-	const [person,setPerson] = useState(null);
-	const [doorList,setDoorList] = useState(null);
-	const [door,setDoor] = useState(null);
-	const [selectedDate,setSelectedDate] = useState(dfns.setMinutes(new Date(), (Math.round(dfns.getMinutes(new Date()) / 15)) * 15));
-	const [open,setOpen] = useState(null);
-	const [transition,setTransition] = useState(0);
-	const [hubConnection,setHubConnection] = useState(
-			new HubConnectionBuilder()
-				.withUrl('/signalr')
-				.configureLogging(LogLevel.Information)
-				.build());
+	const [isLoading, setIsLoading] = useState(false);
+	const [isOpen, setIsOpen] = useState(null);
+	const [personList, setPersonList] = useState(null);
+	const [person, setPerson] = useState(null);
+	const [doorList, setDoorList] = useState(null);
+	const [door, setDoor] = useState(null);
+	const [selectedDate, setSelectedDate] = useState(dfns.setMinutes(new Date(), (Math.round(dfns.getMinutes(new Date()) / 15)) * 15));
+	const [open, setOpen] = useState(null);
+	const [transition, setTransition] = useState(0);
+	const [hubConnection, setHubConnection] = useState(null);
 
 	const DoorMessage = () => {
 		return (
-			<FormattedMessage id="home.snackbarTxt" 
-			  values={{
+			<FormattedMessage id="home.snackbarTxt"
+				values={{
 					person: <b>{person.label}</b>,
 					door: <b>{door.label}</b>,
 					state: (isOpen ? 'open' : 'closed')
-				}} 
+				}}
 			></FormattedMessage>
 		)
 	}
@@ -101,54 +97,69 @@ const Home = props => {
 	}
 	*/
 
-	useEffect( () => {
+	useEffect(() => {
 		setIsLoading(true)
 		fetch('api/data/persons')
 			.then(response => response.json())
 			.then(data => {
-					setPersonList(data);
-					setPerson(data[0]);
-				 })
-			.then( () => fetch('api/data/doors')
-				 .then(response => response.json())
-				 .then(data => {
-					 setIsLoading(false);
-					 setDoorList(data);
-					 setDoor(null);
-				 })
+				setPersonList(data);
+				setPerson(data[0]);
+			})
+			.then(() => fetch('api/data/doors')
+				.then(response => response.json())
+				.then(data => {
+					setIsLoading(false);
+					setDoorList(data);
+					setDoor(null);
+				})
 			);
 
-			// useEffect( () => {
-			// 	const connection = props.hubConnection
-			// 		.start()
-			// 		.then( () => console.log('Connection started'))
-			// 		.catch( err => console.log('Error while establishing connection'));
-				
-			// 	return () => {
-			// 		console.log('Connection closed');
-			// 	}
-			// }, [props.hubConnection])
+		// Set the initial SignalR Hub Connection.
+		const createHubConnection = async () => {
 
-		
-	/*	hubConnection.on('BroadcastMessage', (receivedMessage) => {
-			console.log(receivedMessage.message);
+			// Build new Hub Connection, url is currently hard coded.
+			const hubConnect = new HubConnectionBuilder()
+				.withUrl('/signalr')
+				.configureLogging(LogLevel.Information)
+				.build();
+			try {
+				await hubConnect.start()
+				console.log('Connection started')
 
-			fetch('api/data/persons')
-			.then(response => response.json())
-			.then(data => this.setState({
-					personList: data,
-					person: data[0]
-				 }))
-			.then( () => fetch('api/data/doors')
-				 .then(response => response.json())
-				 .then(data => this.setState({
-					 doorList: data,
-					 door: data[1].items[1]
-				 }))
-			);
-		}); */
-	},[])
+				hubConnect.on('BroadcastMessage', (receivedMessage) => {
+					console.log(receivedMessage.message);
+					// setMessages(m => [...m, `${nick} has connected.`]);
+				})
+			}
+			catch (err) {
+				console.log('Error while establishing connection')
+			}
+			setHubConnection(hubConnect);
+		}
+
+		createHubConnection();
+
+
+
+		/*	hubConnection.on('BroadcastMessage', (receivedMessage) => {
+				console.log(receivedMessage.message);
 	
+				fetch('api/data/persons')
+				.then(response => response.json())
+				.then(data => this.setState({
+						personList: data,
+						person: data[0]
+					 }))
+				.then( () => fetch('api/data/doors')
+					 .then(response => response.json())
+					 .then(data => this.setState({
+						 doorList: data,
+						 door: data[1].items[1]
+					 }))
+				);
+			}); */
+	}, [])
+
 	const handleClose = (event, reason) => {
 		if (reason === 'clickaway') {
 			return;
@@ -162,8 +173,8 @@ const Home = props => {
 		var dateString = dfns.format(selectedDate, "yyyy-MM-dd'T'HH:mm")
 		console.log(dateString)
 		fetch(`api/data/check?keyId=${person.keyId}&lockId=${door.lockId}&dateTime=${dateString}`)
-			.then( response => response.json())
-			.then( ok => {
+			.then(response => response.json())
+			.then(ok => {
 				console.log(` response with ${ok}`)
 				if (ok) {
 					let newTransition;
@@ -173,7 +184,7 @@ const Home = props => {
 						} else {
 							newTransition = 2;
 						}
-					}	else {
+					} else {
 						newTransition = 0;
 					}
 					setIsOpen(!isOpen)
@@ -190,7 +201,7 @@ const Home = props => {
 						} else {
 							newTransition = 1;
 						}
-					}	else {
+					} else {
 						newTransition = 0;
 					}
 					setIsOpen(!isOpen)
@@ -228,120 +239,120 @@ const Home = props => {
 	}
 
 	const onSelectRoom = (roomId) => {
-		onSelectDoor({value: roomId});
+		onSelectDoor({ value: roomId });
 	}
 
 	return (
 		isLoading ? (<p>Loading ...</p>) :
-		(
-			<LanguageContext.Consumer>
-				{ language => (
-					<Grid>
-						<Snackbar
-							anchorOrigin={{
-							vertical: 'bottom',
-							horizontal: 'center',
-							}}
-							open={open}
-							autoHideDuration={2000}
-							onClose={handleClose}
-							ContentProps={{
-							'aria-describedby': 'home.snackbarTxt',
-							}}
-						message={<DoorMessage />}
-							action={[
-								<IconButton
-									key="close"
-									aria-label="Close"
-									color="inherit"
-									onClick={handleClose}
-								>
-								<CloseIcon />
-							</IconButton>,
-							]}
-						/>
+			(
+				<LanguageContext.Consumer>
+					{ language => (
+						<Grid>
+							<Snackbar
+								anchorOrigin={{
+									vertical: 'bottom',
+									horizontal: 'center',
+								}}
+								open={open}
+								autoHideDuration={2000}
+								onClose={handleClose}
+								ContentProps={{
+									'aria-describedby': 'home.snackbarTxt',
+								}}
+								message={<DoorMessage />}
+								action={[
+									<IconButton
+										key="close"
+										aria-label="Close"
+										color="inherit"
+										onClick={handleClose}
+									>
+										<CloseIcon />
+									</IconButton>,
+								]}
+							/>
 
-						<Door doorId={(door) ? door.image : "nothing"} isOpen={isOpen} transition={transition}/>
-						
-						<DoorCaption doorName={(door) ? door.label : "nothing"}></DoorCaption>
+							<Door doorId={(door) ? door.image : "nothing"} isOpen={isOpen} transition={transition} />
 
-					<Row className="grid-content">
-						<Col xs={4} className="col-content-aside col-content-left">
-							<Label>
-								{intl.formatMessage(messages.homeLabelPerson)}
-							</Label>
-							<Dropdown arrowClosed={arrowClosed} arrowOpen={arrowOpen}
-								options={personList} onChange={onSelectPerson} value={person} />
+							<DoorCaption doorName={(door) ? door.label : "nothing"}></DoorCaption>
 
-							<InfoBox label={intl.formatMessage(messages.homeLabelDepartment)}>
-								{(person) ? person.department : "nothing"}
-							</InfoBox>
+							<Row className="grid-content">
+								<Col xs={4} className="col-content-aside col-content-left">
+									<Label>
+										{intl.formatMessage(messages.homeLabelPerson)}
+									</Label>
+									<Dropdown arrowClosed={arrowClosed} arrowOpen={arrowOpen}
+										options={personList} onChange={onSelectPerson} value={person} />
 
-							<ColorInfoBox label={intl.formatMessage(messages.homeLabelKeyId)}
-								color={(person) && (person.color) ? person.color : undefined}>
-								{(person) ? `${person.value} (${person.keyId})` : null} 
-							</ColorInfoBox>
+									<InfoBox label={intl.formatMessage(messages.homeLabelDepartment)}>
+										{(person) ? person.department : "nothing"}
+									</InfoBox>
 
-							<Label>{intl.formatMessage(messages.homeLabelDoor)}</Label>
-							<Dropdown arrowClosed={arrowClosed} arrowOpen={arrowOpen}
-								options={doorList} onChange={onSelectDoor} value={door} />
+									<ColorInfoBox label={intl.formatMessage(messages.homeLabelKeyId)}
+										color={(person) && (person.color) ? person.color : undefined}>
+										{(person) ? `${person.value} (${person.keyId})` : null}
+									</ColorInfoBox>
 
-							<InfoBox label={intl.formatMessage(messages.homeLabelBuilding)}>
-								{(door) ? door.building : null}
-							</InfoBox>
+									<Label>{intl.formatMessage(messages.homeLabelDoor)}</Label>
+									<Dropdown arrowClosed={arrowClosed} arrowOpen={arrowOpen}
+										options={doorList} onChange={onSelectDoor} value={door} />
 
-							<ColorInfoBox label={intl.formatMessage(messages.homeLabelLockId)}
-								color={(door) && (door.color) ? door.color : undefined}>
-								{(door) ? `${door.value} (${door.lockId})` : null}
-							</ColorInfoBox>
-						</Col>
-						
-						<Col xs={4} className="col-content-center" >
-							<GroundPlan 
-								selectedRoom={(door) ? door.value: null} 
-								onClick={onSelectRoom}
-								doors={doorList} />
-						</Col>
+									<InfoBox label={intl.formatMessage(messages.homeLabelBuilding)}>
+										{(door) ? door.building : null}
+									</InfoBox>
 
-						<Col xs={4} className="col-content-aside col-content-right">
+									<ColorInfoBox label={intl.formatMessage(messages.homeLabelLockId)}
+										color={(door) && (door.color) ? door.color : undefined}>
+										{(door) ? `${door.value} (${door.lockId})` : null}
+									</ColorInfoBox>
+								</Col>
 
-							<InfoBox label={intl.formatMessage(messages.homeLabelDoorState)}
-								icon={isOpen ? "lock-open" : "lock"} >
-								{isOpen ? 
-									intl.formatMessage(messages.homeDoorOpenState): 
-									intl.formatMessage(messages.homeDoorCloseState)}
-							</InfoBox>
+								<Col xs={4} className="col-content-center" >
+									<GroundPlan
+										selectedRoom={(door) ? door.value : null}
+										onClick={onSelectRoom}
+										doors={doorList} />
+								</Col>
 
-							<MuiPickersUtilsProvider utils={ExtDateFnsUtils} locale={localeMap[language.language.value]}>
-								<Row>
-									<Col xs={6}>
-										<Label>{intl.formatMessage(messages.homeLabelDate)}</Label>
-									</Col>
-									<Col xs={6}>
-										<Label>{intl.formatMessage(messages.homeLabelTime)}</Label>
-									</Col>
-								</Row>
-								<Row>
-									<Col xs={6}>
-										<DateSelection intl={intl} selectedDate={selectedDate} 
-										handleDateChange={handleDateChange} />
-									</Col>
-									<Col xs={6}>
-										<TimeSelection intl={intl} selectedDate={selectedDate} 
-											handleDateChange={handleDateChange} /> 
-									</Col>
-								</Row>
-							</MuiPickersUtilsProvider>
-							
-							<Button variant="contained" color="primary" onClick={toggleDoor}>
-								{intl.formatMessage(messages.homeButtonCheck)}
-							</Button>
-						</Col>
-					</Row>
-				</Grid>
-			)}
-			</LanguageContext.Consumer>
-		));
+								<Col xs={4} className="col-content-aside col-content-right">
+
+									<InfoBox label={intl.formatMessage(messages.homeLabelDoorState)}
+										icon={isOpen ? "lock-open" : "lock"} >
+										{isOpen ?
+											intl.formatMessage(messages.homeDoorOpenState) :
+											intl.formatMessage(messages.homeDoorCloseState)}
+									</InfoBox>
+
+									<MuiPickersUtilsProvider utils={ExtDateFnsUtils} locale={localeMap[language.language.value]}>
+										<Row>
+											<Col xs={6}>
+												<Label>{intl.formatMessage(messages.homeLabelDate)}</Label>
+											</Col>
+											<Col xs={6}>
+												<Label>{intl.formatMessage(messages.homeLabelTime)}</Label>
+											</Col>
+										</Row>
+										<Row>
+											<Col xs={6}>
+												<DateSelection intl={intl} selectedDate={selectedDate}
+													handleDateChange={handleDateChange} />
+											</Col>
+											<Col xs={6}>
+												<TimeSelection intl={intl} selectedDate={selectedDate}
+													handleDateChange={handleDateChange} />
+											</Col>
+										</Row>
+									</MuiPickersUtilsProvider>
+
+									<Button variant="contained" color="primary" onClick={toggleDoor}>
+										{intl.formatMessage(messages.homeButtonCheck)}
+									</Button>
+								</Col>
+							</Row>
+						</Grid>
+					)}
+				</LanguageContext.Consumer>
+			));
 };
 
 Home.displayName = 'Home'
