@@ -79,40 +79,9 @@ const Home = props => {
 		)
 	}
 
-	/*
-			// https://www.robinwieruch.de/react-fetching-data/
-
-
-		// Zeit auf 15 Minuten Intervall abrunden
-		var date = new Date();
-		date = dfns.setMinutes(date, (Math.round(dfns.getMinutes(date) / 15)) * 15);
-
-	
-		this.toggleDoor = this.toggleDoor.bind(this);
-		this.onSelectDoor = this.onSelectDoor.bind(this);
-		this.onSelectPerson = this.onSelectPerson.bind(this);
-		this.handleDateChange = this.handleDateChange.bind(this);
-		this.onSelectRoom = this.onSelectRoom.bind(this);
-
-	}
-	*/
-
 	useEffect(() => {
-		setIsLoading(true)
-		fetch('api/data/persons')
-			.then(response => response.json())
-			.then(data => {
-				setPersonList(data);
-				setPerson(data[0]);
-			})
-			.then(() => fetch('api/data/doors')
-				.then(response => response.json())
-				.then(data => {
-					setIsLoading(false);
-					setDoorList(data);
-					setDoor(null);
-				})
-			);
+
+		loadData()
 
 		// Set the initial SignalR Hub Connection.
 		const createHubConnection = async () => {
@@ -126,9 +95,8 @@ const Home = props => {
 				await hubConnect.start()
 				console.log('Connection started')
 
-				hubConnect.on('BroadcastMessage', (receivedMessage) => {
-					console.log(receivedMessage.message);
-					// setMessages(m => [...m, `${nick} has connected.`]);
+				hubConnect.on('BroadcastMessage', (msg) => {
+					loadData()
 				})
 			}
 			catch (err) {
@@ -138,26 +106,6 @@ const Home = props => {
 		}
 
 		createHubConnection();
-
-
-
-		/*	hubConnection.on('BroadcastMessage', (receivedMessage) => {
-				console.log(receivedMessage.message);
-	
-				fetch('api/data/persons')
-				.then(response => response.json())
-				.then(data => this.setState({
-						personList: data,
-						person: data[0]
-					 }))
-				.then( () => fetch('api/data/doors')
-					 .then(response => response.json())
-					 .then(data => this.setState({
-						 doorList: data,
-						 door: data[1].items[1]
-					 }))
-				);
-			}); */
 	}, [])
 
 	const handleClose = (event, reason) => {
@@ -167,6 +115,26 @@ const Home = props => {
 
 		setOpen(null);
 	};
+
+	const loadData = () => {
+		console.log('loading...')
+		setIsLoading(true)
+		fetch('api/data/persons')
+			.then(response => response.json())
+			.then(data => {
+				setPersonList(data);
+				setPerson(data[0]);
+			})
+			.then(() => fetch('api/data/doors')
+				.then(response => response.json())
+				.then(data => {
+					console.log('loaded...')
+					setIsLoading(false);
+					setDoorList(data);
+					setDoor(null);
+				})
+			);
+	}
 
 	const toggleDoor = () => {
 		console.log(`Toggle Door ${door.lockId} - ${person.keyId} - ${selectedDate}`)
