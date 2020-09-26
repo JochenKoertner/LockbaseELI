@@ -5,11 +5,9 @@ using System.Reactive.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Lockbase.CoreDomain;
 using Lockbase.CoreDomain.Extensions;
 using Lockbase.CoreDomain.Services;
 using Lockbase.CoreDomain.ValueObjects;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -37,7 +35,7 @@ namespace ui.Common
 		private readonly IObservable<Statement> observableStatement;
 		private readonly IObserver<Statement> statementObserver;
 
-		private readonly IHubContext<SignalrHub, IHubClient> hub;
+        private readonly IObserver<Message> messageObserver;
 
 		public MqttBackgroundService(
 			IOptions<BrokerConfig> brokerConfig,
@@ -45,14 +43,14 @@ namespace ui.Common
 			IMessageBusInteractor messageBusInteractor,
 			IObservable<Statement> observableStatement,
 			IObserver<Statement> statementObserver,
-			IHubContext<SignalrHub, IHubClient> hub)
+            IObserver<Message> messageObserver)
 		{
 			_brokerConfig = brokerConfig.Value;
 			_logger = loggerFactory.CreateLogger<MqttBackgroundService>();
 			this.messageBusInteractor = messageBusInteractor;
 			this.observableStatement = observableStatement;
 			this.statementObserver = statementObserver;
-			this.hub = hub;
+            this.messageObserver = messageObserver;
 		}
 
 		private async Task<IMqttClient> CreateClient()
@@ -141,15 +139,15 @@ namespace ui.Common
 			return base.StopAsync(cancellationToken);
 		}
 
-		// Handelt Messages vom Treiber
-		private async Task HandleMessage(MqttApplicationMessage msg)
+        // Handelt Messages vom Treiber
+        private Task HandleMessage(MqttApplicationMessage msg)
 		{
 			var message = JsonConvert.DeserializeObject<Message>(Encoding.UTF8.GetString(msg.Payload));
 			messageBusInteractor.Receive(replyTo: message.reply_to, sessionId: message.session_id.FromHex(), message: message.text);
 
-			var signalrMsg = new MessageInstance()
-				{ Timestamp = DateTime.UtcNow.ToString(), From= message.session_id, Message = message.text };
-			await this.hub.Clients.All.BroadcastMessage(signalrMsg);
+            this.messageObserver.OnNext(message);
+
+            return Task.CompletedTask;
 		}
 
 		private async Task<SessionState> Connect(IMqttClient client, string clientId)
