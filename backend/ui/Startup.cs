@@ -18,6 +18,7 @@ using Microsoft.Extensions.Hosting;
 using ui.Common;
 using Lockbase.ui.Resources;
 using Lockbase.CoreDomain.Contracts;
+using Microsoft.AspNetCore.SignalR;
 
 namespace ui
 {
@@ -46,11 +47,23 @@ namespace ui
 
 			services
 				.AddSingleton(new AtomicValue<LockSystem>(CreateLockSystem()))
-				.AddSingleton<ISubject<Statement>,ReplaySubject<Statement>>()
+
+                .AddSingleton<ISubject<Statement>,ReplaySubject<Statement>>()
 				.AddSingleton<IObservable<Statement>>(sp => sp.GetService<ISubject<Statement>>().AsObservable())
 				.AddSingleton<IObserver<Statement>>(sp => sp.GetService<ISubject<Statement>>())
-				.AddSingleton<IMessageBusInteractor,MessageBusInteractor>()
+
+                .AddSingleton<IMessageBusInteractor,MessageBusInteractor>()
 				.AddSingleton<IDateTimeProvider>(new DateTimeProvider())
+
+                .AddSingleton<ISubject<Message>, ReplaySubject<Message>>()
+                .AddSingleton<IObservable<Message>>(sp => sp.GetService<ISubject<Message>>().AsObservable())
+                .AddSingleton<IObserver<Message>>(sp => sp.GetService<ISubject<Message>>())
+
+                .AddSingleton<BrowserChannel>(sp => new BrowserChannel(
+                   sp.GetService<IObservable<Message>>(),
+                   sp.GetService<IHubContext<SignalrHub, IHubClient>>(),
+                   sp.GetService<ILoggerFactory>(),
+                   sp.GetService<IDateTimeProvider>()))
 				.AddSingleton<Id>(sp => new Id(sp.GetService<IDateTimeProvider>()));
 
 			services.AddCors(options => 
@@ -70,13 +83,16 @@ namespace ui
 				.AddSignalR(options => { options.KeepAliveInterval = TimeSpan.FromSeconds(5); })
 				.AddMessagePackProtocol();
 
-			services.AddMqttService(this.configuration);
+            services
+                .AddMqttService(this.configuration);
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
 		public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 		{
-				if (env.IsDevelopment())
+            app.ApplicationServices.GetService<BrowserChannel>();
+
+            if (env.IsDevelopment())
 				{
 					app.UseDeveloperExceptionPage();
 				}
