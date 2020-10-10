@@ -13,11 +13,14 @@
 
 #define JOB_ID		"4711"
 
-#if defined (WIN32)
-	#define LICENCE  "vbox"
-#else
+// Mit 'vbox' gehe ich zum MacOs Host
+// Mit 'lic' gehe ich zum lokalen Mqtt Server
+
+//#if defined (WIN32)
+//	#define LICENCE  "vbox"
+//#else
 	#define LICENCE "lic"
-#endif
+//#endif
 
 // const char* sSysID, const char* sJobID, const char* sJobData
 int myCallBack( const char* sSysID, const char*  sJobID, const char* sJobData) {

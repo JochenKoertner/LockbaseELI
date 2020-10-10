@@ -45,8 +45,8 @@ At first you need to install Chocolatey.
 1. Powershell V6.1.0 win x86  
     `choco install powershell-core`
 
-1. NodeJS V8.12.0 x86  
-    `choco install nodejs --version 8.12.0`
+1. NodeJS V10.16.3  
+    `choco install nodejs --version 10.16.3`
 
 1. Git 2.19.1 32-bit  
     `choco install git`
@@ -68,8 +68,11 @@ At first you need to install Chocolatey.
 1. Powershell V6.1.0 win (64-bit)
     `choco install powershell-core -y`
 
-1. NodeJS V8.12.0 (64-bit)  
+1. NodeJS V10.16.3 (64-bit)  
     `choco install nodejs --version 8.12.0 -y`
+
+1. Yarn V1.22.5 
+    `choco install yarn --version 1.22.5 -y`
 
 1. Git 2.19.1 64-bit  
     `choco install git --version 2.19.1 -y `
