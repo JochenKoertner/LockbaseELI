@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-// #include <process.h>
+#include <unistd.h>
 
 #include "library.h"
 #include "utils.h"
@@ -34,16 +34,6 @@ char getch() {
 	system("/bin/stty cooked");
 	return ch;
 }
-#endif
-
-#if defined (WIN32)
-	#include <windows.h>
-	void sleep(unsigned seconds)
-	{
-		Sleep(seconds * 1000);
-	}
-#else
-	#include <unistd.h>
 #endif
 
 const char* getField(const char* line, int num)
