@@ -207,17 +207,13 @@ int main() {
 		else if ((ch == 'd') || (ch == 'D')) {
 			printf("List Data (LD)\n");
 			ELIApp2Drv( SYSTEM, JOB_ID, "LD,");
+			sleep(2); // Wait 2sec
 		} 
 		// List Events command
 		else if ((ch == 'e') || (ch == 'E')) {
 			printf("List Events (LE)\n");
-			sleep(2);  // wait 2sec
-		//	App2Drv() LD 
-		//	while timeout < 100 
-		//	   wait;
-			printf("List Events (LE,)\n");
 			ELIApp2Drv( SYSTEM, JOB_ID, "LE,"); // 20200213T142758Z
-			sleep(2);  // wait 2sec
+			sleep(2); // wait 2sec
 			
 		} else if  ((ch == 'q') || (ch == 'Q'))  {
 			

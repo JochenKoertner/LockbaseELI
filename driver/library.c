@@ -228,6 +228,7 @@ LBELI_EXPORT const char* ELIOpen( const char* sUserList, const char* sSysID, con
 	{
 		printf("system %s unknown\n", sSysID);
 		node = new_session(&driverInfo->sessions, sUserList, sSysID, sExtData);
+		printf("create new session for '%s' \n", sSysID);
 	}
 	else {
 		update_session(node, sUserList, sExtData);
@@ -337,12 +338,18 @@ LBELI_EXPORT int ELIApp2Drv( const char* sSysID, const char *sJobID, const char*
 		char* sessionId = NULL;
 		char* text = NULL;
 		parse_payload(payload, &sessionId, &text);
-		printf("sessionId '%s'\n", sessionId);
-		printf("text '%s'\n", text);
+		if (driverInfo->callback != NULL)
+		{
+			driverInfo->callback(sSysID, sJobID, text);
+		}
 
 		free(sessionId);
 		free(text);
 		free(payload);
+	}
+	else
+	{
+		printf("no response\n");
 	}
 	return 0;
 }

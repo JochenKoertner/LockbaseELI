@@ -31,11 +31,11 @@ namespace Lockbase.CoreDomain.Services
 			foreach(var line in message.Split("\n"))
 			{
 				int index = line.IndexOf(',');
-            	string head = line.Substring(0, index);
+				string head = line.Substring(0, index);
 				if (head.Equals("LE")) {
 					ListEvents(replyTo, sessionId);
 				} else if (head.Equals("LD")) {
-					this.logger.LogInformation("List Data");
+					ListData(replyTo, sessionId);
 				} else if (head.Equals("OPEN") || head.Equals("CLOSE")) {
 					this.logger.LogInformation(line);
 				} else {
@@ -46,12 +46,17 @@ namespace Lockbase.CoreDomain.Services
 
 		private void ListEvents(string topic, int sessionId) {
 			this.logger.LogInformation("List Events");
-			this.statementObserver.OnNext(new Statement(topic, sessionId, 
-				$"EK,sddsds"));
+			this.statementObserver.OnNext(new Statement(topic, sessionId,
+				$"EK,080000ijvs1lo,EAAA,20200202T063507Z,,580000t00nuiu"));
+			this.statementObserver.OnNext(new Statement(topic, sessionId,
+				$"LER,OK"));
 		}
 
-		private void ListData() {
-
+		private void ListData(string topic, int sessionId)
+		{
+			this.logger.LogInformation("List Data");
+			this.statementObserver.OnNext(new Statement(topic, sessionId,
+				$"LD,blapllop..."));
 		}
 	}
 }
