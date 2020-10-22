@@ -349,7 +349,7 @@ LBELI_EXPORT int ELIApp2Drv( const char* sSysID, const char *sJobID, const char*
 	}
 	else
 	{
-		printf("no response\n");
+		// printf("no response\n");
 	}
 	return 0;
 }

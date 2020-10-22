@@ -75,7 +75,7 @@ const char* getField(const char* line, int num)
 }
 
 void send_initial_setup() {
-	ELIApp2Drv( SYSTEM, JOB_ID, "DK,000000hqvs1lo,,,MTAzLTEsIEZlbmRlciwgS2xhdXMA");
+	ELIApp2Drv( SYSTEM, JOB_ID, "DK,000000hqvs1lo,900-1,,MTAzLTEsIEZlbmRlciwgS2xhdXMA");
 	ELIApp2Drv( SYSTEM, JOB_ID, "DK,040000iavs1lo,,,MTA0LTEsIEtpc3RsZXIsIFNhYmluZQA=");
 	ELIApp2Drv( SYSTEM, JOB_ID, "DK,080000ijvs1lo,,,MTA1LTEsIEtvaGwsIFVscmljaAA=");
 	ELIApp2Drv( SYSTEM, JOB_ID, "DK,0c0000ml0c25o,,,MjAzLTEsIFdhbHRlciwgSmVucwA=");
