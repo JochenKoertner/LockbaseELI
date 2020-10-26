@@ -13,10 +13,14 @@ namespace Lockbase.CoreDomain.Aggregates
 
     public class LockSystem
     {
-
-        static private Lazy<LockSystem> empty = new Lazy<LockSystem>(() => new LockSystem(), true);
-
+		public static LockSystem Create(Id id) {
+			empty = new Lazy<LockSystem>(() => new LockSystem(id), true);
+			return empty.Value;
+		}
+        static private Lazy<LockSystem> empty;
         public static LockSystem Empty => empty.Value;
+
+		private readonly Id id;
 
         private readonly IImmutableDictionary<string, Key> keys;
         private readonly IImmutableDictionary<string, Lock> locks;
@@ -27,7 +31,8 @@ namespace Lockbase.CoreDomain.Aggregates
 
 		public IEnumerable<Event> Events => events;
 		
-        public LockSystem() : this(
+        private LockSystem(Id id) : this(
+			id,
             ImmutableDictionary<string, Key>.Empty,
             ImmutableDictionary<string, Lock>.Empty,
             ImmutableDictionary<string, AccessPolicy>.Empty,
@@ -37,12 +42,14 @@ namespace Lockbase.CoreDomain.Aggregates
         }
 
         private LockSystem(
+			Id id,
             IImmutableDictionary<string, Key> keys,
             IImmutableDictionary<string, Lock> locks,
             IImmutableDictionary<string, AccessPolicy> policies,
             IImmutableSet<PolicyAssignment> assignments,
             IImmutableList<Event> events)
         {
+			this.id = id;
             this.keys = keys;
             this.locks = locks;
             this.policies = policies;
@@ -52,30 +59,30 @@ namespace Lockbase.CoreDomain.Aggregates
 
         private LockSystem WithKeys(IImmutableDictionary<string, Key> keys)
         {
-            return new LockSystem(keys: keys,
+            return new LockSystem(this.id, keys: keys,
                 locks: this.locks, policies: this.policies, assignments: this.assignments, events: this.events);
         }
 
         private LockSystem WithLocks(IImmutableDictionary<string, Lock> locks)
         {
-            return new LockSystem(locks: locks,
+            return new LockSystem(this.id, locks: locks,
                 keys: this.keys, policies: this.policies, assignments: this.assignments, events: this.events);
         }
 
         private LockSystem WithPolicies(IImmutableDictionary<string, AccessPolicy> policies)
         {
-            return new LockSystem(policies: policies,
+            return new LockSystem(this.id, policies: policies,
                 keys: this.keys, locks: this.locks, assignments: this.assignments, events: this.events);
         }
 
         private LockSystem WithAssignments(IImmutableSet<PolicyAssignment> assignments)
         {
-            return new LockSystem(assignments: assignments,
+            return new LockSystem(this.id, assignments: assignments,
                 keys: this.keys, locks: this.locks, policies: this.policies, events: this.events);
         }
         private LockSystem WithEvents(IImmutableList<Event> events)
         {
-            return new LockSystem(events: events,
+            return new LockSystem(this.id, events: events,
                 keys: this.keys, locks: this.locks, assignments: assignments, policies: this.policies);
         }
 
@@ -104,8 +111,8 @@ namespace Lockbase.CoreDomain.Aggregates
         {
             var properties = statement.Split(',');
             var id = properties.ElementAt(0);
-            var appId = properties.ElementAtOrDefault(1);
-            var name = properties.ElementAtOrDefault(2);
+            var name = properties.ElementAtOrDefault(1);
+            var appId = properties.ElementAtOrDefault(2);
             var extData = properties.ElementAtOrDefault(3)
                 .FromBase64()
                 .RemoveTrailingZero();
@@ -116,8 +123,8 @@ namespace Lockbase.CoreDomain.Aggregates
         {
             var properties = statement.Split(',');
             var id = properties.ElementAt(0);
-            var appId = properties.ElementAtOrDefault(1);
-            var name = properties.ElementAtOrDefault(2);
+            var name = properties.ElementAtOrDefault(1);
+            var appId = properties.ElementAtOrDefault(2);
             var extData = properties.ElementAtOrDefault(3)
                 .FromBase64()
                 .RemoveTrailingZero();

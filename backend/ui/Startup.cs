@@ -46,14 +46,15 @@ namespace ui
 			// services.AddSpaStaticFiles(spa =>spa.RootPath = "build");
 
 			services
-				.AddSingleton(new AtomicValue<LockSystem>(CreateLockSystem()))
+				.AddSingleton<IDateTimeProvider>(new DateTimeProvider())
+				.AddSingleton<Id>(sp => new Id(sp.GetService<IDateTimeProvider>()))
+				.AddSingleton(sp => new AtomicValue<LockSystem>(LockSystem.Create(sp.GetService<Id>())))
 
                 .AddSingleton<ISubject<Statement>,ReplaySubject<Statement>>()
 				.AddSingleton<IObservable<Statement>>(sp => sp.GetService<ISubject<Statement>>().AsObservable())
 				.AddSingleton<IObserver<Statement>>(sp => sp.GetService<ISubject<Statement>>())
 
                 .AddSingleton<IMessageBusInteractor,MessageBusInteractor>()
-				.AddSingleton<IDateTimeProvider>(new DateTimeProvider())
 
                 .AddSingleton<ISubject<Message>, ReplaySubject<Message>>()
                 .AddSingleton<IObservable<Message>>(sp => sp.GetService<ISubject<Message>>().AsObservable())
@@ -63,8 +64,7 @@ namespace ui
                    sp.GetService<IObservable<Message>>(),
                    sp.GetService<IHubContext<SignalrHub, IHubClient>>(),
                    sp.GetService<ILoggerFactory>(),
-                   sp.GetService<IDateTimeProvider>()))
-				.AddSingleton<Id>(sp => new Id(sp.GetService<IDateTimeProvider>()));
+                   sp.GetService<IDateTimeProvider>()));
 
 			services.AddCors(options => 
 			{
@@ -131,9 +131,5 @@ namespace ui
 						Height = 1200,
 					}));
 		}
-
-		private LockSystem CreateLockSystem() => LockSystem.Empty;
-		//	File.ReadAllLines("sample/ELIApp2Drv.txt")
-		//		.Aggregate(LockSystem.Empty, (accu, current) => accu.DefineStatement(current));
 	}
 }

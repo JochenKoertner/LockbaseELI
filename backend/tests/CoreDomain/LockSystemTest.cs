@@ -11,6 +11,7 @@ using System.IO;
 using System.Collections.Immutable;
 using Lockbase.CoreDomain.Extensions;
 using Lockbase.CoreDomain.Enumerations;
+using Lockbase.CoreDomain.Services;
 
 namespace Lockbase.Tests.CoreDomain {
 
@@ -24,13 +25,13 @@ namespace Lockbase.Tests.CoreDomain {
 
 		const string WerktagPolicyId = "000002oe1g25o";
 
-		public LockSystem system; 
+		private readonly LockSystem system; 
 
 		public LockSystemTest()
 		{
 			TimePeriodDefinition timePeriodDefinition = "20190211T080000Z/28800/DW(Mo+Tu+We+Th+Fr)/20190329T160000Z";
 			AccessPolicy accessPolicy = new AccessPolicy("000002oe1g25o", new NumberOfLockings(12,45), new []{timePeriodDefinition});
-			system = new LockSystem()
+			this.system = LockSystem.Create(new Id("2020-01-23T16:14:35".FakeNow()))
 				.AddLock(new Lock(TorWestId, "W1",null, "Tor West"))
 				.AddKey(new Key(KlausFenderId,"103-1",null, "Fender, Klaus"))
 				.AddAccessPolicy(accessPolicy);
@@ -57,9 +58,9 @@ namespace Lockbase.Tests.CoreDomain {
 
 			Assert.Empty(system.QueryPolicies(torwest, klaus));
 
-			system = system.AddAssignment(torwest, werktags, klaus.Yield());
+			var newSystem = system.AddAssignment(torwest, werktags, klaus.Yield());
 
-			var policies = system.QueryPolicies(torwest, klaus);
+			var policies = newSystem.QueryPolicies(torwest, klaus);
 
 			Assert.Single(policies);
 			Assert.True( policies.First() == WerktagPolicyId);
@@ -78,9 +79,9 @@ namespace Lockbase.Tests.CoreDomain {
 
 			Assert.Empty(system.QueryPolicies(torwest, klaus));
 
-			system = system.AddAssignment(klaus, werktags, torwest.Yield());
+			var newSystem = system.AddAssignment(klaus, werktags, torwest.Yield());
 
-			var policies = system.QueryPolicies(torwest, klaus);
+			var policies = newSystem.QueryPolicies(torwest, klaus);
 
 			Assert.Single(policies);
 			Assert.True( policies.First() == WerktagPolicyId);
@@ -96,7 +97,7 @@ namespace Lockbase.Tests.CoreDomain {
 			var office = new Lock(OfficeId, "Office", null, "Office");
 			var sales  = new Lock(SalesId, "Sales", null, "Sales");
 
-			system = system
+			var newSystem = system
 				.AddLock(office)
 				.AddLock(sales)
 				.AddAssignment(torwest, werktags, klaus.Yield())
@@ -104,9 +105,9 @@ namespace Lockbase.Tests.CoreDomain {
 				.AddAssignment(sales, werktags, klaus.Yield());
 
 			
-			Assert.Single(system.QueryPolicies(torwest, klaus));
-			Assert.Single(system.QueryPolicies(office, klaus));
-			Assert.Single(system.QueryPolicies(sales, klaus));
+			Assert.Single(newSystem.QueryPolicies(torwest, klaus));
+			Assert.Single(newSystem.QueryPolicies(office, klaus));
+			Assert.Single(newSystem.QueryPolicies(sales, klaus));
 		}
 
 		[Fact]
@@ -119,14 +120,14 @@ namespace Lockbase.Tests.CoreDomain {
 			var office = new Lock(OfficeId, "Office", null, "Office");
 			var sales  = new Lock(SalesId, "Sales", null, "Sales");
 			
-			system = system
+			var newSystem = system
 				.AddLock(office)
 				.AddLock(sales)
 				.AddAssignment(klaus, werktags, new []{torwest,office,sales});
 			
-			Assert.Single(system.QueryPolicies(torwest, klaus));
-			Assert.Single(system.QueryPolicies(office, klaus));
-			Assert.Single(system.QueryPolicies(sales, klaus));
+			Assert.Single(newSystem.QueryPolicies(torwest, klaus));
+			Assert.Single(newSystem.QueryPolicies(office, klaus));
+			Assert.Single(newSystem.QueryPolicies(sales, klaus));
 		}
 
 		[Fact]
@@ -138,12 +139,12 @@ namespace Lockbase.Tests.CoreDomain {
 
 			// "20190211T080000Z/28800/DW(Mo+Tu+We+Th+Fr)/20190329T160000Z";
 			//  2019-02-11 08:00 - 16:00 bis 2019-03-29   (Mo,Di,Mi,Do,Fr) 
-			 system = system
+			var newSystem = system
 				.AddAssignment(klaus, werktags, new []{torwest});
 			
 			var friday = new DateTime(2019,2,15,12,0,0);  // Freitag Mittag ok 
 			Assert.Equal(EventType.Authorized_Access, 
-				system.HasAccess(klaus, torwest, friday));
+				newSystem.HasAccess(klaus, torwest, friday));
 		}
 
 		[Fact]
@@ -259,6 +260,16 @@ namespace Lockbase.Tests.CoreDomain {
 
 			var setAssignments = ImmutableHashSet<PolicyAssignment>.Empty.Add(assignA).Add(assignB);
 			Assert.NotEmpty(setAssignments);
+		}
+
+		[Fact]
+		public void TestCreateKey() 
+		{
+			//var system = LockSystem.Empty.DefineStatement("CK,,103-1");
+			//Assert.Equal(1, system.Keys.Count());
+			//var key = system.Keys.First( x => x.Name == "103-1");
+			//Assert.Equal(, key.Id);
+
 		}
 
 		[Fact]
