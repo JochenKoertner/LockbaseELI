@@ -8,7 +8,7 @@ namespace Lockbase.CoreDomain.Entities {
 	[DebuggerDisplay("{debugDescription,nq} ({Name,nq},{ExtData,nq})")]
 	public class Key: Entity, IEquatable<Key> {
 
-		public Key(string id, string name, string appId, string extData):base(id) {
+		public Key(string id, string name, string appId, string extData = ""):base(id) {
 			Name = name;
 			AppId = appId;
 			ExtData = extData;	

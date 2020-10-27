@@ -267,11 +267,31 @@ namespace Lockbase.Tests.CoreDomain {
 		[Fact]
 		public void TestCreateKey() 
 		{
-			//var system = CreateEmptyLockSystem().DefineStatement("CK,,103-1");
-			//Assert.Equal(1, system.Keys.Count());
-			//var key = system.Keys.First( x => x.Name == "103-1");
-			//Assert.Equal(, key.Id);
+			var system = CreateEmptyLockSystem()
+				.DefineStatement("CK,APP,103-1")
+				.DefineStatement("CK,APP,103-3");
+			Assert.Equal(2, system.Keys.Count());
+			var key103_1 = system.Keys.First(x => x.Name == "103-1");
+			Assert.Equal("040000jbookls", key103_1.Id);
+			Assert.Equal("APP", key103_1.AppId);
+			var key103_3 = system.Keys.First(x => x.Name == "103-3");
+			Assert.Equal("080000jbookls", key103_3.Id);
+			Assert.Equal("APP", key103_3.AppId);
+		}
 
+		[Fact]
+		public void TestCreateLock() 
+		{
+			var system = CreateEmptyLockSystem()
+				.DefineStatement("CL,APP,105")
+				.DefineStatement("CL,APP,Z1");
+			Assert.Equal(2, system.Locks.Count());
+			var lock105 = system.Locks.First(x => x.Name == "105");
+			Assert.Equal("040000rbookls", lock105.Id);
+			Assert.Equal("APP", lock105.AppId);
+			var lockZ1 = system.Locks.First(x => x.Name == "Z1");
+			Assert.Equal("080000rbookls", lockZ1.Id);
+			Assert.Equal("APP", lockZ1.AppId);
 		}
 
 		[Fact]

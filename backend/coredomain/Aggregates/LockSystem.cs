@@ -125,6 +125,22 @@ namespace Lockbase.CoreDomain.Aggregates
 			return AddKey(new Key(id: id, name: name, appId: appId, extData: extData));
 		}
 
+		public LockSystem CreateKey(string statement)
+		{
+			var properties = statement.Split(',');
+			var appId = properties.ElementAtOrDefault(0);
+			var name = properties.ElementAtOrDefault(1);
+			return AddKey(new Key(this.id.NewId(TableIds.Key, this.Keys.Count()+1), name: name, appId: appId));
+		}
+
+		public LockSystem CreateLock(string statement)
+		{
+			var properties = statement.Split(',');
+			var appId = properties.ElementAtOrDefault(0);
+			var name = properties.ElementAtOrDefault(1);
+			return AddLock(new Lock(this.id.NewId(TableIds.Lock, this.Locks.Count()+1), name: name, appId: appId));
+		}
+
 		public LockSystem DefinePolicy(string statement)
 		{
 			var properties = statement.Split(',');
@@ -163,8 +179,12 @@ namespace Lockbase.CoreDomain.Aggregates
 
 			if (head.Equals("DK"))
 				return DefineKey(tail);
+			else if (head.Equals("CK"))
+				return CreateKey(tail);
 			else if (head.Equals("DL"))
 				return DefineLock(tail);
+			else if (head.Equals("CL"))
+				return CreateLock(tail);
 			else if (head.Equals("AT"))
 				return DefinePolicy(tail);
 			else if (head.Equals("AL"))
