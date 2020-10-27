@@ -31,11 +31,13 @@ namespace Lockbase.Tests.CoreDomain {
 		{
 			TimePeriodDefinition timePeriodDefinition = "20190211T080000Z/28800/DW(Mo+Tu+We+Th+Fr)/20190329T160000Z";
 			AccessPolicy accessPolicy = new AccessPolicy("000002oe1g25o", new NumberOfLockings(12,45), new []{timePeriodDefinition});
-			this.system = LockSystem.Create(new Id("2020-01-23T16:14:35".FakeNow()))
+			this.system = CreateEmptyLockSystem()
 				.AddLock(new Lock(TorWestId, "W1",null, "Tor West"))
 				.AddKey(new Key(KlausFenderId,"103-1",null, "Fender, Klaus"))
 				.AddAccessPolicy(accessPolicy);
 		}
+
+		private LockSystem CreateEmptyLockSystem() => LockSystem.Create(new Id("2020-01-23T16:14:35".FakeNow()));
 
 		[Fact]
 		public void TestFoundEntities() {
@@ -149,7 +151,7 @@ namespace Lockbase.Tests.CoreDomain {
 
 		[Fact]
 		public void TestDefineLock() {
-			var lockSystem= LockSystem.Empty.DefineLock("000000t00nuiu,,,MTAwLCBNZWV0aW5nIFJvb20sIEFkbWluaXN0cmF0aW9uAA==");
+			var lockSystem= CreateEmptyLockSystem().DefineLock("000000t00nuiu,,,MTAwLCBNZWV0aW5nIFJvb20sIEFkbWluaXN0cmF0aW9uAA==");
 
 			var door = lockSystem.QueryLock("000000t00nuiu");
 
@@ -162,7 +164,7 @@ namespace Lockbase.Tests.CoreDomain {
 		   
 		[Fact]
 		public void TestDefineKey() {
-			var lockSystem= LockSystem.Empty.DefineKey("000000hqvs1lo,,,MTAzLTEsIEZlbmRlciwgS2xhdXMA");
+			var lockSystem= CreateEmptyLockSystem().DefineKey("000000hqvs1lo,,,MTAzLTEsIEZlbmRlciwgS2xhdXMA");
 
 			var @key = lockSystem.QueryKey("000000hqvs1lo");
 
@@ -174,7 +176,7 @@ namespace Lockbase.Tests.CoreDomain {
 
 		[Fact]
 		public void TestDefinePolicy() {
-			var lockSystem= LockSystem.Empty.DefinePolicy(
+			var lockSystem= CreateEmptyLockSystem().DefinePolicy(
 				"000002oe1g25o,,20190212T080000Z/28800/DW(Mo+Tu+We+Th+Fr)/20190329T160000Z,20190401T070000Z/28800/DW(Mo+Tu+We+Th+Fr)/20191025T150000Z,20191028T080000Z/28800/DW(Mo+Tu+We+Th+Fr)/20200211T160000Z");
 
 			var  policy = lockSystem.QueryPolicy("000002oe1g25o");
@@ -187,7 +189,7 @@ namespace Lockbase.Tests.CoreDomain {
 		[Fact]
 		public void TestDefineAssignmentKey() {
 
-			var lockSystem= LockSystem.Empty
+			var lockSystem= CreateEmptyLockSystem()
 				.DefineKey("000000hqvs1lo,,,MTAzLTEsIEZlbmRlciwgS2xhdXMA")
 				.DefineLock("0c0000t00nuiu,,,MTAzLCBBY2NvdW50aW5nLCBBZG1pbmlzdHJhdGlvbgA=")
 				.DefineLock("580000t00nuiu,,,WjEsIEVudHJhbmNlIFdlc3QsIEFkbWluaXN0cmF0aW9uAA==")
@@ -207,7 +209,7 @@ namespace Lockbase.Tests.CoreDomain {
 		[Fact]
 		public void TestDefineAssignmentLock() {
 
-			var lockSystem= LockSystem.Empty
+			var lockSystem= CreateEmptyLockSystem()
 				.DefineKey("000000hqvs1lo,,,MTAzLTEsIEZlbmRlciwgS2xhdXMA")
 				.DefineLock("0c0000t00nuiu,,,MTAzLCBBY2NvdW50aW5nLCBBZG1pbmlzdHJhdGlvbgA=")
 				.DefinePolicy("000002oe1g25o,,20190212T080000Z/28800/DW(Mo+Tu+We+Th+Fr)/20190329T160000Z,20190401T070000Z/28800/DW(Mo+Tu+We+Th+Fr)/20191025T150000Z,20191028T080000Z/28800/DW(Mo+Tu+We+Th+Fr)/20200211T160000Z")
@@ -226,7 +228,7 @@ namespace Lockbase.Tests.CoreDomain {
 		 [Fact]
 		public void TestDefineAssignmentDuplicate() {
 
-			var lockSystem= LockSystem.Empty
+			var lockSystem= CreateEmptyLockSystem()
 				.DefineKey("000000hqvs1lo,,,MTAzLTEsIEZlbmRlciwgS2xhdXMA")
 				.DefineLock("0c0000t00nuiu,,,MTAzLCBBY2NvdW50aW5nLCBBZG1pbmlzdHJhdGlvbgA=")
 				.DefinePolicy("000002oe1g25o,,20190212T080000Z/28800/DW(Mo+Tu+We+Th+Fr)/20190329T160000Z,20190401T070000Z/28800/DW(Mo+Tu+We+Th+Fr)/20191025T150000Z,20191028T080000Z/28800/DW(Mo+Tu+We+Th+Fr)/20200211T160000Z")
@@ -265,7 +267,7 @@ namespace Lockbase.Tests.CoreDomain {
 		[Fact]
 		public void TestCreateKey() 
 		{
-			//var system = LockSystem.Empty.DefineStatement("CK,,103-1");
+			//var system = CreateEmptyLockSystem().DefineStatement("CK,,103-1");
 			//Assert.Equal(1, system.Keys.Count());
 			//var key = system.Keys.First( x => x.Name == "103-1");
 			//Assert.Equal(, key.Id);
@@ -276,7 +278,7 @@ namespace Lockbase.Tests.CoreDomain {
 		public void TestDefineLockSystem() {
 			var lines = File.ReadAllLines("samples/ELIApp2Drv.txt");
 			var lockSystem = lines.Aggregate( 
-				seed: LockSystem.Empty, 
+				seed: CreateEmptyLockSystem(), 
 				func: (system, line) => system.DefineStatement(line)
 			);
 			

@@ -9,7 +9,7 @@ Folgende Schritte müssen gemacht werden um das Entwicklungssystem aufzusetzen.
 Benötigte Software 
 
 XCode 11.3 CommandLines Tools installieren
-(clang version 11.0.0 (clang-1100.0.33.16))
+(clang version 12.0.0 (clang-1200.0.32.2))
 
 `/Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild -version`
 `gcc --version`
@@ -20,16 +20,18 @@ CMake 3.15.6-Darwin installieren
 `cmake --version` 
 
 dotnet core 3.1.0 installieren
+`dotnet --list-sdks` 
 
-Clion Installieren (2019.3.2)
+mono 6.12.0 installieren 
+`mono --version`
 
 NodeJS installieren (v10.16.3)
 `node --version`
 
-yarn installieren (v1.17.3)
+yarn installieren (v1.22.4)
 `yarn --version`
 
-### SourceTree (optional)
+### Fork (optional)
 
 
 
