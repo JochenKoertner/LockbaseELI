@@ -122,7 +122,11 @@ namespace Lockbase.CoreDomain.Aggregates
 			var extData = properties.ElementAtOrDefault(3)
 				.FromBase64()
 				.RemoveTrailingZero();
-			return AddKey(new Key(id: id, name: name, appId: appId, extData: extData));
+			return (this.keys.TryGetValue(id, out var key)) ? 
+				RemoveKey(key)
+				.AddKey(new Key(id: key.Id, name: key.Name, appId: key.AppId, extData: extData))
+				: 
+				AddKey(new Key(id: id, name: name, appId: appId, extData: extData));
 		}
 
 		public LockSystem CreateKey(string statement)
@@ -130,7 +134,7 @@ namespace Lockbase.CoreDomain.Aggregates
 			var properties = statement.Split(',');
 			var appId = properties.ElementAtOrDefault(0);
 			var name = properties.ElementAtOrDefault(1);
-			return AddKey(new Key(this.id.NewId(TableIds.Key, this.Keys.Count()+1), name: name, appId: appId));
+			return AddKey(new Key(this.id.NewId(TableIds.Key, this.Keys.Count() + 1), name: name, appId: appId));
 		}
 
 		public LockSystem CreateLock(string statement)
@@ -138,7 +142,7 @@ namespace Lockbase.CoreDomain.Aggregates
 			var properties = statement.Split(',');
 			var appId = properties.ElementAtOrDefault(0);
 			var name = properties.ElementAtOrDefault(1);
-			return AddLock(new Lock(this.id.NewId(TableIds.Lock, this.Locks.Count()+1), name: name, appId: appId));
+			return AddLock(new Lock(this.id.NewId(TableIds.Lock, this.Locks.Count() + 1), name: name, appId: appId));
 		}
 
 		public LockSystem DefinePolicy(string statement)
