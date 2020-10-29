@@ -110,7 +110,12 @@ namespace Lockbase.CoreDomain.Aggregates
 			var extData = properties.ElementAtOrDefault(3)
 				.FromBase64()
 				.RemoveTrailingZero();
-			return AddLock(new Lock(id: id, name: name, appId: appId, extData: extData));
+
+			return (this.locks.TryGetValue(id, out var @lock)) ?
+				RemoveLock(@lock)
+				.AddLock(new Lock(id: @lock.Id, name: @lock.Name, appId: @lock.AppId, extData: extData))
+				:
+				AddLock(new Lock(id: id, name: name, appId: appId, extData: extData));
 		}
 
 		public LockSystem DefineKey(string statement)
@@ -122,10 +127,11 @@ namespace Lockbase.CoreDomain.Aggregates
 			var extData = properties.ElementAtOrDefault(3)
 				.FromBase64()
 				.RemoveTrailingZero();
-			return (this.keys.TryGetValue(id, out var key)) ? 
+
+			return (this.keys.TryGetValue(id, out var key)) ?
 				RemoveKey(key)
 				.AddKey(new Key(id: key.Id, name: key.Name, appId: key.AppId, extData: extData))
-				: 
+				:
 				AddKey(new Key(id: id, name: name, appId: appId, extData: extData));
 		}
 

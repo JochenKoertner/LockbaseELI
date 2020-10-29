@@ -312,20 +312,40 @@ namespace Lockbase.Tests.CoreDomain
 		[Fact]
 		public void TestDefineKeyAfterCreate()
 		{
-			var extData = "103-1, Fender, Klaus\0".ToBase64();
+			const string keyName = "103-1";
+			var extData = $"{keyName}, Fender, Klaus\0".ToBase64();
 			var system = CreateEmptyLockSystem()
-				.DefineStatement("CK,APP,103-1");
+				.DefineStatement($"CK,APP,{keyName}");
 			Func<string,string> getId = name => system.Keys.SingleOrDefault( key => key.Name == name)?.Id;
 
 			system = system
-				.DefineStatement($"DK,{getId("103-1")},j,j,{extData}");
+				.DefineStatement($"DK,{getId(keyName)},,,{extData}");
 
 			Assert.Equal(1, system.Keys.Count());
-			var key103_1 = system.Keys.First(x => x.Name == "103-1");
-			Assert.Equal("040000jbookls", key103_1.Id);
-			Assert.Equal("103-1", key103_1.Name);
-			Assert.Equal("APP", key103_1.AppId);
-			Assert.Equal("103-1, Fender, Klaus", key103_1.ExtData);
+			var key_103_1 = system.Keys.First(x => x.Name == keyName);
+			Assert.Equal("040000jbookls", key_103_1.Id);
+			Assert.Equal(keyName, key_103_1.Name);
+			Assert.Equal("APP", key_103_1.AppId);
+			Assert.Equal($"{keyName}, Fender, Klaus", key_103_1.ExtData);
+		}
+		[Fact]
+		public void TestDefineLockAfterCreate()
+		{
+			const string lockName = "100";
+			var extData = $"{lockName}, Meeting Room, Administration\0".ToBase64();
+			var system = CreateEmptyLockSystem()
+				.DefineStatement($"CL,APP,{lockName}");
+			Func<string, string> getId = name => system.Locks.SingleOrDefault(@lock => @lock.Name == name)?.Id;
+
+			system = system
+				.DefineStatement($"DL,{getId(lockName)},,,{extData}");
+
+			Assert.Equal(1, system.Locks.Count());
+			var lock_100 = system.Locks.First(x => x.Name == lockName);
+			Assert.Equal("040000rbookls", lock_100.Id);
+			Assert.Equal(lockName, lock_100.Name);
+			Assert.Equal("APP", lock_100.AppId);
+			Assert.Equal($"{lockName}, Meeting Room, Administration", lock_100.ExtData);
 		}
 
 		[Fact]
