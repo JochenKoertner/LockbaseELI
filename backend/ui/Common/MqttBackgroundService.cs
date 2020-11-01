@@ -35,7 +35,7 @@ namespace ui.Common
 		private readonly IObservable<Statement> observableStatement;
 		private readonly IObserver<Statement> statementObserver;
 
-        private readonly IObserver<Message> messageObserver;
+		private readonly IObserver<Message> messageObserver;
 
 		public MqttBackgroundService(
 			IOptions<BrokerConfig> brokerConfig,
@@ -43,14 +43,14 @@ namespace ui.Common
 			IMessageBusInteractor messageBusInteractor,
 			IObservable<Statement> observableStatement,
 			IObserver<Statement> statementObserver,
-            IObserver<Message> messageObserver)
+			IObserver<Message> messageObserver)
 		{
 			_brokerConfig = brokerConfig.Value;
 			_logger = loggerFactory.CreateLogger<MqttBackgroundService>();
 			this.messageBusInteractor = messageBusInteractor;
 			this.observableStatement = observableStatement;
 			this.statementObserver = statementObserver;
-            this.messageObserver = messageObserver;
+			this.messageObserver = messageObserver;
 		}
 
 		private async Task<IMqttClient> CreateClient()
@@ -75,7 +75,7 @@ namespace ui.Common
 			var sessionState = await Connect(mqttClient, _brokerConfig.User);
 
 			_logger.LogInformation($"MQTT Create Client (User:'{_brokerConfig.User}', Topic:'{_brokerConfig.Topic}')");
-			
+
 
 			await mqttClient.SubscribeAsync(_brokerConfig.Topic, MqttQualityOfService.ExactlyOnce); //QoS2
 
@@ -83,33 +83,38 @@ namespace ui.Common
 			var subscriptionStatement = this.observableStatement.Subscribe(
 				async statement =>
 					await Publish(
-						client: mqttClient, 
-						topic: statement.Topic, 
-						sessionId: statement.SessionId, 
+						client: mqttClient,
+						topic: statement.Topic,
+						sessionId: statement.SessionId,
 						payload: statement.Message,
-						replyTo: TOPIC_RESPONSE,
-						qos: MqttQualityOfService.ExactlyOnce
+						//replyTo: TOPIC_RESPONSE,
+						qos: MqttQualityOfService.AtMostOnce
 					)
 			);
 
 			// Hier kommen die Messages vom Treiber an und werden an 'HandleMessage' geroutet
 			var subscriptionChannel = mqttClient
 				.MessageStream
-				.Subscribe(async msg => {
+				.Subscribe(async msg =>
+				{
+					_logger.Log(LogLevel.Information, 1, "a1", null, (s, e) => DateTime.Now + " " + s.ToString());
 					if (msg.Topic.Equals(_brokerConfig.Topic))
 					{
 						await HandleMessage(msg);
 					}
-					else 
+					else
 						_logger.LogInformation($"Publish {msg.Topic} '{Encoding.UTF8.GetString(msg.Payload)}'");
+					_logger.Log(LogLevel.Information, 1, "a2", null, (s, e) => DateTime.Now + " " + s.ToString());
 				});
-		
+
 			_disposables = new CompositeDisposable(
-				new []{mqttClient, subscriptionChannel, subscriptionStatement});
+				new[] { mqttClient, subscriptionChannel, subscriptionStatement });
+
+			_logger.LogInformation($"Before message loop");
 
 			while (!stoppingToken.IsCancellationRequested)
 			{
-				await Task.Delay(5000, stoppingToken);
+				await Task.Delay(1_000, stoppingToken);
 			}
 
 			//Method to unsubscribe a topic or many topics, which means that the message will no longer
@@ -130,7 +135,7 @@ namespace ui.Common
 		public override Task StopAsync(CancellationToken cancellationToken)
 		{
 			_logger.LogInformation("Stop MQTT-Broker");
-		
+
 			_disposables?.Dispose();
 
 			_mqttServer.Stop();
@@ -139,15 +144,15 @@ namespace ui.Common
 			return base.StopAsync(cancellationToken);
 		}
 
-        // Handelt Messages vom Treiber
-        private Task HandleMessage(MqttApplicationMessage msg)
+		// Handelt Messages vom Treiber
+		private Task HandleMessage(MqttApplicationMessage msg)
 		{
 			var message = JsonConvert.DeserializeObject<Message>(Encoding.UTF8.GetString(msg.Payload));
 			messageBusInteractor.Receive(replyTo: message.reply_to, sessionId: message.session_id.FromHex(), message: message.text);
 
-            this.messageObserver.OnNext(message);
+			this.messageObserver.OnNext(message);
 
-            return Task.CompletedTask;
+			return Task.CompletedTask;
 		}
 
 		private async Task<SessionState> Connect(IMqttClient client, string clientId)
@@ -161,14 +166,13 @@ namespace ui.Common
 			await client.DisconnectAsync();
 		}
 
-		private async Task Publish(IMqttClient client, string topic, int sessionId, string payload, string replyTo, MqttQualityOfService qos)
+		private async Task Publish(IMqttClient client, string topic, int sessionId, string payload, MqttQualityOfService qos)
 		{
 			_logger.LogInformation($"Topic: '{topic}', Session:{sessionId}, '{payload}'");
 			var message = new Message()
 			{
 				session_id = sessionId.ToString("X8"),
-				text = payload,
-				reply_to = replyTo
+				text = payload
 			};
 			var json = JsonConvert.SerializeObject(message, Formatting.Indented);
 			var msg = new MqttApplicationMessage(topic, Encoding.UTF8.GetBytes(json));

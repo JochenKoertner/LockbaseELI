@@ -2,8 +2,8 @@ using System;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading.Tasks;
-using ElectronNET.API;
-using ElectronNET.API.Entities;
+// using ElectronNET.API;
+// using ElectronNET.API.Entities;
 using Lockbase.CoreDomain;
 using Lockbase.CoreDomain.Aggregates;
 using Lockbase.CoreDomain.Services;
@@ -22,12 +22,12 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace ui
 {
-    public class Startup
+	public class Startup
 	{
 		readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
 		private readonly IConfiguration configuration;
-		
+
 
 		public Startup(IConfiguration configuration)
 		{
@@ -36,12 +36,13 @@ namespace ui
 
 		public void ConfigureServices(IServiceCollection services)
 		{
-			services.AddControllersWithViews()
+			services
+				.AddControllersWithViews()
 				.AddNewtonsoftJson();
 			services.AddRazorPages();
-			
-			
-			services.AddSpaStaticFiles(spa =>spa.RootPath = "ClientApp" );
+
+
+			services.AddSpaStaticFiles(spa => spa.RootPath = "ClientApp");
 			// In production, the React files will be served from this directory
 			// services.AddSpaStaticFiles(spa =>spa.RootPath = "build");
 
@@ -50,30 +51,31 @@ namespace ui
 				.AddSingleton<Id>(sp => new Id(sp.GetService<IDateTimeProvider>()))
 				.AddSingleton(sp => new AtomicValue<LockSystem>(LockSystem.Create(sp.GetService<Id>())))
 
-                .AddSingleton<ISubject<Statement>,ReplaySubject<Statement>>()
+				.AddSingleton<ISubject<Statement>, ReplaySubject<Statement>>()
 				.AddSingleton<IObservable<Statement>>(sp => sp.GetService<ISubject<Statement>>().AsObservable())
 				.AddSingleton<IObserver<Statement>>(sp => sp.GetService<ISubject<Statement>>())
 
-                .AddSingleton<IMessageBusInteractor,MessageBusInteractor>()
+				.AddSingleton<IMessageBusInteractor, MessageBusInteractor>()
 
-                .AddSingleton<ISubject<Message>, ReplaySubject<Message>>()
-                .AddSingleton<IObservable<Message>>(sp => sp.GetService<ISubject<Message>>().AsObservable())
-                .AddSingleton<IObserver<Message>>(sp => sp.GetService<ISubject<Message>>())
+				.AddSingleton<ISubject<Message>, ReplaySubject<Message>>()
+				.AddSingleton<IObservable<Message>>(sp => sp.GetService<ISubject<Message>>().AsObservable())
+				.AddSingleton<IObserver<Message>>(sp => sp.GetService<ISubject<Message>>())
 
-                .AddSingleton<BrowserChannel>(sp => new BrowserChannel(
-                   sp.GetService<IObservable<Message>>(),
-                   sp.GetService<IHubContext<SignalrHub, IHubClient>>(),
-                   sp.GetService<ILoggerFactory>(),
-                   sp.GetService<IDateTimeProvider>()));
+				.AddSingleton<BrowserChannel>(sp => new BrowserChannel(
+					sp.GetService<IObservable<Message>>(),
+					sp.GetService<IHubContext<SignalrHub, IHubClient>>(),
+					sp.GetService<ILoggerFactory>(),
+					sp.GetService<IDateTimeProvider>()))
+				;
 
-			services.AddCors(options => 
+			services.AddCors(options =>
 			{
 				options.AddPolicy(MyAllowSpecificOrigins, builder =>
 				{
 					builder// .WithOrigins("http://localhost","http://127.0.0.1")
 							.AllowAnyMethod()
 							.AllowAnyHeader()
-							.AllowAnyOrigin() 
+							.AllowAnyOrigin()
 							//.AllowCredentials()
 							;
 				});
@@ -83,16 +85,16 @@ namespace ui
 				.AddSignalR(options => { options.KeepAliveInterval = TimeSpan.FromSeconds(5); })
 				.AddMessagePackProtocol();
 
-            services
-                .AddMqttService(this.configuration);
+			services
+				.AddMqttService(this.configuration);
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
 		public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 		{
-            app.ApplicationServices.GetService<BrowserChannel>();
+			app.ApplicationServices.GetService<BrowserChannel>();
 
-            if (env.IsDevelopment())
+			if (env.IsDevelopment())
 				{
 					app.UseDeveloperExceptionPage();
 				}
@@ -107,13 +109,13 @@ namespace ui
 				app.UseSpaStaticFiles();
 				app.UseRouting();
 
-				app.UseEndpoints(endpoints =>
-    			{
-        			endpoints.MapHub<SignalrHub>("/signalr");
-       			 	endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
-    			});
+			app.UseEndpoints(endpoints =>
+			{
+				endpoints.MapHub<SignalrHub>("/signalr");
+			 	endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
+			});
 
-				app.UseSpa(spa =>
+			app.UseSpa(spa =>
 				{
 					if (env.IsDevelopment())
 					{
@@ -123,13 +125,13 @@ namespace ui
 					}
 				});
 
-				// Open the Electron-Window here
-				Task.Run(async () => await Electron.WindowManager.CreateWindowAsync(
-					new BrowserWindowOptions
-					{
-						Width = 1260,
-						Height = 1200,
-					}));
+			// Open the Electron-Window here
+			// Task.Run(async () => await Electron.WindowManager.CreateWindowAsync(
+			// 	new BrowserWindowOptions
+			// 	{
+			// 		Width = 1260,
+			// 		Height = 1200,
+			// 	}));
 		}
 	}
 }

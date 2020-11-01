@@ -1,6 +1,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Lockbase.CoreDomain.Aggregates;
 using Lockbase.CoreDomain.Entities;
 using Lockbase.CoreDomain.ValueObjects;
@@ -30,7 +31,7 @@ namespace Lockbase.CoreDomain.Services
 		public void Receive(string replyTo, int sessionId, string message)
 		{
 			this.logger.LogInformation($"Receive('{replyTo}', {sessionId.ToString("X8")}, ...)");
-			foreach(var line in message.Split("\n"))
+			foreach (var line in message.Split("\n").Where(x => !string.IsNullOrWhiteSpace(x)))
 			{
 				int index = line.IndexOf(',');
 				string head = line.Substring(0, index);

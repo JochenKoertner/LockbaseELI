@@ -44,9 +44,9 @@
 		<None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
 	</ItemGroup>
 
-	<ItemGroup>
+	<!-- <ItemGroup>
 		<DotNetCliToolReference Include="ElectronNET.CLI" Version="0.0.9" />
-	</ItemGroup>
+	</ItemGroup> -->
 
 	<ItemGroup>
 		<ProjectReference Include="../coredomain/coredomain.csproj" />
@@ -54,9 +54,9 @@
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 			<CopyToPublishDirectory>Never</CopyToPublishDirectory>
 		</Content>
-		<Content Update="electron.manifest.json">
+		<!-- <Content Update="electron.manifest.json">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</Content>
+		</Content> -->
 		<Content Remove="appsettings.Development.json" />
 	</ItemGroup>
 
