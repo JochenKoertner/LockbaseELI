@@ -33,7 +33,7 @@
 		<PackageReference Include="System.Reactive.Interfaces" Version="4.3.2" />
 		<PackageReference Include="System.Reactive.PlatformServices" Version="4.3.2" />
 		<PackageReference Include="System.Net.Mqtt" Version="0.6.0-beta" />
-		<PackageReference Include="System.Net.Mqtt.Server" Version="0.6.0-beta" />
+		<PackageReference Include="MQTTnet" Version="3.0.11" />
 		<PackageReference Include="ElectronNET.API" Version="5.22.14" />
 	</ItemGroup>
 

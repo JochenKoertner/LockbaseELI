@@ -14,7 +14,7 @@
 
 #define CLIENT_ID		"Alice"
 
-#define TIMEOUT				1000L
+#define TIMEOUT 15000L
 
 #define QoS_FireAndForget	0
 #define QoS_AtLeastOnce		1
@@ -236,7 +236,7 @@ LBELI_EXPORT const char* ELIOpen( const char* sUserList, const char* sSysID, con
 	}
 
 	char* message = create_event_payload("ELIOpen", sSessID, "OPEN,sSystem,sExtData", RESPONSE_TOPIC);
-	rc = mqtt_publish(sSysID, message, QoS_FireAndForget);
+	rc = mqtt_publish(sSysID, message, QoS_AtLeastOnce);
 	free(message);
 	if (rc != MQTTCLIENT_SUCCESS) {
 		free(sSessID);
