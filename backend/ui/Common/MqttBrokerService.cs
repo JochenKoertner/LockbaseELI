@@ -10,18 +10,18 @@ using MQTTnet.Server;
 namespace ui.Common
 {
 
-	public class MqttBackgroundServer : BackgroundService
+	public class MqttBrokerService : BackgroundService
 	{
 		private readonly BrokerConfig _brokerConfig;
-		private readonly ILogger<MqttBackgroundServer> _logger;
+		private readonly ILogger<MqttBrokerService> _logger;
 		private IMqttServer _mqttServer;
 
-		public MqttBackgroundServer(
+		public MqttBrokerService(
 			IOptions<BrokerConfig> brokerConfig,
 			ILoggerFactory loggerFactory)
 		{
 			_brokerConfig = brokerConfig.Value;
-			_logger = loggerFactory.CreateLogger<MqttBackgroundServer>();
+			_logger = loggerFactory.CreateLogger<MqttBrokerService>();
 		}
 
 		public override async Task StartAsync(CancellationToken cancellationToken)
@@ -51,9 +51,6 @@ namespace ui.Common
 			_mqttServer = new MqttFactory().CreateMqttServer();
 			await _mqttServer.StartAsync(optionsBuilder.Build());
 
-			//_mqttServer = MqttServer.Create(_brokerConfig.Port);
-			//_mqttServer.Start();
-
 			await base.StartAsync(cancellationToken);
 		}
 
@@ -65,9 +62,6 @@ namespace ui.Common
 			await base.StopAsync(cancellationToken);
 		}
 
-		protected override Task ExecuteAsync(CancellationToken cancellationToken)
-		{
-			return Task.CompletedTask;
-		}
+		protected override Task ExecuteAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 	}
 }

@@ -11,7 +11,7 @@ namespace ui.Common
 				options => options.BindNonPublicProperties = true);
 			
 			return services
-				.AddHostedService<MqttBackgroundServer>()
+				.AddHostedService<MqttBrokerService>()
 				.AddHostedService<MqttBackgroundService>();
 		}
 	}
