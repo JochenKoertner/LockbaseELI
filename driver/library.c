@@ -12,9 +12,9 @@
 #include "session_list.h"
 #include "driver.h"
 
-#define CLIENT_ID		"Alice"
+#define CLIENT_ID		"driver"
 
-#define TIMEOUT 15000L
+#define TIMEOUT 5000L
 
 #define QoS_FireAndForget	0
 #define QoS_AtLeastOnce		1
@@ -35,6 +35,7 @@ int mqtt_connect() {
 	MQTTClient_connectOptions conn_opts = MQTTClient_connectOptions_initializer;
 	conn_opts.keepAliveInterval = 20;
 	conn_opts.cleansession = 1;
+	conn_opts.MQTTVersion = MQTTVERSION_5;
 	int rc ;
 
 	if ((rc = MQTTClient_connect(driverInfo->client, &conn_opts)) != MQTTCLIENT_SUCCESS) // TODO: Hier kommt er nicht zurück??
@@ -59,7 +60,24 @@ int mqtt_publish(const char* topic, const char* payload, int qos) {
 	pubmsg.qos = qos;
 	pubmsg.retained = 0;
 
-	int rc = MQTTClient_publishMessage(driverInfo->client, topic, &pubmsg, &token);
+	MQTTProperty property;
+	property.identifier = MQTTPROPERTY_CODE_RESPONSE_TOPIC;
+	property.value.data.data = "response_topic";
+	property.value.data.len = (int)strlen(property.value.data.data);
+	MQTTProperties_add(&pubmsg.properties, &property);
+
+	property.identifier = MQTTPROPERTY_CODE_CORRELATION_DATA;
+	property.value.data.data = "correlation_id";
+	property.value.data.len = (int)strlen(property.value.data.data);
+	MQTTProperties_add(&pubmsg.properties, &property);
+
+	MQTTResponse resp;
+
+	resp = MQTTClient_publishMessage5(driverInfo->client, topic, &pubmsg, &token);
+	int rc = resp.reasonCode;
+	
+	MQTTProperties_free(&pubmsg.properties);
+
 	if (rc != MQTTCLIENT_SUCCESS) {
 		printf("Failed to publish, return code %d\n", rc);
 		return rc;

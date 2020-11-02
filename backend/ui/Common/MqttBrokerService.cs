@@ -42,8 +42,10 @@ namespace ui.Common
 					{
 						c.AcceptPublish = true;
 						var payload = c.ApplicationMessage?.Payload == null ? null : Encoding.UTF8.GetString(c.ApplicationMessage?.Payload);
+						var correlationId = c.ApplicationMessage?.CorrelationData == null ? null : Encoding.UTF8.GetString(c.ApplicationMessage?.CorrelationData);
 						_logger.LogInformation(
 				$"Message: ClientId = {c.ClientId}, Topic = {c.ApplicationMessage?.Topic},"
+				+ $" CorrelationId = {correlationId}, ReplyTo ={c.ApplicationMessage?.ResponseTopic},"
 				+ $" Payload = {payload}, QoS = {c.ApplicationMessage?.QualityOfServiceLevel},"
 				+ $" Retain-Flag = {c.ApplicationMessage?.Retain}");
 					});
