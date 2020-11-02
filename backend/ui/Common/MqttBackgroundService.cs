@@ -100,7 +100,7 @@ namespace ui.Common
 				.Subscribe(msg => HandleMessage(msg));
 
 			this._disposables = new CompositeDisposable(
-				new[] { this.mqttClient, subscriptionChannel, subscriptionStatement });
+				new[] { subscriptionChannel, subscriptionStatement });
 
 			await base.StartAsync(cancellationToken);
 		}
@@ -108,10 +108,7 @@ namespace ui.Common
 		public override async Task StopAsync(CancellationToken cancellationToken)
 		{
 			_logger.LogInformation("Stop MQTT-Service");
-			//Method to unsubscribe a topic or many topics, which means that the message will no longer
-			//be received in the MessageStream anymore
-			await this.mqttClient.UnsubscribeAsync(_brokerConfig.Topic);
-
+			
 			await this.mqttClient.DisconnectAsync();
 
 			_disposables?.Dispose();
