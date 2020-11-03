@@ -43,7 +43,7 @@ namespace ui.Common
 		private MessageInstance Map(Message msg) => new MessageInstance()
             {
                 Timestamp = this.dateTimeProvider.Now.ToString(),
-                From = msg.session_id,
+                From = "session_id",
                 Message = msg.text
             };
 

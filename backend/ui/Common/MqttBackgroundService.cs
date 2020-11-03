@@ -21,9 +21,7 @@ namespace ui.Common
 {
 	public class Message
 	{
-		public string session_id { get; set; }
 		public string text { get; set; }
-		public string reply_to { get; set; }
 	}
 
 	public class MqttBackgroundService : BackgroundService
@@ -129,8 +127,10 @@ namespace ui.Common
 		// Handelt Messages vom Treiber
 		private void HandleMessage(MqttApplicationMessage msg)
 		{
+			var correlationId = msg.CorrelationData == null ? null : Encoding.UTF8.GetString(msg.CorrelationData);
+			var replyTo = msg.ResponseTopic;
 			var message = JsonConvert.DeserializeObject<Message>(Encoding.UTF8.GetString(msg.Payload));
-			messageBusInteractor.Receive(replyTo: message.reply_to, sessionId: message.session_id.FromHex(), message: message.text);
+			messageBusInteractor.Receive(replyTo: replyTo, sessionId: correlationId.FromHex(), message: message.text);
 
 			this.messageObserver.OnNext(message);
 		}
@@ -140,8 +140,7 @@ namespace ui.Common
 		{
 			_logger.LogInformation($"Topic: '{topic}', Session:{sessionId}, '{payload}'");
 			var message = new Message()
-			{
-				session_id = sessionId.ToString("X8"),
+			{				
 				text = payload
 			};
 			var json = JsonConvert.SerializeObject(message, Formatting.Indented);
@@ -150,7 +149,8 @@ namespace ui.Common
 			{
 				Topic = topic,
 				Payload = Encoding.UTF8.GetBytes(json),
-				QualityOfServiceLevel = qos
+				QualityOfServiceLevel = qos,
+				CorrelationData = Encoding.UTF8.GetBytes(sessionId.ToString("X8"))
 			};
 			await client.PublishAsync(msg, cancellationToken);
 		}
