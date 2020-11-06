@@ -128,7 +128,9 @@ int mqtt_subscribe(const char* topic, int qos) {
 }
 
 int mqtt_unsubscribe(const char* topic) {
-	int rc = MQTTClient_unsubscribe5(driverInfo->client, topic, NULL).reasonCode;
+	MQTTProperties props = MQTTProperties_initializer;
+	int rc = MQTTClient_unsubscribe5(driverInfo->client, topic, &props).reasonCode;
+	MQTTProperties_free(&props);
 	if (rc != MQTTCLIENT_SUCCESS) {
 		printf("Failed to unsubscribe return code %d\n", rc);
 	}

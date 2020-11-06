@@ -14,6 +14,7 @@ using Microsoft.Extensions.Options;
 using MQTTnet;
 using MQTTnet.Client;
 using MQTTnet.Client.Options;
+using MQTTnet.Formatter;
 using MQTTnet.Protocol;
 using Newtonsoft.Json;
 
@@ -63,6 +64,7 @@ namespace ui.Common
 			// Create TCP based options using the builder.
 			var options = new MqttClientOptionsBuilder()
 				.WithClientId("backend")
+				.WithProtocolVersion(MqttProtocolVersion.V500)
 				.WithCredentials(username: _brokerConfig.User, password: (string)null)
 				.WithTcpServer(_brokerConfig.HostName, _brokerConfig.Port)
 				.WithCommunicationTimeout(TimeSpan.FromSeconds(2))

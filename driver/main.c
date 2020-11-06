@@ -189,6 +189,21 @@ int main()
     // First session
     const char *mySessionId = createSession();
 
+
+	const char *csv = ELIOpen("jk", SYSTEM, CLIENT_ID);
+	const char *errorCode = getField(csv, 1);
+	if (strcmp(errorCode, "OK") == 0)
+	{
+		const char *tmp = getField(csv, 4); //TODO funktioniert nicht bei ACLR,,1 !!
+		const char *session = tmp == errorCode ? "" : tmp;
+
+		printf("ELIOpen(...) => '%s' (%s)\n", retCode, session);
+	}
+	else
+	{
+		printf("[%s]\n", errorCode);
+	}
+
     printf("Press Any Key to Continue\n");
     printf(" - 'I' => Initsequence (DL,DK,AK,...)\n");
     printf(" - 'D' => List Data (LD)\n");
@@ -197,25 +212,12 @@ int main()
     char ch = getch();
     while (ch != 'q' && ch != 'Q')
     {
-
+		printf(".");
         // Init Sequence
         if ((ch == 'i') || (ch == 'I'))
         {
-            const char *csv = ELIOpen("jk", SYSTEM, CLIENT_ID);
-            const char *errorCode = getField(csv, 1);
-            if (strcmp(errorCode, "OK") == 0)
-            {
-                const char *tmp = getField(csv, 4); //TODO funktioniert nicht bei ACLR,,1 !!
-                const char *session = tmp == errorCode ? "" : tmp;
-
-                printf("ELIOpen(...) => '%s' (%s)\n", retCode, session);
-                send_initial_setup();
-            }
-            else
-            {
-                printf("[%s]\n", errorCode);
-                break;
-            }
+			send_initial_setup();
+			sleep(2);
         }
         // List Data command
         else if ((ch == 'd') || (ch == 'D'))

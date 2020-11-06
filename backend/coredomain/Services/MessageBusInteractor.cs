@@ -71,8 +71,7 @@ namespace Lockbase.CoreDomain.Services
 		private void ListData(string topic, int sessionId)
 		{
 			this.logger.LogInformation("List Data");
-			this.statementObserver.OnNext(new Statement(topic, sessionId,
-				$"LD,blapllop..."));
+			this.statementObserver.OnNext(new Statement(topic, sessionId, "LDR,OK"));
 		}
 	}
 }
