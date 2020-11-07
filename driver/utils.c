@@ -21,12 +21,13 @@ char* formatUrl(const char* protocol, const char* host, long port) {
 	return address;
 }
 
-char *create_event_payload(const char *eventName, const char *sText)
+char *create_event_payload(const char *sText)
 {
-	const char *fmt = u8"{ eventName: '%s', text : '%s' }";
-	size_t needed = snprintf(NULL, 0, fmt, eventName, sText);
+	const char *fmt = u8"{text: '%s'}";
+	size_t needed = snprintf(NULL, 0, fmt, sText);
 	char *buffer = malloc(needed+1);
-	sprintf(buffer, fmt, eventName, sText);
+	sprintf(buffer, fmt, sText);
+	buffer[needed + 1] = 0;
 	return buffer;
 }
 
@@ -47,7 +48,8 @@ char *strndup(const char *str, unsigned int chars)
 }
 #endif
 
-void parse_payload(const char* json, char** sessionId, char** text) {
+void parse_payload(const char *json, char **text)
+{
 
 	int i;
 	int r;
@@ -67,10 +69,8 @@ void parse_payload(const char* json, char** sessionId, char** text) {
 
 	/* Loop over all keys of the root object */
 	for (i = 1; i < r; i++) {
-		if (jsoneq(json, &t[i], "session_id") == 0) {
-			*sessionId = strndup(json + t[i+1].start, t[i+1].end-t[i+1].start);
-			i++;
-		} else if (jsoneq(json, &t[i], "text") == 0) {
+		if (jsoneq(json, &t[i], "text") == 0)
+		{
 			*text = strndup(json + t[i+1].start, t[i+1].end-t[i+1].start);
 			i++;
 		}

@@ -82,8 +82,13 @@ const char *getField(const char *line, int num)
 
 void send_initial_setup()
 {
-    ELIApp2Drv(SYSTEM, JOB_ID,
-               "DK,000000hqvs1lo,103-1,,MTAzLTEsIEZlbmRlciwgS2xhdXMA\n"
+    ELIApp2Drv(SYSTEM, JOB_ID,u8"LD,zzzzzzzzzzzzzzz"); // 18+1
+    ELIApp2Drv(SYSTEM, JOB_ID,u8"LD,aaaaaabbbbbbbc"); // 17+1
+	ELIApp2Drv(SYSTEM, JOB_ID,u8"LD,xxxxxxxxxxxxx");  // 16+1
+	ELIApp2Drv(SYSTEM, JOB_ID,u8"LD,abc");  // 16+1
+
+        /*	ELIApp2Drv(SYSTEM, JOB_ID,
+	          "DK,000000hqvs1lo,103-1,,MTAzLTEsIEZlbmRlciwgS2xhdXMA\n"
                "DK,040000iavs1lo,104-1,,MTA0LTEsIEtpc3RsZXIsIFNhYmluZQA=\n"
                "DK,080000ijvs1lo,105-1,,MTA1LTEsIEtvaGwsIFVscmljaAA=\n"
                "DK,0c0000ml0c25o,203-1,,MjAzLTEsIFdhbHRlciwgSmVucwA=\n"
@@ -145,7 +150,7 @@ void send_initial_setup()
                "AK,8c0000l00nuiu,000002oe1g25o,580000t00nuiu\n"
                "AK,8c0000l00nuiu,040002vn1g25o,1c0000t00nuiu\n"
                "AK,8g0000l00nuiu,000002oe1g25o,580000t00nuiu\n"
-               "AK,8g0000l00nuiu,040002vn1g25o,1c0000t00nuiu\n");
+               "AK,8g0000l00nuiu,040002vn1g25o,1c0000t00nuiu\n"); */
 }
 
 const char *createSession()
@@ -223,14 +228,14 @@ int main()
         else if ((ch == 'd') || (ch == 'D'))
         {
             printf("List Data (LD)\n");
-            ELIApp2Drv(SYSTEM, JOB_ID, "LD,");
+            ELIApp2Drv(SYSTEM, JOB_ID, "LD,\n");
             sleep(2); // Wait 2sec
         }
         // List Events command
         else if ((ch == 'e') || (ch == 'E'))
         {
             printf("List Events (LE)\n");
-            ELIApp2Drv(SYSTEM, JOB_ID, "LE,"); // 20200213T142758Z
+            ELIApp2Drv(SYSTEM, JOB_ID, "LE,\n"); // 20200213T142758Z
             sleep(2);                          // wait 2sec
         }
         else if ((ch == 'q') || (ch == 'Q'))

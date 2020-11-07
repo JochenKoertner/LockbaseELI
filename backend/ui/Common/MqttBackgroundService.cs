@@ -1,5 +1,4 @@
 using System;
-// using System.Net.Mqtt;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Text;
@@ -131,26 +130,20 @@ namespace ui.Common
 		{
 			var correlationId = msg.CorrelationData == null ? null : Encoding.UTF8.GetString(msg.CorrelationData);
 			var replyTo = msg.ResponseTopic;
-			var message = JsonConvert.DeserializeObject<Message>(Encoding.UTF8.GetString(msg.Payload));
-			messageBusInteractor.Receive(replyTo: replyTo, sessionId: correlationId.FromHex(), message: message.text);
+			var message = Encoding.UTF8.GetString(msg.Payload);
+			messageBusInteractor.Receive(replyTo: replyTo, sessionId: correlationId.FromHex(), message: message);
 
-			this.messageObserver.OnNext(message);
+			this.messageObserver.OnNext(new Message { text = message });
 		}
 
 		private async Task Publish(IMqttClient client, string topic, int sessionId, string payload,
 			MqttQualityOfServiceLevel qos, CancellationToken cancellationToken)
 		{
 			_logger.LogInformation($"Topic: '{topic}', Session:{sessionId}, '{payload}'");
-			var message = new Message()
-			{				
-				text = payload
-			};
-			var json = JsonConvert.SerializeObject(message, Formatting.Indented);
-
 			var msg = new MqttApplicationMessage()
 			{
 				Topic = topic,
-				Payload = Encoding.UTF8.GetBytes(json),
+				Payload = Encoding.UTF8.GetBytes(payload),
 				QualityOfServiceLevel = qos,
 				CorrelationData = Encoding.UTF8.GetBytes(sessionId.ToString("X8"))
 			};

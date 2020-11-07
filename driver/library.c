@@ -73,7 +73,7 @@ int mqtt_publish(const char* topic, const char* payload, int qos, const char* co
 
 	MQTTClient_message pubmsg = MQTTClient_message_initializer;
 	pubmsg.payload = (char*)payload;
-	pubmsg.payloadlen = (int) strlen(payload);
+	pubmsg.payloadlen = (int)strlen(payload) + 1;
 	pubmsg.qos = qos;
 	pubmsg.retained = 0;
 
@@ -277,14 +277,13 @@ LBELI_EXPORT const char* ELIOpen( const char* sUserList, const char* sSysID, con
 		return "EUNKNOWN,,,,0";
 	}
 
-	char* message = create_event_payload("ELIOpen", "OPEN,sSystem,sExtData");
-	rc = mqtt_publish(sSysID, message, QoS_AtLeastOnce, sSessID, RESPONSE_TOPIC);
-	free(message);
+/*
+	rc = mqtt_publish(sSysID, u8"OPEN,sSystem,sExtData", QoS_AtLeastOnce, sSessID, RESPONSE_TOPIC);
 	if (rc != MQTTCLIENT_SUCCESS) {
 		free(sSessID);
 		return "EUNKNOWN,,,,0";
 	}
-	
+*/	
 	const char* sessionId = isNewSession ? "" : sSessID;
 
 	printf("__^__ELIOpen(%s)\n",sSessID);
@@ -328,9 +327,7 @@ LBELI_EXPORT const char* ELIClose( const char* sSysID, const char* sSessID ) {
 
 	char* sessionID = session_id_to_string(node->session_id);
 
-	char* message = create_event_payload("ELIClose", "CLOSE,session");
-	int rc = mqtt_publish(node->sSystem, message, QoS_FireAndForget, sessionID, RESPONSE_TOPIC);
-	free(message);
+	int rc = mqtt_publish(node->sSystem, u8"CLOSE,session", QoS_FireAndForget, sessionID, RESPONSE_TOPIC);
 	free(sessionID);
 	if (rc != MQTTCLIENT_SUCCESS) {
 		printf("not publish to %s retcode %d \n", node->sSystem, rc);
@@ -362,13 +359,9 @@ LBELI_EXPORT int ELIApp2Drv( const char* sSysID, const char *sJobID, const char*
 		return -1;
 	}
 
-	int session_id = node->session_id;
+	char *sSessionID = session_id_to_string(node->session_id);
 
-	char* sSessionID = session_id_to_string(session_id);
-
-	char* message = create_event_payload("ELIApp2Drv", sJobData);
-	int rc = mqtt_publish(node->sSystem, message, QoS_FireAndForget, sSessionID, RESPONSE_TOPIC);
-	free(message);
+	int rc = mqtt_publish(node->sSystem, sJobData, QoS_FireAndForget, sSessionID, RESPONSE_TOPIC);
 	free(sSessionID);
 	if (rc != MQTTCLIENT_SUCCESS) {
 		printf("not publish to %s retcode %d \n", node->sSystem, rc);
@@ -380,17 +373,12 @@ LBELI_EXPORT int ELIApp2Drv( const char* sSysID, const char *sJobID, const char*
 	char* payload = NULL;
 	rc = mqtt_receive_msg(RESPONSE_TOPIC, 100L, &payload);
 
-	if (payload) {
-		char* sessionId = NULL;
-		char* text = NULL;
-		parse_payload(payload, &sessionId, &text);
+	if (payload)
+	{
 		if (driverInfo->callback != NULL)
 		{
-			driverInfo->callback(sSysID, sJobID, text);
+			driverInfo->callback(sSysID, sJobID, payload);
 		}
-
-		free(sessionId);
-		free(text);
 		free(payload);
 	}
 	else

@@ -46,7 +46,7 @@ namespace ui.Common
 						_logger.LogInformation(
 				$"Message: ClientId={c.ClientId}, Topic={c.ApplicationMessage?.Topic},"
 				+ $" CorrelationId='{correlationId}', ReplyTo='{c.ApplicationMessage?.ResponseTopic}',"
-				+ $" Payload='{payload.Substring(0, 10)}...', QoS={c.ApplicationMessage?.QualityOfServiceLevel},"
+				+ $" Payload='{payload.Substring(0, 18)}...', QoS={c.ApplicationMessage?.QualityOfServiceLevel},"
 				+ $" Retain-Flag={c.ApplicationMessage?.Retain}");
 					});
 
