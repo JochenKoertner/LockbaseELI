@@ -15,11 +15,10 @@ using MQTTnet.Client;
 using MQTTnet.Client.Options;
 using MQTTnet.Formatter;
 using MQTTnet.Protocol;
-using Newtonsoft.Json;
 
 namespace ui.Common
 {
-	
+
 	public class MqttBackgroundService : BackgroundService
 	{
 		private readonly BrokerConfig _brokerConfig;
@@ -48,6 +47,11 @@ namespace ui.Common
 
 			// Create a new MQTT client.
 			this.mqttClient = new MqttFactory().CreateMqttClient();
+
+			this.mqttClient.UseApplicationMessageReceivedHandler(e => HandleMessage(e.ApplicationMessage));
+
+
+			// MqttNetGlobalLogger.LogMessagePublished += (sender, e) => _logger.LogInformation(e.LogMessage.ToString());
 		}
 
 		private async Task ConnectClient(CancellationToken cancellationToken)
@@ -56,10 +60,7 @@ namespace ui.Common
 			var options = new MqttClientOptionsBuilder()
 				.WithClientId("backend")
 				.WithProtocolVersion(MqttProtocolVersion.V500)
-				.WithCredentials(username: _brokerConfig.User, password: (string)null)
 				.WithTcpServer(_brokerConfig.HostName, _brokerConfig.Port)
-				.WithCommunicationTimeout(TimeSpan.FromSeconds(5))
-				.WithKeepAlivePeriod(TimeSpan.FromSeconds(10))
 				.WithCleanSession()
 				.Build();
 
@@ -79,10 +80,10 @@ namespace ui.Common
 
 			var topicFilter = new MqttTopicFilterBuilder()
 				.WithTopic(_brokerConfig.Topic)
-				.WithExactlyOnceQoS()
+				.WithAtLeastOnceQoS()
 				.Build();
 
-			await this.mqttClient.SubscribeAsync(topicFilter);
+			var subscritionChannel = await this.mqttClient.SubscribeAsync(topicFilter);
 
 			// Hier werden die Antworten zu dem Treiber per 'Publish' verschickt
 			var subscriptionStatement = this.observableStatement.Subscribe(
@@ -92,16 +93,12 @@ namespace ui.Common
 						topic: statement.Topic,
 						sessionId: statement.SessionId,
 						payload: statement.Message,
-						qos: MqttQualityOfServiceLevel.ExactlyOnce,
+						qos: MqttQualityOfServiceLevel.AtLeastOnce,
 						cancellationToken: cancellationToken
 					)
 			);
 
 			// Hier kommen die Messages vom Treiber an und werden an 'HandleMessage' geroutet
-			this.mqttClient.UseApplicationMessageReceivedHandler(e =>
-			{
-				HandleMessage(e.ApplicationMessage);
-			});
 
 
 			this._disposables = new CompositeDisposable(
@@ -113,7 +110,7 @@ namespace ui.Common
 		public override async Task StopAsync(CancellationToken cancellationToken)
 		{
 			_logger.LogInformation("Stop MQTT-Service");
-			
+
 			await this.mqttClient.DisconnectAsync();
 
 			_disposables?.Dispose();
@@ -122,7 +119,7 @@ namespace ui.Common
 		}
 
 		// Handelt Messages vom Treiber
-		private void HandleMessage(MqttApplicationMessage msg)
+		private Task HandleMessage(MqttApplicationMessage msg)
 		{
 			var correlationId = msg.CorrelationData == null ? null : Encoding.UTF8.GetString(msg.CorrelationData);
 			var replyTo = msg.ResponseTopic;
@@ -131,6 +128,7 @@ namespace ui.Common
 			_logger.LogInformation($"New Message = '{message.Shorten()}', CorrelationId = {correlationId}");
 
 			this.messageObserver.OnNext(new Message { text = message, replyTo = replyTo, correlationId = correlationId.FromHex() });
+			return Task.CompletedTask;
 		}
 
 		private async Task Publish(IMqttClient client, string topic, int sessionId, string payload,

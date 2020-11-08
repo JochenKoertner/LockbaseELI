@@ -1,16 +1,21 @@
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Lockbase.CoreDomain.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MQTTnet;
+using MQTTnet.Client.Receiving;
 using MQTTnet.Server;
 
 namespace ui.Common
 {
 
-	public class MqttBrokerService : BackgroundService
+	public class MqttBrokerService : BackgroundService,
+		IMqttServerClientConnectedHandler,
+		IMqttServerClientDisconnectedHandler,
+		IMqttApplicationMessageReceivedHandler
 	{
 		private readonly BrokerConfig _brokerConfig;
 		private readonly ILogger<MqttBrokerService> _logger;
@@ -23,6 +28,7 @@ namespace ui.Common
 			_brokerConfig = brokerConfig.Value;
 			_logger = loggerFactory.CreateLogger<MqttBrokerService>();
 		}
+
 
 		public override async Task StartAsync(CancellationToken cancellationToken)
 		{
@@ -48,6 +54,10 @@ namespace ui.Common
 					});
 
 			_mqttServer = new MqttFactory().CreateMqttServer();
+
+			_mqttServer.ClientConnectedHandler = this;
+			_mqttServer.ClientDisconnectedHandler = this;
+			_mqttServer.ApplicationMessageReceivedHandler = this;
 			await _mqttServer.StartAsync(optionsBuilder.Build());
 
 			await base.StartAsync(cancellationToken);
@@ -62,5 +72,22 @@ namespace ui.Common
 		}
 
 		protected override Task ExecuteAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+		public Task HandleClientConnectedAsync(MqttServerClientConnectedEventArgs eventArgs)
+		{
+			_logger.LogInformation($"Client Connect {eventArgs.ClientId}");
+			return Task.CompletedTask;
+		}
+
+		public Task HandleClientDisconnectedAsync(MqttServerClientDisconnectedEventArgs eventArgs)
+		{
+			_logger.LogInformation($"Client Disconnect {eventArgs.ClientId} , {eventArgs.DisconnectType}");
+			return Task.CompletedTask;
+		}
+
+		public Task HandleApplicationMessageReceivedAsync(MqttApplicationMessageReceivedEventArgs eventArgs)
+		{
+			_logger.LogInformation($"Message Receive {eventArgs.ClientId}, {eventArgs.ApplicationMessage.Topic}, {eventArgs.ProcessingFailed}, {Encoding.UTF8.GetString(eventArgs.ApplicationMessage.Payload).Shorten()}");
+			return Task.CompletedTask;
+		}
 	}
 }

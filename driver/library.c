@@ -20,6 +20,7 @@
 #define QoS_AtLeastOnce		1
 #define QoS_ExactlyOnce		2
 
+#define QoS 				QoS_AtLeastOnce
 
 #define RESPONSE_TOPIC		"respond"
 
@@ -42,7 +43,7 @@ void mqtt_destroy() {
 
 int mqtt_connect() {
 	MQTTClient_connectOptions conn_opts = MQTTClient_connectOptions_initializer;
-	conn_opts.keepAliveInterval = 20;
+	conn_opts.keepAliveInterval = 0;
 	conn_opts.cleansession = false;
 	conn_opts.cleanstart = true; 
 	conn_opts.MQTTVersion = MQTTVERSION_5;
@@ -134,6 +135,7 @@ int mqtt_publish(const char* topic, const char* payload, int qos, const char* co
 int mqtt_subscribe(const char* topic, int qos) {
 	MQTTSubscribe_options subopts = MQTTSubscribe_options_initializer;
 	subopts.retainAsPublished = false;
+	subopts.noLocal = true;
 
 	MQTTProperties props = MQTTProperties_initializer;
 	int rc = MQTTClient_subscribe5(driverInfo->client, topic, qos, &subopts, &props).reasonCode;
@@ -288,7 +290,7 @@ LBELI_EXPORT const char* ELIOpen( const char* sUserList, const char* sSysID, con
 
 	char* sSessID = session_id_to_string(node->session_id);
 
-	rc = mqtt_subscribe(RESPONSE_TOPIC, QoS_ExactlyOnce);
+	rc = mqtt_subscribe(RESPONSE_TOPIC, QoS);
 	if (rc != MQTTCLIENT_SUCCESS) {
 		printf("no possible to subscripe to '%s' \n", RESPONSE_TOPIC);
 		return "EUNKNOWN,,,,0";
@@ -337,14 +339,8 @@ LBELI_EXPORT const char* ELIClose( const char* sSysID, const char* sSessID ) {
 
 	char* sessionID = session_id_to_string(node->session_id);
 
-	int rc = mqtt_publish(node->sSystem, u8"CLOSE,session", QoS_ExactlyOnce, sessionID, RESPONSE_TOPIC);
-	free(sessionID);
-	if (rc != MQTTCLIENT_SUCCESS) {
-		printf("not publish to %s retcode %d \n", node->sSystem, rc);
-		return "ECONNECTION";
-	}
-
-	rc = mqtt_unsubscribe(RESPONSE_TOPIC);
+	
+	int rc = mqtt_unsubscribe(RESPONSE_TOPIC);
 	if (rc != MQTTCLIENT_SUCCESS)
 	{
 		printf("mqtt_unsubscripe() => %i\n", rc);
@@ -371,7 +367,7 @@ LBELI_EXPORT int ELIApp2Drv( const char* sSysID, const char *sJobID, const char*
 
 	char *sSessionID = session_id_to_string(node->session_id);
 
-	int rc = mqtt_publish(node->sSystem, sJobData, QoS_ExactlyOnce, sSessionID, RESPONSE_TOPIC);
+	int rc = mqtt_publish(node->sSystem, sJobData, QoS, sSessionID, RESPONSE_TOPIC);
 	free(sSessionID);
 	if (rc != MQTTCLIENT_SUCCESS) {
 		printf("not publish to %s retcode %d \n", node->sSystem, rc);
