@@ -15,6 +15,14 @@ int string_to_session_id(const char* sSessID) {
 	return (int)strtol(sSessID, NULL, 16);
 }
 
+char* topic_replyTo(const char* topic, const char* clientId) 
+{
+	size_t needed = snprintf(NULL, 0, "%s/%s/result", topic, clientId);
+	char  *buffer = malloc(needed+1);
+	sprintf(buffer, "%s/%s/result", topic, clientId);
+	return buffer;
+}
+
 char* formatUrl(const char* protocol, const char* host, long port) {
 	static char address[100];
 	sprintf(address, "%s://%s:%ld", protocol, host ? host : "localhost", port);
