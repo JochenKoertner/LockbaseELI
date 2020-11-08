@@ -92,8 +92,7 @@ namespace ui.Common
 						topic: statement.Topic,
 						sessionId: statement.SessionId,
 						payload: statement.Message,
-						//replyTo: TOPIC_RESPONSE,
-						qos: MqttQualityOfServiceLevel.AtLeastOnce,
+						qos: MqttQualityOfServiceLevel.ExactlyOnce,
 						cancellationToken: cancellationToken
 					)
 			);
@@ -137,11 +136,12 @@ namespace ui.Common
 		private async Task Publish(IMqttClient client, string topic, int sessionId, string payload,
 			MqttQualityOfServiceLevel qos, CancellationToken cancellationToken)
 		{
-			_logger.LogInformation($"Topic: '{topic}', Session:{sessionId}, '{payload}'");
+			_logger.LogInformation($"publish({topic}, {sessionId.ToHex()}, '{payload.Shorten()}')");
 			var msg = new MqttApplicationMessage()
 			{
 				Topic = topic,
 				Payload = Encoding.UTF8.GetBytes(payload),
+				PayloadFormatIndicator = MqttPayloadFormatIndicator.CharacterData,
 				QualityOfServiceLevel = qos,
 				CorrelationData = Encoding.UTF8.GetBytes(sessionId.ToString("X8"))
 			};

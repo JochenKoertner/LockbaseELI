@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Lockbase.CoreDomain.Aggregates;
 using Lockbase.CoreDomain.Entities;
+using Lockbase.CoreDomain.Extensions;
 using Lockbase.CoreDomain.ValueObjects;
 using Microsoft.Extensions.Logging;
 
@@ -41,11 +42,11 @@ namespace Lockbase.CoreDomain.Services
 		}
 		private void Receive(string replyTo, int sessionId, string message)
 		{
-			this.logger.LogInformation($"Receive('{replyTo}', {sessionId.ToString("X8")}, ...)");
+			this.logger.LogInformation($"Receive('{replyTo}', {sessionId.ToHex()}, '{message.Shorten()}')");
 			foreach (var line in message.Split("\n").Where(x => !string.IsNullOrWhiteSpace(x)))
 			{
 				int index = line.IndexOf(',');
-				string head = line.Substring(0, index);
+				string head = index == -1 ? line : line.Substring(0, index);
 				if (head.Equals("LE")) {
 					ListEvents(replyTo, sessionId, null);
 				} else if (head.Equals("LD")) {
@@ -60,13 +61,11 @@ namespace Lockbase.CoreDomain.Services
 
 		private void ListEvents(string topic, int sessionId, DateTime? since)
 		{
-			this.logger.LogInformation("List Events");
 			LockSystem system = this.lockSystem;
 			foreach (var @event in system.Events)
 				this.statementObserver.OnNext(new Statement(topic, sessionId, String.Join(',', FormatEvent(@event))));
 
-			this.statementObserver.OnNext(new Statement(topic, sessionId,
-				$"LER,OK"));
+			this.statementObserver.OnNext(new Statement(topic, sessionId, $"LER,OK"));
 		}
 
 		private IEnumerable<string> FormatEvent(Event @event)
@@ -81,7 +80,6 @@ namespace Lockbase.CoreDomain.Services
 
 		private void ListData(string topic, int sessionId)
 		{
-			this.logger.LogInformation("List Data");
 			this.statementObserver.OnNext(new Statement(topic, sessionId, "LDR,OK"));
 		}
 	}
