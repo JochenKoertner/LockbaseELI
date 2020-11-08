@@ -55,18 +55,12 @@ namespace ui
 				.AddSingleton<IObservable<Statement>>(sp => sp.GetService<ISubject<Statement>>().AsObservable())
 				.AddSingleton<IObserver<Statement>>(sp => sp.GetService<ISubject<Statement>>())
 
-
 				.AddSingleton<ISubject<Message>, ReplaySubject<Message>>()
 				.AddSingleton<IObservable<Message>>(sp => sp.GetService<ISubject<Message>>().AsObservable())
 				.AddSingleton<IObserver<Message>>(sp => sp.GetService<ISubject<Message>>())
 
-				.AddSingleton<BrowserChannel>(sp => new BrowserChannel(
-					sp.GetService<IObservable<Message>>(),
-					sp.GetService<IHubContext<SignalrHub, IHubClient>>(),
-					sp.GetService<ILoggerFactory>(),
-					sp.GetService<IDateTimeProvider>()))
-
-				.AddSingleton<IMessageBusInteractor, MessageBusInteractor>()
+				.AddSingleton<BrowserChannel>()
+				.AddSingleton<MessageBusInteractor, MessageBusInteractor>()
 				;
 
 			services.AddCors(options =>
@@ -88,13 +82,13 @@ namespace ui
 
 			services
 				.AddMqttService(this.configuration);
+
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-		public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+		public void Configure(IApplicationBuilder app, IWebHostEnvironment env,
+			BrowserChannel browserChannel, MessageBusInteractor messageBusInteractor)
 		{
-			app.ApplicationServices.GetService<BrowserChannel>();
-
 			if (env.IsDevelopment())
 				{
 					app.UseDeveloperExceptionPage();

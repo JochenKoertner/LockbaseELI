@@ -9,28 +9,37 @@ using Microsoft.Extensions.Logging;
 
 namespace Lockbase.CoreDomain.Services
 {
+	public class Message
+	{
+		public string text { get; set; }
 
-	public class MessageBusInteractor : IMessageBusInteractor
+		public int correlationId { get; set; }
+
+		public string replyTo { get; set; }
+	}
+
+	public class MessageBusInteractor
 	{
 
 		private readonly ILogger<MessageBusInteractor> logger;
 		private readonly AtomicValue<LockSystem> lockSystem;
 
 		private readonly IObserver<Statement> statementObserver;
-		private readonly IObservable<Message> messageObservable;
 
 			// statementObserver.OnNext(new Statement(TOPIC_RESPONSE, 4711, 
 			// 	$"EK,{@event.Lock.Id},{@event.Key.Id},{@event.IsOpen}"));
 
-		public MessageBusInteractor(AtomicValue<LockSystem> lockSystem, ILogger<MessageBusInteractor> logger, 
+		public MessageBusInteractor(AtomicValue<LockSystem> lockSystem, ILoggerFactory loggerFactory, 
 			IObserver<Statement> statementObserver, IObservable<Message> messageObservable)
 		{
 			this.lockSystem = lockSystem;
-			this.logger = logger;
+			this.logger = loggerFactory.CreateLogger<MessageBusInteractor>();
+
 			this.statementObserver = statementObserver;
-			this.messageObservable = messageObservable;
+			
+			messageObservable.Subscribe(msg => Receive(msg.replyTo, msg.correlationId, msg.text));
 		}
-		public void Receive(string replyTo, int sessionId, string message)
+		private void Receive(string replyTo, int sessionId, string message)
 		{
 			this.logger.LogInformation($"Receive('{replyTo}', {sessionId.ToString("X8")}, ...)");
 			foreach (var line in message.Split("\n").Where(x => !string.IsNullOrWhiteSpace(x)))

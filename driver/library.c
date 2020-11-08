@@ -294,16 +294,6 @@ LBELI_EXPORT const char* ELIOpen( const char* sUserList, const char* sSysID, con
 		return "EUNKNOWN,,,,0";
 	}
 
-	// rc = mqtt_publish(node->sSystem, u8"OPEN,sSystem", QoS_ExactlyOnce, sSessID, RESPONSE_TOPIC);
-	
-
-/*
-	rc = mqtt_publish(sSysID, u8"OPEN,sSystem", QoS_AtLeastOnce, sSessID, RESPONSE_TOPIC);
-	if (rc != MQTTCLIENT_SUCCESS) {
-		free(sSessID);
-		return "EUNKNOWN,,,,0";
-	}
-*/	
 	const char* sessionId = isNewSession ? "" : sSessID;
 
 	printf("__^__ELIOpen(%s)\n",sSessID);
@@ -347,7 +337,7 @@ LBELI_EXPORT const char* ELIClose( const char* sSysID, const char* sSessID ) {
 
 	char* sessionID = session_id_to_string(node->session_id);
 
-	int rc = mqtt_publish(node->sSystem, u8"CLOSE,session", QoS_FireAndForget, sessionID, RESPONSE_TOPIC);
+	int rc = mqtt_publish(node->sSystem, u8"CLOSE,session", QoS_ExactlyOnce, sessionID, RESPONSE_TOPIC);
 	free(sessionID);
 	if (rc != MQTTCLIENT_SUCCESS) {
 		printf("not publish to %s retcode %d \n", node->sSystem, rc);
@@ -381,7 +371,7 @@ LBELI_EXPORT int ELIApp2Drv( const char* sSysID, const char *sJobID, const char*
 
 	char *sSessionID = session_id_to_string(node->session_id);
 
-	int rc = mqtt_publish(node->sSystem, sJobData, QoS_FireAndForget, sSessionID, RESPONSE_TOPIC);
+	int rc = mqtt_publish(node->sSystem, sJobData, QoS_ExactlyOnce, sSessionID, RESPONSE_TOPIC);
 	free(sSessionID);
 	if (rc != MQTTCLIENT_SUCCESS) {
 		printf("not publish to %s retcode %d \n", node->sSystem, rc);

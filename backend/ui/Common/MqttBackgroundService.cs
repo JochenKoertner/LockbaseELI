@@ -28,7 +28,6 @@ namespace ui.Common
 
 		private readonly IMqttClient mqttClient;
 
-		private readonly IMessageBusInteractor messageBusInteractor;
 		private readonly IObservable<Statement> observableStatement;
 		private readonly IObserver<Statement> statementObserver;
 
@@ -37,14 +36,12 @@ namespace ui.Common
 		public MqttBackgroundService(
 			IOptions<BrokerConfig> brokerConfig,
 			ILoggerFactory loggerFactory,
-			IMessageBusInteractor messageBusInteractor,
 			IObservable<Statement> observableStatement,
 			IObserver<Statement> statementObserver,
 			IObserver<Message> messageObserver)
 		{
 			_brokerConfig = brokerConfig.Value;
 			_logger = loggerFactory.CreateLogger<MqttBackgroundService>();
-			this.messageBusInteractor = messageBusInteractor;
 			this.observableStatement = observableStatement;
 			this.statementObserver = statementObserver;
 			this.messageObserver = messageObserver;
@@ -96,7 +93,7 @@ namespace ui.Common
 						sessionId: statement.SessionId,
 						payload: statement.Message,
 						//replyTo: TOPIC_RESPONSE,
-						qos: MqttQualityOfServiceLevel.ExactlyOnce,
+						qos: MqttQualityOfServiceLevel.AtLeastOnce,
 						cancellationToken: cancellationToken
 					)
 			);
@@ -133,8 +130,6 @@ namespace ui.Common
 			var message = Encoding.UTF8.GetString(msg.Payload).TrimEnd();
 
 			_logger.LogInformation($"New Message = '{message.Shorten()}', CorrelationId = {correlationId}");
-
-			messageBusInteractor.Receive(replyTo: replyTo, sessionId: correlationId.FromHex(), message: message);
 
 			this.messageObserver.OnNext(new Message { text = message, replyTo = replyTo, correlationId = correlationId.FromHex() });
 		}
