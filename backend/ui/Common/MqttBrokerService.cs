@@ -37,17 +37,14 @@ namespace ui.Common
 					{
 						c.AcceptSubscription = true;
 						_logger.LogInformation($"New subscription: ClientId = {c.ClientId}, TopicFilter = {c.TopicFilter}");
-					}).WithApplicationMessageInterceptor(
+					})
+				.WithApplicationMessageInterceptor(
 					c =>
 					{
-						c.AcceptPublish = true;
-						var payload = c.ApplicationMessage?.Payload == null ? null : Encoding.UTF8.GetString(c.ApplicationMessage?.Payload);
-						var correlationId = c.ApplicationMessage?.CorrelationData == null ? null : Encoding.UTF8.GetString(c.ApplicationMessage?.CorrelationData);
-						_logger.LogInformation(
-				$"Message: ClientId={c.ClientId}, Topic={c.ApplicationMessage?.Topic},"
-				+ $" CorrelationId='{correlationId}', ReplyTo='{c.ApplicationMessage?.ResponseTopic}',"
-				+ $" Payload='{payload.Substring(0, 18)}...', QoS={c.ApplicationMessage?.QualityOfServiceLevel},"
-				+ $" Retain-Flag={c.ApplicationMessage?.Retain}");
+						c.ApplicationMessage.Payload = 
+							Encoding.UTF8.GetBytes(
+								Encoding.UTF8.GetString(c.ApplicationMessage.Payload).Trim());
+						//c.ApplicationMessage.Payload = Encoding.UTF8.GetBytes(payload);
 					});
 
 			_mqttServer = new MqttFactory().CreateMqttServer();

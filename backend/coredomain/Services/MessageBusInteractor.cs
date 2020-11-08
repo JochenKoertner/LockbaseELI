@@ -17,16 +17,18 @@ namespace Lockbase.CoreDomain.Services
 		private readonly AtomicValue<LockSystem> lockSystem;
 
 		private readonly IObserver<Statement> statementObserver;
+		private readonly IObservable<Message> messageObservable;
 
 			// statementObserver.OnNext(new Statement(TOPIC_RESPONSE, 4711, 
 			// 	$"EK,{@event.Lock.Id},{@event.Key.Id},{@event.IsOpen}"));
 
 		public MessageBusInteractor(AtomicValue<LockSystem> lockSystem, ILogger<MessageBusInteractor> logger, 
-			IObserver<Statement> statementObserver)
+			IObserver<Statement> statementObserver, IObservable<Message> messageObservable)
 		{
 			this.lockSystem = lockSystem;
 			this.logger = logger;
 			this.statementObserver = statementObserver;
+			this.messageObservable = messageObservable;
 		}
 		public void Receive(string replyTo, int sessionId, string message)
 		{

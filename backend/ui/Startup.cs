@@ -55,7 +55,6 @@ namespace ui
 				.AddSingleton<IObservable<Statement>>(sp => sp.GetService<ISubject<Statement>>().AsObservable())
 				.AddSingleton<IObserver<Statement>>(sp => sp.GetService<ISubject<Statement>>())
 
-				.AddSingleton<IMessageBusInteractor, MessageBusInteractor>()
 
 				.AddSingleton<ISubject<Message>, ReplaySubject<Message>>()
 				.AddSingleton<IObservable<Message>>(sp => sp.GetService<ISubject<Message>>().AsObservable())
@@ -66,6 +65,8 @@ namespace ui
 					sp.GetService<IHubContext<SignalrHub, IHubClient>>(),
 					sp.GetService<ILoggerFactory>(),
 					sp.GetService<IDateTimeProvider>()))
+
+				.AddSingleton<IMessageBusInteractor, MessageBusInteractor>()
 				;
 
 			services.AddCors(options =>

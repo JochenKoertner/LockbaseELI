@@ -19,14 +19,9 @@ using Newtonsoft.Json;
 
 namespace ui.Common
 {
-	public class Message
-	{
-		public string text { get; set; }
-	}
-
+	
 	public class MqttBackgroundService : BackgroundService
 	{
-		private const string TOPIC_RESPONSE = "response";
 		private readonly BrokerConfig _brokerConfig;
 		private readonly ILogger<MqttBackgroundService> _logger;
 		private IDisposable _disposables;
@@ -66,7 +61,7 @@ namespace ui.Common
 				.WithProtocolVersion(MqttProtocolVersion.V500)
 				.WithCredentials(username: _brokerConfig.User, password: (string)null)
 				.WithTcpServer(_brokerConfig.HostName, _brokerConfig.Port)
-				.WithCommunicationTimeout(TimeSpan.FromSeconds(2))
+				.WithCommunicationTimeout(TimeSpan.FromSeconds(5))
 				.WithKeepAlivePeriod(TimeSpan.FromSeconds(10))
 				.WithCleanSession()
 				.Build();
@@ -85,7 +80,12 @@ namespace ui.Common
 			await ConnectClient(cancellationToken);
 			_logger.LogInformation($"MQTT Create Client (User:'{_brokerConfig.User}', Topic:'{_brokerConfig.Topic}')");
 
-			await this.mqttClient.SubscribeAsync(new MqttTopicFilterBuilder().WithTopic(_brokerConfig.Topic).Build());
+			var topicFilter = new MqttTopicFilterBuilder()
+				.WithTopic(_brokerConfig.Topic)
+				.WithExactlyOnceQoS()
+				.Build();
+
+			await this.mqttClient.SubscribeAsync(topicFilter);
 
 			// Hier werden die Antworten zu dem Treiber per 'Publish' verschickt
 			var subscriptionStatement = this.observableStatement.Subscribe(
@@ -96,7 +96,7 @@ namespace ui.Common
 						sessionId: statement.SessionId,
 						payload: statement.Message,
 						//replyTo: TOPIC_RESPONSE,
-						qos: MqttQualityOfServiceLevel.AtMostOnce,
+						qos: MqttQualityOfServiceLevel.ExactlyOnce,
 						cancellationToken: cancellationToken
 					)
 			);
@@ -130,10 +130,13 @@ namespace ui.Common
 		{
 			var correlationId = msg.CorrelationData == null ? null : Encoding.UTF8.GetString(msg.CorrelationData);
 			var replyTo = msg.ResponseTopic;
-			var message = Encoding.UTF8.GetString(msg.Payload);
+			var message = Encoding.UTF8.GetString(msg.Payload).TrimEnd();
+
+			_logger.LogInformation($"New Message = '{message.Shorten()}', CorrelationId = {correlationId}");
+
 			messageBusInteractor.Receive(replyTo: replyTo, sessionId: correlationId.FromHex(), message: message);
 
-			this.messageObserver.OnNext(new Message { text = message });
+			this.messageObserver.OnNext(new Message { text = message, replyTo = replyTo, correlationId = correlationId.FromHex() });
 		}
 
 		private async Task Publish(IMqttClient client, string topic, int sessionId, string payload,

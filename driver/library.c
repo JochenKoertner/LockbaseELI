@@ -74,8 +74,19 @@ int mqtt_publish(const char* topic, const char* payload, int qos, const char* co
 	MQTTClient_message pubmsg = MQTTClient_message_initializer;
 	pubmsg.payload = (char*)payload;
 	pubmsg.payloadlen = (int)strlen(payload) + 1;
+
+	if (strlen(payload) < 20)	// padding up small messages
+	{
+		size_t needed = snprintf(NULL, 0, "%-20s", payload);
+		char  *buffer = malloc(needed+1);
+		sprintf(buffer, "%-20s", payload);
+
+		pubmsg.payload = buffer;
+		pubmsg.payloadlen = needed;
+	}
+	
 	pubmsg.qos = qos;
-	pubmsg.retained = 0;
+	pubmsg.retained = false;
 
 	MQTTProperty property;
 	property.identifier = MQTTPROPERTY_CODE_RESPONSE_TOPIC;
@@ -93,6 +104,11 @@ int mqtt_publish(const char* topic, const char* payload, int qos, const char* co
 	resp = MQTTClient_publishMessage5(driverInfo->client, topic, &pubmsg, &token);
 	int rc = resp.reasonCode;
 	
+	if (strlen(payload) < 20)
+	{
+		free(pubmsg.payload);
+	}
+
 	MQTTProperties_free(&pubmsg.properties);
 
 	if (rc != MQTTCLIENT_SUCCESS) {
@@ -111,6 +127,7 @@ int mqtt_publish(const char* topic, const char* payload, int qos, const char* co
 		printf("Message publish timed out, return code %d\n", rc);
 		return rc;
 	}
+	printf("Delivery token '%d' for message\n", token);
 	return MQTTCLIENT_SUCCESS;
 }
 
@@ -277,8 +294,11 @@ LBELI_EXPORT const char* ELIOpen( const char* sUserList, const char* sSysID, con
 		return "EUNKNOWN,,,,0";
 	}
 
+	// rc = mqtt_publish(node->sSystem, u8"OPEN,sSystem", QoS_ExactlyOnce, sSessID, RESPONSE_TOPIC);
+	
+
 /*
-	rc = mqtt_publish(sSysID, u8"OPEN,sSystem,sExtData", QoS_AtLeastOnce, sSessID, RESPONSE_TOPIC);
+	rc = mqtt_publish(sSysID, u8"OPEN,sSystem", QoS_AtLeastOnce, sSessID, RESPONSE_TOPIC);
 	if (rc != MQTTCLIENT_SUCCESS) {
 		free(sSessID);
 		return "EUNKNOWN,,,,0";

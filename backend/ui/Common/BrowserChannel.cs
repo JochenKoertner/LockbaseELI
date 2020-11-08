@@ -1,6 +1,7 @@
 using System;
 using System.Reactive.Linq;
 using Lockbase.CoreDomain.Contracts;
+using Lockbase.CoreDomain.Services;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 
