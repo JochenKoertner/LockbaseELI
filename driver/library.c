@@ -150,7 +150,8 @@ int mqtt_unsubscribe(const char* topic) {
 	return rc;
 }
 
-int mqtt_receive_msg(const char* topic, int timeout, char** payload) {
+int mqtt_receive_msg(const char *topic, int timeout, char **payload, char **correlationId)
+{
 	char* topicName = NULL;
 	int topicLen;
 	MQTTClient_message* msg = NULL;
@@ -161,20 +162,24 @@ int mqtt_receive_msg(const char* topic, int timeout, char** payload) {
 		return rc;
 	}
 
-	if (topicName) {
-		printf("topic receive '%s'\n", topicName);
+	if (topicName)
+	{
 		if (msg != NULL) {
 			*payload = strndup((char*)(msg->payload), msg->payloadlen);
-			printf("Message received on topic %s is %.*s", topicName, msg->payloadlen, (char*)(msg->payload));
+
+			if (MQTTProperties_hasProperty(&msg->properties, MQTTPROPERTY_CODE_CORRELATION_DATA))
+			{
+				MQTTProperty *prop = MQTTProperties_getProperty(&msg->properties, MQTTPROPERTY_CODE_CORRELATION_DATA);
+				*correlationId = strndup((char *)(prop->value.data.data), prop->value.data.len);
+			}
 			MQTTClient_freeMessage(&msg);
+
 		}
 		MQTTClient_free(topicName);
 	};
 
 	return MQTTCLIENT_SUCCESS;
 }
-
-
 
 /*
 *  LbwELI() is the constructor of the interface object, which is required to use the interface. It expects the
@@ -366,8 +371,8 @@ LBELI_EXPORT int ELIApp2Drv( const char* sSysID, const char *sJobID, const char*
 	}
 
 	char *sSessionID = session_id_to_string(node->session_id);
-	char *replyTo = topic_replyTo(node->sSystem, CLIENT_ID);
-	int rc = mqtt_publish(node->sSystem, sJobData, QoS, sSessionID, replyTo);
+	char *replyTo = topic_replyTo(node->sSystem, sSessionID);
+	int rc = mqtt_publish(node->sSystem, sJobData, QoS, sJobID, replyTo);
 	free(sSessionID);
 
 	if (rc != MQTTCLIENT_SUCCESS) {
@@ -375,23 +380,20 @@ LBELI_EXPORT int ELIApp2Drv( const char* sSysID, const char *sJobID, const char*
 		return -1;
 	}
 
-
 	//  "response" cames separatly and asynchron via ELIDrv2App
 	char* payload = NULL;
-	rc = mqtt_receive_msg(replyTo, 100L, &payload);
+	char *correlationId = NULL;
+	rc = mqtt_receive_msg(replyTo, 100L, &payload, &correlationId);
 	free(replyTo);
 
 	if (payload)
 	{
 		if (driverInfo->callback != NULL)
 		{
-			driverInfo->callback(sSysID, sJobID, payload);
+			driverInfo->callback(sSysID, (correlationId) ? correlationId : sJobID, payload);
 		}
 		free(payload);
 	}
-	else
-	{
-		// printf("no response\n");
-	}
+
 	return 0;
 }
