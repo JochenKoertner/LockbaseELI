@@ -1,6 +1,7 @@
 using System;
 using System.Reactive.Linq;
 using Lockbase.CoreDomain.Contracts;
+using Lockbase.CoreDomain.Extensions;
 using Lockbase.CoreDomain.Services;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
@@ -44,7 +45,7 @@ namespace ui.Common
 		private MessageInstance Map(Message msg) => new MessageInstance()
             {
                 Timestamp = this.dateTimeProvider.Now.ToString(),
-                From = "session_id",
+                From = msg.correlationId.ToHex(),
                 Message = msg.text
             };
 

@@ -28,6 +28,8 @@ static int jsoneq(const char *json, const jsmntok_t *tok, const char *s) {
 }
 
 LBELI_EXPORT char* session_id_to_string(int session_id);
+LBELI_EXPORT char* job_id_to_string(int job_id);
+
 char *topic_replyTo(const char *topic, const char *clientId);
 
 int string_to_session_id(const char* sSessID);

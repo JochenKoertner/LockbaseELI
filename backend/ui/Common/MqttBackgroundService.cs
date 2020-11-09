@@ -91,7 +91,7 @@ namespace ui.Common
 					await Publish(
 						client: mqttClient,
 						topic: statement.Topic,
-						sessionId: statement.SessionId,
+						jobId: statement.JobId,
 						payload: statement.Message,
 						qos: MqttQualityOfServiceLevel.AtLeastOnce,
 						cancellationToken: cancellationToken
@@ -131,17 +131,17 @@ namespace ui.Common
 			return Task.CompletedTask;
 		}
 
-		private async Task Publish(IMqttClient client, string topic, int sessionId, string payload,
+		private async Task Publish(IMqttClient client, string topic, int jobId, string payload,
 			MqttQualityOfServiceLevel qos, CancellationToken cancellationToken)
 		{
-			_logger.LogInformation($"publish({topic}, {sessionId.ToHex()}, '{payload.Shorten()}')");
+			_logger.LogInformation($"publish({topic}, {jobId.ToHex()}, '{payload.Shorten()}')");
 			var msg = new MqttApplicationMessage()
 			{
 				Topic = topic,
 				Payload = Encoding.UTF8.GetBytes(payload),
 				PayloadFormatIndicator = MqttPayloadFormatIndicator.CharacterData,
 				QualityOfServiceLevel = qos,
-				CorrelationData = Encoding.UTF8.GetBytes(sessionId.ToString("X8"))
+				CorrelationData = Encoding.UTF8.GetBytes(jobId.ToString("X8"))
 			};
 			await client.PublishAsync(msg, cancellationToken);
 		}

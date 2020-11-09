@@ -11,7 +11,6 @@
 #define SYSTEM "ELIDemo"
 #define TIMEOUT 10000L
 
-#define JOB_ID "4711"
 
 // Mit 'vbox' gehe ich zum MacOs Host
 // Mit 'lic' gehe ich zum lokalen Mqtt Server
@@ -42,6 +41,8 @@ char getch()
     return ch;
 }
 #endif
+
+char* jobId = NULL; 
 
 const char *getField(const char *line, int num)
 {
@@ -84,7 +85,7 @@ const char *getField(const char *line, int num)
 
 void send_initial_setup()
 {
-   ELIApp2Drv(SYSTEM, JOB_ID,
+   ELIApp2Drv(SYSTEM, jobId,
 	          "DK,000000hqvs1lo,103-1,,MTAzLTEsIEZlbmRlciwgS2xhdXMA\n"
                "DK,040000iavs1lo,104-1,,MTA0LTEsIEtpc3RsZXIsIFNhYmluZQA=\n"
                "DK,080000ijvs1lo,105-1,,MTA1LTEsIEtvaGwsIFVscmljaAA=\n"
@@ -160,6 +161,7 @@ const char *createSession()
 int main()
 {
     printf("PID: '%d'\n", getpid());
+	jobId = job_id_to_string(getpid());
 
     // initialise driver interface and register a callback function
     const char *retCode = ELICreate(LICENCE, LbwELI_VERSION, myCallBack);
@@ -224,13 +226,13 @@ int main()
         else if ((ch == 'd') || (ch == 'D'))
         {
             printf("List Data (LD)\n");
-            ELIApp2Drv(SYSTEM, JOB_ID, "LD");
+            ELIApp2Drv(SYSTEM, jobId, "LD");
         }
         // List Events command
         else if ((ch == 'e') || (ch == 'E'))
         {
             printf("List Events (LE)\n");
-            ELIApp2Drv(SYSTEM, JOB_ID, "LE"); // 20200213T142758Z
+            ELIApp2Drv(SYSTEM, jobId, "LE"); // 20200213T142758Z
         }
         else if ((ch == 'q') || (ch == 'Q'))
         {
@@ -243,5 +245,7 @@ int main()
     // destroy the driver interface
     ELIDestroy();
     printf("ELIDestroy()\n");
+
+	free(jobId);
     return 0;
 }

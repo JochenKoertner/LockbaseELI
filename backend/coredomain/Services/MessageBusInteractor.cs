@@ -40,17 +40,17 @@ namespace Lockbase.CoreDomain.Services
 			
 			messageObservable.Subscribe(msg => Receive(msg.replyTo, msg.correlationId, msg.text));
 		}
-		private void Receive(string replyTo, int sessionId, string message)
+		private void Receive(string replyTo, int jobId, string message)
 		{
-			this.logger.LogInformation($"Receive('{replyTo}', {sessionId.ToHex()}, '{message.Shorten()}')");
+			this.logger.LogInformation($"Receive('{replyTo}', {jobId.ToHex()}, '{message.Shorten()}')");
 			foreach (var line in message.Split("\n").Where(x => !string.IsNullOrWhiteSpace(x)))
 			{
 				int index = line.IndexOf(',');
 				string head = index == -1 ? line : line.Substring(0, index);
 				if (head.Equals("LE")) {
-					ListEvents(replyTo, sessionId, null);
+					ListEvents(replyTo, jobId, null);
 				} else if (head.Equals("LD")) {
-					ListData(replyTo, sessionId);
+					ListData(replyTo, jobId);
 				} else if (head.Equals("OPEN") || head.Equals("CLOSE")) {
 					this.logger.LogInformation(line);
 				} else {
@@ -59,13 +59,13 @@ namespace Lockbase.CoreDomain.Services
 			}
 		}
 
-		private void ListEvents(string topic, int sessionId, DateTime? since)
+		private void ListEvents(string topic, int jobId, DateTime? since)
 		{
 			LockSystem system = this.lockSystem;
 			foreach (var @event in system.Events)
-				this.statementObserver.OnNext(new Statement(topic, sessionId, String.Join(',', FormatEvent(@event))));
+				this.statementObserver.OnNext(new Statement(topic, jobId, String.Join(',', FormatEvent(@event))));
 
-			this.statementObserver.OnNext(new Statement(topic, sessionId, $"LER,OK"));
+			this.statementObserver.OnNext(new Statement(topic, jobId, $"LER,OK"));
 		}
 
 		private IEnumerable<string> FormatEvent(Event @event)
