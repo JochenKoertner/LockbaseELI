@@ -166,7 +166,7 @@ int main()
     // initialise driver interface and register a callback function
     const char *retCode = ELICreate(LICENCE, LbwELI_VERSION, myCallBack);
     printf("ELICreate(...) => '%s'\n\n", retCode);
-    if (strcmp(retCode, "OK,0.4") != 0)
+    if (strcmp(retCode, "OK,0.5") != 0)
     {
         return -1;
     }

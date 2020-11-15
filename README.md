@@ -92,6 +92,8 @@ Change path to `/driver/build` path.
 
 For Mac Build call `../mac-build.sh` 
 
+For Win Build call `../win-build.ps1` 
+
 ## Windows Defender Firewall Regeln scripten 
 
 Get-Command -module Netsecurity 
