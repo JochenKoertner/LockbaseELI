@@ -24,7 +24,14 @@
 			"type": "lldb",
 			"request": "attach",
 			"name": "Attach via lldb",
-			"program": "${workspaceFolder}//build/LbELI_cli"
+			"windows" : {
+				//"program": "C:\\LockbaseDemo\\Lockbase\\Lbw.exe"
+				"program": "C:\\Users\\SB\\Projects\\LockbaseELI\\driver\\build\\LbELI_cli.exe"
+			},
+			"osx" : {
+				"program": "${workspaceFolder}//build/LbELI_cli"
+			}
+
 		},
 		{
 			"name": "LLDB Extension",
