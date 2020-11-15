@@ -288,7 +288,7 @@ LBELI_EXPORT const char* ELIOpen( const char* sUserList, const char* sSysID, con
 
 
 	char* sSessID = session_id_to_string(node->session_id);
-	char *replyTo = topic_replyTo(node->sSystem, CLIENT_ID);
+	char *replyTo = topic_replyTo(node->sSystem, sSessID);
 	
 	rc = mqtt_subscribe(replyTo, QoS);
 
@@ -341,7 +341,7 @@ LBELI_EXPORT const char* ELIClose( const char* sSysID, const char* sSessID ) {
 
 	char* sessionID = session_id_to_string(node->session_id);
 
-	char *replyTo = topic_replyTo(node->sSystem, CLIENT_ID);
+	char *replyTo = topic_replyTo(node->sSystem, sessionID);
 	int rc = mqtt_unsubscribe(replyTo);
 	free(replyTo);
 	free(sessionID);

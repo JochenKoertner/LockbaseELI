@@ -12,6 +12,6 @@ namespace Lockbase.CoreDomain.Extensions
 			return b1 << 24 | b2 << 16 | b3 << 8 | b4 << 0;
 		}
 
-		public static string ToHex(this int value) => value.ToString("X8");
+		public static string ToHex(this int value) => value.ToString("x9");
     }
 }

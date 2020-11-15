@@ -14,9 +14,9 @@ char *session_id_to_string(int session_id)
 
 char *job_id_to_string(int job_id)
 {
-	size_t needed = snprintf(NULL, 0, "%08X", job_id);
+	size_t needed = snprintf(NULL, 0, "%09x", job_id);
 	char *buffer = malloc(needed + 1);
-	sprintf(buffer, "%08X", job_id);
+	sprintf(buffer, "%09x", job_id);
 	return buffer;
 }
 

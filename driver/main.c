@@ -7,7 +7,6 @@
 #include "utils.h"
 #include "driver.h"
 
-#define CLIENT_ID "Alice"
 #define SYSTEM "ELIDemo"
 #define TIMEOUT 10000L
 
@@ -15,11 +14,11 @@
 // Mit 'vbox' gehe ich zum MacOs Host
 // Mit 'lic' gehe ich zum lokalen Mqtt Server
 
-//#if defined (WIN32)
-//	#define LICENCE  "vbox"
-//#else
-#define LICENCE "lic"
-//#endif
+#if defined (WIN32)
+	#define LICENCE  "685-685-0"
+#else
+	#define LICENCE "lic"
+#endif
 
 // const char* sSysID, const char* sJobID, const char* sJobData
 int myCallBack(const char *sSysID, const char *sJobID, const char *sJobData)
@@ -162,6 +161,7 @@ int main()
 {
     printf("PID: '%d'\n", getpid());
 	jobId = job_id_to_string(getpid());
+	printf("sJobId: '%s'\n", jobId);
 
     // initialise driver interface and register a callback function
     const char *retCode = ELICreate(LICENCE, LbwELI_VERSION, myCallBack);
@@ -194,7 +194,7 @@ int main()
     const char *mySessionId = createSession();
 
 
-	const char *csv = ELIOpen("jk", SYSTEM, CLIENT_ID);
+	const char *csv = ELIOpen("jk", SYSTEM, "");
 	const char *errorCode = getField(csv, 1);
 	if (strcmp(errorCode, "OK") == 0)
 	{
