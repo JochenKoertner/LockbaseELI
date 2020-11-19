@@ -141,7 +141,7 @@ namespace ui.Common
 				Payload = Encoding.UTF8.GetBytes(payload),
 				PayloadFormatIndicator = MqttPayloadFormatIndicator.CharacterData,
 				QualityOfServiceLevel = qos,
-				CorrelationData = Encoding.UTF8.GetBytes(jobId.ToString("x9"))
+				CorrelationData = Encoding.UTF8.GetBytes(jobId.ToHex())
 			};
 			await client.PublishAsync(msg, cancellationToken);
 		}

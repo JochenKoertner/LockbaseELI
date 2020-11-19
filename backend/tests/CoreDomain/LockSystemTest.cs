@@ -368,5 +368,28 @@ namespace Lockbase.Tests.CoreDomain
 			Assert.NotNull(policiy);
 			Assert.Equal("080002uc1k25o", policiy.Id);
 		}
+
+		[Fact]
+		public void TestDeltaLockNewSystem()
+		{
+			const string lockName = "100";
+			const string keyName = "103-1";
+
+			var system_t0 = CreateEmptyLockSystem();
+			var system_t1 = system_t0
+				.DefineStatement($"CL,APP,{lockName}")
+				.DefineStatement($"CK,APP,{keyName}");
+
+			var newEntities = LockSystem.CreatedEntities(system_t0, system_t1);
+			Assert.Equal(2, newEntities.Count());
+			Assert.Equal(lockName, newEntities.OfType<Lock>().Single().Name);
+			Assert.Equal(keyName, newEntities.OfType<Key>().Single().Name);
+
+			var oldEntities = LockSystem.RemovedEntities(system_t1, system_t0);
+			Assert.Equal(2, oldEntities.Count());
+			Assert.Equal(lockName, oldEntities.OfType<Lock>().Single().Name);
+			Assert.Equal(keyName, oldEntities.OfType<Key>().Single().Name);
+		}
+
 	}
 }

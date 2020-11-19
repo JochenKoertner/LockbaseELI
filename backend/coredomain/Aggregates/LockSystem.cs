@@ -7,10 +7,11 @@ using Lockbase.CoreDomain.ValueObjects;
 using Lockbase.CoreDomain.Extensions;
 using Lockbase.CoreDomain.Services;
 using Lockbase.CoreDomain.Enumerations;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Lockbase.CoreDomain.Aggregates
 {
-	public class LockSystem
+	public class LockSystem : IEquatable<LockSystem>
 	{
 		public static LockSystem Create(Id id) => new LockSystem(id);
 
@@ -191,10 +192,14 @@ namespace Lockbase.CoreDomain.Aggregates
 				return DefineKey(tail);
 			else if (head.Equals("CK"))
 				return CreateKey(tail);
+			else if (head.Equals("RK"))
+				return RemoveKey(tail);
 			else if (head.Equals("DL"))
 				return DefineLock(tail);
 			else if (head.Equals("CL"))
 				return CreateLock(tail);
+			else if (head.Equals("RL"))
+				return RemoveLock(tail);
 			else if (head.Equals("AT"))
 				return DefinePolicy(tail);
 			else if (head.Equals("AL"))
@@ -218,11 +223,27 @@ namespace Lockbase.CoreDomain.Aggregates
 			return WithKeys(this.keys.Remove(key.Id));
 		}
 
+		private LockSystem RemoveKey(string statement) 
+		{
+			var properties = statement.Split(',');
+			var id = properties.ElementAt(0);
+			if (!this.keys.ContainsKey(id)) throw new ArgumentException($"Key '{id}' not found!");
+			return WithKeys(this.keys.Remove(id));
+		}
+
 
 		public LockSystem RemoveLock(Lock @lock)
 		{
 			if (!this.locks.ContainsKey(@lock.Id)) throw new ArgumentException($"Lock '{@lock.Id}' not found!");
 			return WithLocks(this.locks.Remove(@lock.Id));
+		}
+
+		private LockSystem RemoveLock(string statement) 
+		{
+			var properties = statement.Split(',');
+			var id = properties.ElementAt(0);
+			if (!this.locks.ContainsKey(id)) throw new ArgumentException($"Lock '{id}' not found!");
+			return WithLocks(this.locks.Remove(id));
 		}
 
 		#endregion
@@ -286,6 +307,33 @@ namespace Lockbase.CoreDomain.Aggregates
 				.Where(assignment => assignment.Match(@lock, key))
 				.Select(assignment => assignment.Source);
 
+
 		#endregion
+
+		public bool Equals([AllowNull] LockSystem other) 
+		{
+			if (other == null)
+				return false;
+
+			return 
+				keys.Equals(other.keys) &&
+				locks.Equals(other.locks) &&
+				policies.Equals(other.policies) &&
+				assignments.Equals(other.assignments);
+		}
+
+		public static IEnumerable<Entity> CreatedEntities(LockSystem preceding, LockSystem present)
+		{
+			var newKeys = present.Keys.Except(preceding.Keys).Cast<Entity>();
+			var newLocks = present.Locks.Except(preceding.Locks).Cast<Entity>();
+			return newKeys.Concat(newLocks).ToList();
+		}
+
+		public static IEnumerable<Entity> RemovedEntities(LockSystem preceding, LockSystem present)
+		{
+			var removedKeys = preceding.Keys.Except(present.Keys).Cast<Entity>();
+			var removedLocks = preceding.Locks.Except(present.Locks).Cast<Entity>();
+			return removedKeys.Concat(removedLocks).ToList();
+		}
 	}
 }
