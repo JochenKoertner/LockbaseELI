@@ -326,6 +326,7 @@ namespace Lockbase.CoreDomain.Aggregates
 		{
 			var newKeys = present.Keys.Except(preceding.Keys).Cast<Entity>();
 			var newLocks = present.Locks.Except(preceding.Locks).Cast<Entity>();
+			var newPolicies = present.Policies.Except(preceding.Policies).Cast<Entity>();
 			return newKeys.Concat(newLocks).ToList();
 		}
 

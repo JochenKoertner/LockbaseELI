@@ -67,7 +67,7 @@ namespace Lockbase.CoreDomain.Services
 
 			if (systemBefore != systemAfter)
 			{
-				var statements =LockSystem.CreatedEntities(systemBefore, systemAfter).Select(entity =>
+				var statements = LockSystem.CreatedEntities(systemBefore, systemAfter).Select(entity =>
 					{
 						switch (entity)
 						{
@@ -77,37 +77,39 @@ namespace Lockbase.CoreDomain.Services
 							case Lock @lock:
 								return DefinedLock(@lock);
 
-							default:
-								throw new ArgumentException(
-									message: "Missing 'DefinedXXX' operation for entity",
-									paramName: nameof(entity));
-						}
-					}).Concat( LockSystem.RemovedEntities(systemBefore, systemAfter).Select( entity => 
+							case AccessPolicy accessPolicy:
+								return DefinedAccessPolicy(systemAfter, accessPolicy);
+
+							 default:
+								 throw new ArgumentException(
+									 message: "Missing 'DefinedXXX' operation for entity",
+									 paramName: nameof(entity));
+						 }
+					 }).Concat(LockSystem.RemovedEntities(systemBefore, systemAfter).Select(entity =>
+				  {
+					switch (entity)
 					{
-						switch (entity) 
-						{
-							case Key key:
-								return RemovedKey(key);
+						case Key key:
+							return RemovedKey(key);
 
-							case Lock @lock:
-								return RemovedLock(@lock);
+						case Lock @lock:
+							return RemovedLock(@lock);
 
-							default:
-								throw new ArgumentException(
-									message: "Missing 'RemovedXXX' operation for entity",
-									paramName: nameof(entity));
-						}	
-					}));
+						default:
+							throw new ArgumentException(
+								message: "Missing 'RemovedXXX' operation for entity",
+								paramName: nameof(entity));
+					  }
+				  }));
 
-				statements.ToObservable().Subscribe(s => this.statementObserver.OnNext(new Statement(replyTo, jobId, s)));
-
-				// foreach (var s in statements)
-				// {
-				// 	this.statementObserver.OnNext(new Statement(replyTo, jobId, s));
-				// }
-
+				statements
+					.ToObservable()
+					.Select(s => new Statement(replyTo, jobId, s))
+					.Subscribe(this.statementObserver);
 			}
 		}
+
+		
 
 		private void ListEvents(string topic, int jobId, DateTime? since)
 		{
@@ -135,7 +137,11 @@ namespace Lockbase.CoreDomain.Services
 
 		private string DefinedKey(Key key) => $"DK,{key.Id},,,,{key.ExtData}";
 		private string DefinedLock(Lock @lock) => $"DL,{@lock.Id},,,,{@lock.ExtData}";
+		private string DefinedAccessPolicy(LockSystem system, AccessPolicy accessPolicy) => 
+			system.QueryKey(accessPolicy.Id) != (Key)null ? 
+				$"AKR,{accessPolicy.Id},OK" : $"ALR,{accessPolicy.Id},OK";
 		private string RemovedKey(Key key) => $"RKR,{key.Id},OK";
 		private string RemovedLock(Lock @lock) => $"RDR,{@lock.Id},OK";
+
 	}
 }
