@@ -1,12 +1,12 @@
 using System;
 using Lockbase.CoreDomain.Services;
-using Xunit; 
+using Xunit;
 using FakeItEasy;
 using Lockbase.CoreDomain.Contracts;
-using Lockbase.CoreDomain;
 using Lockbase.CoreDomain.Extensions;
 
-namespace Lockbase.Tests.CoreDomain {
+namespace Lockbase.Tests.CoreDomain
+{
 
 	public class IdTest {
 		
