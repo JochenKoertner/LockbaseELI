@@ -34,7 +34,6 @@ namespace Lockbase.Tests.Services
 				OnCompleted<Message>(020)
 			);
 
-
 			var _ = new MessageBusInteractor(CreateLockSystem(), CreateLoggerFactory(), this.target, source);
 
 			// Act
@@ -46,6 +45,32 @@ namespace Lockbase.Tests.Services
 				new Recorded<Notification<Statement>>[] { OnNext(010, expected), OnCompleted<Statement>(010) },
 				this.target.Messages);
 		}
+
+		[Fact]
+		public void CkCLOnEmptySystem()
+		{
+			// Arrange 
+			var source = scheduler.CreateColdObservable(
+				OnNext(010, new Message() { text = "CK,APP,103-1\nCL,APP,105", correlationId = 4711, replyTo = nameof(CkCLOnEmptySystem) }),
+				OnCompleted<Message>(020)
+			);
+
+			var _ = new MessageBusInteractor(CreateLockSystem(), CreateLoggerFactory(), this.target, source);
+
+			// Act
+			var messageObserver = this.scheduler.Start(() => source, 0, 0, TimeSpan.FromSeconds(5).Ticks);
+
+			// Assert 
+			var expected = new Statement(nameof(CkCLOnEmptySystem), 4711, 
+				"DK,040000jbookls,,,,\nDL,040000rbookls,,,,");
+			ReactiveAssert.AreElementsEqual(
+				new Recorded<Notification<Statement>>[] { 
+					OnNext(010, expected),
+					OnCompleted<Statement>(010) },
+				this.target.Messages);
+		}
+
+
 
 		private AtomicValue<LockSystem> CreateLockSystem() => new AtomicValue<LockSystem>(CreateEmptyLockSystem());
 
