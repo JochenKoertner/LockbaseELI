@@ -66,11 +66,11 @@ namespace Lockbase.CoreDomain.ValueObjects  {
 		public readonly DateTime? EndTime;
 		public readonly bool Negation;
 
-		public static DateTime StringToDateTime(string value) {
-			return DateTime.ParseExact(value,
+		public static DateTime StringToDateTime(string value) => DateTime.ParseExact(value,
 				"yyyyMMdd%THHmmss%Z",
 				CultureInfo.InvariantCulture,
 				DateTimeStyles.None).ToUniversalTime();
-		}
+
+		public static string DateTimeToString(DateTime value) => value.ToString("yyyyMMdd%THHmmss%Z");
 	}
 }

@@ -24,14 +24,21 @@
 			"type": "lldb",
 			"request": "attach",
 			"name": "Attach via lldb",
-			"program": "${workspaceFolder}//build/LbELI_cli"
+			"windows" : {
+				//"program": "C:\\LockbaseDemo\\Lockbase\\Lbw.exe"
+				"program": "C:\\Users\\SB\\Projects\\LockbaseELI\\driver\\build\\LbELI_cli.exe"
+			},
+			"osx" : {
+				"program": "${workspaceFolder}//build/LbELI_cli"
+			}
+
 		},
 		{
 			"name": "LLDB Extension",
 			"type": "lldb",
 			"request": "custom",
 			"targetCreateCommands": [
-				"target create ${workspaceFolder}/build/LbELI_cli"
+				"target create ${workspaceFolder}//build/LbELI_cli"
 			],
 			"processCreateCommands": [
 				"settings set target.run-args value1 value2 value3",
@@ -48,7 +55,7 @@
 			"stopAtEntry": true,
 			"cwd": "${workspaceFolder}",
 			"environment": [],
-			"externalConsole": false,
+			"externalConsole": true,
 			"MIMode":"gdb",
 			"miDebuggerPath": "C:/tools/mingw32/bin/gdb.exe"
 		}

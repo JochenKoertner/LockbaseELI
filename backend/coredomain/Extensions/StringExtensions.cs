@@ -23,10 +23,11 @@ namespace Lockbase.CoreDomain.Extensions
             return value;
         }
 
-		public static string Shorten(this string value) 
-		=> string.Concat(value.Take(5)
+		public static string Shorten(this string value, int maxLen = 13, int takeLen = 5)
+		=> value.Length <= maxLen ? value :
+			string.Concat(value.Take(takeLen)
             .Concat(Enumerable.Repeat('.', 3))
-            .Concat(value.TakeLast(5)));
+            .Concat(value.TakeLast(takeLen)));
 
 		public static int FromHex(this string hexValue) =>
 			int.Parse(hexValue, System.Globalization.NumberStyles.HexNumber);

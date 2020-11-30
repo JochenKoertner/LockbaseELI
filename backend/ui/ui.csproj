@@ -32,8 +32,7 @@
 		<PackageReference Include="System.Reactive.Linq" Version="4.3.2" />
 		<PackageReference Include="System.Reactive.Interfaces" Version="4.3.2" />
 		<PackageReference Include="System.Reactive.PlatformServices" Version="4.3.2" />
-		<PackageReference Include="System.Net.Mqtt" Version="0.6.0-beta" />
-		<PackageReference Include="System.Net.Mqtt.Server" Version="0.6.0-beta" />
+		<PackageReference Include="MQTTnet" Version="3.0.13" />
 		<PackageReference Include="ElectronNET.API" Version="5.22.14" />
 	</ItemGroup>
 
@@ -44,9 +43,9 @@
 		<None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
 	</ItemGroup>
 
-	<ItemGroup>
+	<!-- <ItemGroup>
 		<DotNetCliToolReference Include="ElectronNET.CLI" Version="0.0.9" />
-	</ItemGroup>
+	</ItemGroup> -->
 
 	<ItemGroup>
 		<ProjectReference Include="../coredomain/coredomain.csproj" />
@@ -54,9 +53,9 @@
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 			<CopyToPublishDirectory>Never</CopyToPublishDirectory>
 		</Content>
-		<Content Update="electron.manifest.json">
+		<!-- <Content Update="electron.manifest.json">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</Content>
+		</Content> -->
 		<Content Remove="appsettings.Development.json" />
 	</ItemGroup>
 

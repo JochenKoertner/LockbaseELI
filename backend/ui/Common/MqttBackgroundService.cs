@@ -1,5 +1,4 @@
 using System;
-using System.Net.Mqtt;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Text;
@@ -11,168 +10,140 @@ using Lockbase.CoreDomain.ValueObjects;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
+using MQTTnet;
+using MQTTnet.Client;
+using MQTTnet.Client.Options;
+using MQTTnet.Formatter;
+using MQTTnet.Protocol;
 
 namespace ui.Common
 {
-	public class Message
-	{
-		public string session_id { get; set; }
-		public string text { get; set; }
-		public string reply_to { get; set; }
-	}
 
 	public class MqttBackgroundService : BackgroundService
 	{
-		private const string TOPIC_RESPONSE = "response";
 		private readonly BrokerConfig _brokerConfig;
 		private readonly ILogger<MqttBackgroundService> _logger;
-		private IMqttServer _mqttServer;
-
 		private IDisposable _disposables;
 
-		private readonly IMessageBusInteractor messageBusInteractor;
+		private readonly IMqttClient mqttClient;
+
 		private readonly IObservable<Statement> observableStatement;
 		private readonly IObserver<Statement> statementObserver;
 
-        private readonly IObserver<Message> messageObserver;
+		private readonly IObserver<Message> messageObserver;
 
 		public MqttBackgroundService(
 			IOptions<BrokerConfig> brokerConfig,
 			ILoggerFactory loggerFactory,
-			IMessageBusInteractor messageBusInteractor,
 			IObservable<Statement> observableStatement,
 			IObserver<Statement> statementObserver,
-            IObserver<Message> messageObserver)
+			IObserver<Message> messageObserver)
 		{
 			_brokerConfig = brokerConfig.Value;
 			_logger = loggerFactory.CreateLogger<MqttBackgroundService>();
-			this.messageBusInteractor = messageBusInteractor;
 			this.observableStatement = observableStatement;
 			this.statementObserver = statementObserver;
-            this.messageObserver = messageObserver;
+			this.messageObserver = messageObserver;
+
+			// Create a new MQTT client.
+			this.mqttClient = new MqttFactory().CreateMqttClient();
+
+			this.mqttClient.UseApplicationMessageReceivedHandler(e => HandleMessage(e.ApplicationMessage));
+
+
+			// MqttNetGlobalLogger.LogMessagePublished += (sender, e) => _logger.LogInformation(e.LogMessage.ToString());
 		}
 
-		private async Task<IMqttClient> CreateClient()
+		private async Task ConnectClient(CancellationToken cancellationToken)
 		{
-			var configuration = new MqttConfiguration
-			{
-				BufferSize = 128 * 1024,
-				Port = _brokerConfig.Port,
-				KeepAliveSecs = 100,
-				WaitTimeoutSecs = 2,
-				MaximumQualityOfService = MqttQualityOfService.AtMostOnce,
-				AllowWildcardsInTopicFilters = true
-			};
+			// Create TCP based options using the builder.
+			var options = new MqttClientOptionsBuilder()
+				.WithClientId("backend")
+				.WithProtocolVersion(MqttProtocolVersion.V500)
+				.WithTcpServer(_brokerConfig.HostName, _brokerConfig.Port)
+				.WithCleanSession()
+				.Build();
 
-			return await MqttClient.CreateAsync(_brokerConfig.HostName, configuration);
+
+			await this.mqttClient.ConnectAsync(options, cancellationToken);
 		}
 
-		protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+		protected override Task ExecuteAsync(CancellationToken stoppingToken)
 		{
-			var mqttClient = await CreateClient();
+			return Task.CompletedTask;
+		}
 
-			var sessionState = await Connect(mqttClient, _brokerConfig.User);
-
+		public override async Task StartAsync(CancellationToken cancellationToken)
+		{
+			await ConnectClient(cancellationToken);
 			_logger.LogInformation($"MQTT Create Client (User:'{_brokerConfig.User}', Topic:'{_brokerConfig.Topic}')");
-			
 
-			await mqttClient.SubscribeAsync(_brokerConfig.Topic, MqttQualityOfService.ExactlyOnce); //QoS2
+			var topicFilter = new MqttTopicFilterBuilder()
+				.WithTopic(_brokerConfig.Topic)
+				.WithAtLeastOnceQoS()
+				.Build();
+
+			var subscritionChannel = await this.mqttClient.SubscribeAsync(topicFilter);
 
 			// Hier werden die Antworten zu dem Treiber per 'Publish' verschickt
 			var subscriptionStatement = this.observableStatement.Subscribe(
 				async statement =>
 					await Publish(
-						client: mqttClient, 
-						topic: statement.Topic, 
-						sessionId: statement.SessionId, 
+						client: mqttClient,
+						topic: statement.Topic,
+						jobId: statement.JobId,
 						payload: statement.Message,
-						replyTo: TOPIC_RESPONSE,
-						qos: MqttQualityOfService.ExactlyOnce
+						qos: MqttQualityOfServiceLevel.AtLeastOnce,
+						cancellationToken: cancellationToken
 					)
 			);
 
 			// Hier kommen die Messages vom Treiber an und werden an 'HandleMessage' geroutet
-			var subscriptionChannel = mqttClient
-				.MessageStream
-				.Subscribe(async msg => {
-					if (msg.Topic.Equals(_brokerConfig.Topic))
-					{
-						await HandleMessage(msg);
-					}
-					else 
-						_logger.LogInformation($"Publish {msg.Topic} '{Encoding.UTF8.GetString(msg.Payload)}'");
-				});
-		
-			_disposables = new CompositeDisposable(
-				new []{mqttClient, subscriptionChannel, subscriptionStatement});
 
-			while (!stoppingToken.IsCancellationRequested)
-			{
-				await Task.Delay(5000, stoppingToken);
-			}
 
-			//Method to unsubscribe a topic or many topics, which means that the message will no longer
-			//be received in the MessageStream anymore
-			await mqttClient.UnsubscribeAsync(_brokerConfig.Topic);
+			this._disposables = new CompositeDisposable(
+				new[] { subscriptionStatement });
 
-			await Disconnect(mqttClient);
+			await base.StartAsync(cancellationToken);
 		}
 
-		public override Task StartAsync(CancellationToken cancellationToken)
+		public override async Task StopAsync(CancellationToken cancellationToken)
 		{
-			_logger.LogInformation($"Start MQTT-Broker (Port:{_brokerConfig.Port})");
-			_mqttServer = MqttServer.Create(_brokerConfig.Port);
-			_mqttServer.Start();
-			return base.StartAsync(cancellationToken);
-		}
+			_logger.LogInformation("Stop MQTT-Service");
 
-		public override Task StopAsync(CancellationToken cancellationToken)
-		{
-			_logger.LogInformation("Stop MQTT-Broker");
-		
+			await this.mqttClient.DisconnectAsync();
+
 			_disposables?.Dispose();
 
-			_mqttServer.Stop();
-			_mqttServer.Dispose();
-
-			return base.StopAsync(cancellationToken);
+			await base.StopAsync(cancellationToken);
 		}
 
-        // Handelt Messages vom Treiber
-        private Task HandleMessage(MqttApplicationMessage msg)
+		// Handelt Messages vom Treiber
+		private Task HandleMessage(MqttApplicationMessage msg)
 		{
-			var message = JsonConvert.DeserializeObject<Message>(Encoding.UTF8.GetString(msg.Payload));
-			messageBusInteractor.Receive(replyTo: message.reply_to, sessionId: message.session_id.FromHex(), message: message.text);
+			var correlationId = msg.CorrelationData == null ? null : Encoding.UTF8.GetString(msg.CorrelationData);
+			var replyTo = msg.ResponseTopic;
+			var message = Encoding.UTF8.GetString(msg.Payload).TrimEnd();
 
-            this.messageObserver.OnNext(message);
+			_logger.LogInformation($"New Message = '{message.Shorten()}', CorrelationId = {correlationId}");
 
-            return Task.CompletedTask;
+			this.messageObserver.OnNext(new Message { text = message, replyTo = replyTo, correlationId = correlationId.FromHex() });
+			return Task.CompletedTask;
 		}
 
-		private async Task<SessionState> Connect(IMqttClient client, string clientId)
+		private async Task Publish(IMqttClient client, string topic, int jobId, string payload,
+			MqttQualityOfServiceLevel qos, CancellationToken cancellationToken)
 		{
-			var sessionState = await client.ConnectAsync(new MqttClientCredentials(clientId), cleanSession: true);
-			return sessionState;
-		}
-
-		private async Task Disconnect(IMqttClient client)
-		{
-			await client.DisconnectAsync();
-		}
-
-		private async Task Publish(IMqttClient client, string topic, int sessionId, string payload, string replyTo, MqttQualityOfService qos)
-		{
-			_logger.LogInformation($"Topic: '{topic}', Session:{sessionId}, '{payload}'");
-			var message = new Message()
+			_logger.LogInformation($"publish({topic}, {jobId.ToHex()}, '{payload.Shorten()}')");
+			var msg = new MqttApplicationMessage()
 			{
-				session_id = sessionId.ToString("X8"),
-				text = payload,
-				reply_to = replyTo
+				Topic = topic,
+				Payload = Encoding.UTF8.GetBytes(payload),
+				PayloadFormatIndicator = MqttPayloadFormatIndicator.CharacterData,
+				QualityOfServiceLevel = qos,
+				CorrelationData = Encoding.UTF8.GetBytes(jobId.ToHex())
 			};
-			var json = JsonConvert.SerializeObject(message, Formatting.Indented);
-			var msg = new MqttApplicationMessage(topic, Encoding.UTF8.GetBytes(json));
-			await client.PublishAsync(msg, qos);
+			await client.PublishAsync(msg, cancellationToken);
 		}
 	}
 }
