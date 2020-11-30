@@ -49,24 +49,24 @@ namespace Lockbase.CoreDomain.Services
 			LockSystem systemBefore = lockSystem;
 			LockSystem systemAfter = message.Split("\n")
 				.Where(x => !string.IsNullOrWhiteSpace(x))
-				.Aggregate( systemBefore, (accu, current) => 
-			{
-				int index = current.IndexOf(',');
-				string head = index == -1 ? current : current.Substring(0, index);
-				if (head.Equals("LE"))
-				{
-					return ListEvents(accu, replyTo, jobId, null);
-				}
-				else if (head.Equals("LD"))
-				{
-					return ListData(accu, replyTo, jobId);
-				}
-				else
-				{
-					return accu.DefineStatement(current);
-				}
-			});
-			
+				.Aggregate(systemBefore, (accu, current) =>
+		   {
+			   int index = current.IndexOf(',');
+			   string head = index == -1 ? current : current.Substring(0, index);
+			   if (head.Equals("LE"))
+			   {
+				   return ListEvents(accu, replyTo, jobId, null);
+			   }
+			   else if (head.Equals("LD"))
+			   {
+				   return ListData(accu, replyTo, jobId);
+			   }
+			   else
+			   {
+				   return accu.DefineStatement(current);
+			   }
+		   });
+
 			lockSystem.SetValue(x => systemAfter);
 
 			if (systemBefore != systemAfter)
@@ -88,8 +88,8 @@ namespace Lockbase.CoreDomain.Services
 								throw new ArgumentException(
 									message: "Missing 'DefinedXXX' operation for entity",
 									paramName: nameof(entity));
-						 }
-					 }).Concat(LockSystem.RemovedEntities(systemBefore, systemAfter).Select(entity =>
+						}
+					}).Concat(LockSystem.RemovedEntities(systemBefore, systemAfter).Select(entity =>
 				{
 					switch (entity)
 					{
@@ -104,23 +104,42 @@ namespace Lockbase.CoreDomain.Services
 								message: "Missing 'RemovedXXX' operation for entity",
 								paramName: nameof(entity));
 					}
+				})).Concat(LockSystem.UpdatedEntities(systemBefore, systemAfter).Select(entity =>
+				{
+					switch (entity)
+					{
+						case Key key:
+							return UpdatedKey(key);
+						
+						case Lock @lock:
+							return UpdatedLock(@lock);
+						
+						default:
+							throw new ArgumentException(
+								message: "Missing 'UpdatedXXX' operation for entity",
+								paramName: nameof(entity));
+					}
+
 				}));
 
-				statements
-					.ToObservable()
-					.Aggregate( (accu, current) => accu + "\n" + current)
-					.Select(s => new Statement(replyTo, jobId, s))
-					.Subscribe(this.statementObserver);
+				if (!statements.IsEmpty())
+				{
+					statements
+					   .ToObservable()
+					   .Aggregate((accu, current) => accu + "\n" + current)
+					   .Select(s => new Statement(replyTo, jobId, s))
+					   .Subscribe(this.statementObserver);
+				}
 			}
 		}
 
 		private LockSystem ListEvents(LockSystem lockSystem, string replyTo, int jobId, DateTime? since)
 		{
-			lockSystem.Events 
-				.Select( @event => String.Join(',', FormatEvent(@event)))
-				.Append( "LER,OK")
+			lockSystem.Events
+				.Select(@event => String.Join(',', FormatEvent(@event)))
+				.Append("LER,OK")
 				.ToObservable()
-				.Aggregate( (accu, current) => accu + "\n" + current) 
+				.Aggregate((accu, current) => accu + "\n" + current)
 				.Select(s => new Statement(replyTo, jobId, s))
 				.Subscribe(this.statementObserver);
 
@@ -129,13 +148,13 @@ namespace Lockbase.CoreDomain.Services
 
 		private LockSystem ListData(LockSystem lockSystem, string replyTo, int jobId)
 		{
-			lockSystem.Keys 
-				.Select( key => String.Join(',', FormatKey(key)))
-				.Concat( lockSystem.Locks 
-					.Select( @lock => String.Join(',', FormatLock(@lock))))
-				.Append( "LDR,OK")
+			lockSystem.Keys
+				.Select(key => String.Join(',', FormatKey(key)))
+				.Concat(lockSystem.Locks
+					.Select(@lock => String.Join(',', FormatLock(@lock))))
+				.Append("LDR,OK")
 				.ToObservable()
-				.Aggregate( (accu, current) => accu + "\n" + current)
+				.Aggregate((accu, current) => accu + "\n" + current)
 				.Select(s => new Statement(replyTo, jobId, s))
 				.Subscribe(this.statementObserver);
 
@@ -143,9 +162,11 @@ namespace Lockbase.CoreDomain.Services
 		}
 
 		private string DefinedKey(Key key) => $"DK,{key.Id},,,,{key.ExtData}";
+		private string UpdatedKey(Key key) => $"DK,{key.Id},,,,{(key.ExtData+"\0").ToBase64()}";
 		private string DefinedLock(Lock @lock) => $"DL,{@lock.Id},,,,{@lock.ExtData}";
-		private string DefinedAccessPolicy(LockSystem system, AccessPolicy accessPolicy) => 
-			system.QueryKey(accessPolicy.Id) != (Key)null ? 
+		private string UpdatedLock(Lock @lock) => $"DL,{@lock.Id},,,,{(@lock.ExtData+"\0").ToBase64()}";
+		private string DefinedAccessPolicy(LockSystem system, AccessPolicy accessPolicy) =>
+			system.QueryKey(accessPolicy.Id) != (Key)null ?
 				$"AKR,{accessPolicy.Id},OK" : $"ALR,{accessPolicy.Id},OK";
 		private string RemovedKey(Key key) => $"RKR,{key.Id},OK";
 		private string RemovedLock(Lock @lock) => $"RDR,{@lock.Id},OK";

@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using Lockbase.CoreDomain.Extensions;
 
 namespace Lockbase.CoreDomain.Entities
@@ -27,8 +29,25 @@ namespace Lockbase.CoreDomain.Entities
 		private string debugDescription
 		=> String.Join(',', new[]{"DL", this.Id, this.Func, this.AppId,
 			$"{this.Name}, {this.ExtData}\0".ToBase64().Shorten()});
+	}
+	public class LockComparer : IEqualityComparer<Lock>
+	{
+		public bool Equals([AllowNull] Lock x, [AllowNull] Lock y)
+		{
+			return
+				x.Name.Equals(y.Name) &&
+				x.Func.Equals(y.Func) &&
+				x.AppId.Equals(y.AppId) &&
+				x.ExtData.Equals(y.ExtData);
+		}
 
-
-
+		public int GetHashCode([DisallowNull] Lock value)
+		{
+			return
+				value.Name.GetHashCode() ^
+				value.Func.GetHashCode() ^
+				value.AppId.GetHashCode() ^
+				value.ExtData.GetHashCode();
+		}
 	}
 }

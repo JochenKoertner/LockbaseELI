@@ -327,7 +327,18 @@ namespace Lockbase.CoreDomain.Aggregates
 			var newKeys = present.Keys.Except(preceding.Keys).Cast<Entity>();
 			var newLocks = present.Locks.Except(preceding.Locks).Cast<Entity>();
 			var newPolicies = present.Policies.Except(preceding.Policies).Cast<Entity>();
-			return newKeys.Concat(newLocks).ToList();
+			return newKeys.Concat(newLocks).Concat(newPolicies).ToList();
+		}
+
+		public static IEnumerable<Entity> UpdatedEntities(LockSystem preceding, LockSystem present)
+		{
+			IEqualityComparer<Key> keyComparer = new KeyComparer();
+			var updatedKeys = present.Keys.Intersect(preceding.Keys).Except(preceding.Keys.Intersect(present.Keys), keyComparer).Cast<Entity>();
+			IEqualityComparer<Lock> lockComparer = new LockComparer();
+			var updatedLocks = present.Locks.Intersect(preceding.Locks).Except(preceding.Locks.Intersect(present.Locks), lockComparer).Cast<Entity>();
+
+			//var newPolicies = present.Policies.Except(preceding.Policies).Cast<Entity>();
+			return updatedKeys.Concat(updatedLocks).ToList();
 		}
 
 		public static IEnumerable<Entity> RemovedEntities(LockSystem preceding, LockSystem present)
