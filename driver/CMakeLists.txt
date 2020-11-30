@@ -45,24 +45,27 @@ file(GLOB SOURCES_PAHO
         ${PROJECT_SOURCE_DIR}/LinkedList.c
         ${PROJECT_SOURCE_DIR}/Log.c
         ${PROJECT_SOURCE_DIR}/Messages.c
-        ${PROJECT_SOURCE_DIR}/StackTrace.c
-        ${PROJECT_SOURCE_DIR}/SHA1.c
-        ${PROJECT_SOURCE_DIR}/Socket.c
-        ${PROJECT_SOURCE_DIR}/SocketBuffer.c
-        ${PROJECT_SOURCE_DIR}/WebSocket.c
-        ${PROJECT_SOURCE_DIR}/Tree.c
-        ${PROJECT_SOURCE_DIR}/Thread.c
-        ${PROJECT_SOURCE_DIR}/utf-8.c
+        ${PROJECT_SOURCE_DIR}/MQTTClient.c
         ${PROJECT_SOURCE_DIR}/MQTTPacket.c
         ${PROJECT_SOURCE_DIR}/MQTTPacketOut.c
-        ${PROJECT_SOURCE_DIR}/MQTTProperties.c
         ${PROJECT_SOURCE_DIR}/MQTTPersistence.c
         ${PROJECT_SOURCE_DIR}/MQTTPersistenceDefault.c
+        ${PROJECT_SOURCE_DIR}/MQTTProperties.c
         ${PROJECT_SOURCE_DIR}/MQTTProtocol.c
         ${PROJECT_SOURCE_DIR}/MQTTProtocolClient.c
         ${PROJECT_SOURCE_DIR}/MQTTProtocolOut.c
-        ${PROJECT_SOURCE_DIR}/MQTTClient.c
+        ${PROJECT_SOURCE_DIR}/MQTTReasonCodes.c
         ${PROJECT_SOURCE_DIR}/MQTTTime.c
+        ${PROJECT_SOURCE_DIR}/OsWrapper.c
+        ${PROJECT_SOURCE_DIR}/SHA1.c
+        ${PROJECT_SOURCE_DIR}/Socket.c
+        ${PROJECT_SOURCE_DIR}/SocketBuffer.c
+        ${PROJECT_SOURCE_DIR}/SSLSocket.c
+        ${PROJECT_SOURCE_DIR}/StackTrace.c
+        ${PROJECT_SOURCE_DIR}/Thread.c
+        ${PROJECT_SOURCE_DIR}/Tree.c
+        ${PROJECT_SOURCE_DIR}/utf-8.c
+        ${PROJECT_SOURCE_DIR}/WebSocket.c
         )
 file(GLOB INCLUDE_PAHO
         ${PROJECT_SOURCE_DIR}/Base64.h
@@ -71,14 +74,6 @@ file(GLOB INCLUDE_PAHO
         ${PROJECT_SOURCE_DIR}/Log.h
         ${PROJECT_SOURCE_DIR}/Messages.h
         ${PROJECT_SOURCE_DIR}/LinkedList.h
-        ${PROJECT_SOURCE_DIR}/StackTrace.h
-        ${PROJECT_SOURCE_DIR}/SHA1.h
-        ${PROJECT_SOURCE_DIR}/Socket.h
-        ${PROJECT_SOURCE_DIR}/SocketBuffer.h
-        ${PROJECT_SOURCE_DIR}/WebSocket.h
-        ${PROJECT_SOURCE_DIR}/Tree.h
-        ${PROJECT_SOURCE_DIR}/Thread.h
-        ${PROJECT_SOURCE_DIR}/utf-8.h
         ${PROJECT_SOURCE_DIR}/MQTTPacket.h
         ${PROJECT_SOURCE_DIR}/MQTTPacketOut.h
         ${PROJECT_SOURCE_DIR}/MQTTProperties.h
@@ -88,8 +83,21 @@ file(GLOB INCLUDE_PAHO
         ${PROJECT_SOURCE_DIR}/MQTTProtocolClient.h
         ${PROJECT_SOURCE_DIR}/MQTTProtocolOut.h
         ${PROJECT_SOURCE_DIR}/MQTTClient.h
-        ${PROJECT_SOURCE_DIR}/MQTTTime.h
 		${PROJECT_SOURCE_DIR}/MQTTExportDeclarations.h
+		${PROJECT_SOURCE_DIR}/MQTTReasonCodes.h
+		${PROJECT_SOURCE_DIR}/MQTTSubscripeOpts.h
+        ${PROJECT_SOURCE_DIR}/MQTTTime.h
+        ${PROJECT_SOURCE_DIR}/mutex_type.h
+        ${PROJECT_SOURCE_DIR}/OsWrapper.h
+        ${PROJECT_SOURCE_DIR}/SHA1.h
+        ${PROJECT_SOURCE_DIR}/Socket.h
+        ${PROJECT_SOURCE_DIR}/SocketBuffer.h
+        ${PROJECT_SOURCE_DIR}/SSLSocket.h
+        ${PROJECT_SOURCE_DIR}/StackTrace.h
+        ${PROJECT_SOURCE_DIR}/Thread.h
+        ${PROJECT_SOURCE_DIR}/Tree.h
+        ${PROJECT_SOURCE_DIR}/utf-8.h
+        ${PROJECT_SOURCE_DIR}/WebSocket.h
         )
 
 configure_file( 

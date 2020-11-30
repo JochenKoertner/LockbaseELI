@@ -28,11 +28,15 @@ static int jsoneq(const char *json, const jsmntok_t *tok, const char *s) {
 }
 
 LBELI_EXPORT char* session_id_to_string(int session_id);
+LBELI_EXPORT char* job_id_to_string(int job_id);
+
+char *topic_replyTo(const char *topic, const char *clientId);
+
 int string_to_session_id(const char* sSessID);
 char* formatUrl(const char* protocol, const char* host, long port);
 
-char* create_event_payload(const char* eventName, const char* sSessID, const char* sText, const char* sReplyTo);
-void parse_payload(const char* json, char** sessionId, char** text);
+char *create_event_payload(const char *sText);
+void parse_payload(const char *json, char **text);
 
 char* string_alloc(const char* source, int len);
 

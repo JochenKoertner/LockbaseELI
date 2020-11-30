@@ -12,19 +12,27 @@
 #include "session_list.h"
 #include "driver.h"
 
-#define CLIENT_ID		"Alice"
+#define CLIENT_ID		"driver"
 
-#define TIMEOUT				1000L
+#define TIMEOUT 5000L
 
 #define QoS_FireAndForget	0
 #define QoS_AtLeastOnce		1
 #define QoS_ExactlyOnce		2
 
-
-#define RESPONSE_TOPIC		"respond"
+#define QoS 				QoS_AtLeastOnce
 
 int mqtt_create(const char* serverURI) {
-	return MQTTClient_create(&driverInfo->client, serverURI, CLIENT_ID, MQTTCLIENT_PERSISTENCE_NONE, NULL);
+	MQTTClient_createOptions createOpts = MQTTClient_createOptions_initializer;
+	createOpts.MQTTVersion = MQTTVERSION_5;
+	int rc = MQTTClient_createWithOptions(&driverInfo->client, serverURI,
+										  CLIENT_ID, MQTTCLIENT_PERSISTENCE_NONE, NULL, &createOpts);
+
+	if (rc != MQTTCLIENT_SUCCESS)
+	{
+		MQTTClient_destroy(&driverInfo->client);
+	}
+	return rc;
 }
 
 void mqtt_destroy() {
@@ -33,11 +41,20 @@ void mqtt_destroy() {
 
 int mqtt_connect() {
 	MQTTClient_connectOptions conn_opts = MQTTClient_connectOptions_initializer;
-	conn_opts.keepAliveInterval = 20;
-	conn_opts.cleansession = 1;
-	int rc ;
+	conn_opts.keepAliveInterval = 0;
+	conn_opts.cleansession = false;
+	conn_opts.cleanstart = true; 
+	conn_opts.MQTTVersion = MQTTVERSION_5;
 
-	if ((rc = MQTTClient_connect(driverInfo->client, &conn_opts)) != MQTTCLIENT_SUCCESS) // TODO: Hier kommt er nicht zurück??
+	MQTTResponse response = MQTTResponse_initializer;
+
+	MQTTProperties props = MQTTProperties_initializer;
+
+	response = MQTTClient_connect5(driverInfo->client, &conn_opts, &props, NULL);
+	int rc = response.reasonCode;
+
+	MQTTProperties_free(&props);
+	if (rc != MQTTCLIENT_SUCCESS)
 	{
 		printf("Failed to connect, return code %d\n", rc);
 		return rc;
@@ -49,17 +66,50 @@ int mqtt_disconnect() {
 	return MQTTClient_disconnect(driverInfo->client, 1000);
 }
 
-int mqtt_publish(const char* topic, const char* payload, int qos) {
+int mqtt_publish(const char* topic, const char* payload, int qos, const char* correlationId, const char* replyTo) {
 
 	MQTTClient_deliveryToken token;
 
 	MQTTClient_message pubmsg = MQTTClient_message_initializer;
 	pubmsg.payload = (char*)payload;
-	pubmsg.payloadlen = (int) strlen(payload);
-	pubmsg.qos = qos;
-	pubmsg.retained = 0;
+	pubmsg.payloadlen = (int)strlen(payload) + 1;
 
-	int rc = MQTTClient_publishMessage(driverInfo->client, topic, &pubmsg, &token);
+	if (strlen(payload) < 20)	// padding up small messages
+	{
+		size_t needed = snprintf(NULL, 0, "%-20s", payload);
+		char  *buffer = malloc(needed+1);
+		sprintf(buffer, "%-20s", payload);
+
+		pubmsg.payload = buffer;
+		pubmsg.payloadlen = needed;
+	}
+
+	pubmsg.qos = qos;
+	pubmsg.retained = false;
+
+	MQTTProperty property;
+	property.identifier = MQTTPROPERTY_CODE_RESPONSE_TOPIC;
+	property.value.data.data = replyTo;
+	property.value.data.len = (int)strlen(property.value.data.data);
+	MQTTProperties_add(&pubmsg.properties, &property);
+
+	property.identifier = MQTTPROPERTY_CODE_CORRELATION_DATA;
+	property.value.data.data = correlationId;
+	property.value.data.len = (int)strlen(property.value.data.data);
+	MQTTProperties_add(&pubmsg.properties, &property);
+
+	MQTTResponse resp;
+
+	resp = MQTTClient_publishMessage5(driverInfo->client, topic, &pubmsg, &token);
+	int rc = resp.reasonCode;
+	
+	if (strlen(payload) < 20)
+	{
+		free(pubmsg.payload);
+	}
+
+	MQTTProperties_free(&pubmsg.properties);
+
 	if (rc != MQTTCLIENT_SUCCESS) {
 		printf("Failed to publish, return code %d\n", rc);
 		return rc;
@@ -68,66 +118,68 @@ int mqtt_publish(const char* topic, const char* payload, int qos) {
 	if (qos == QoS_FireAndForget)
 		return rc;
 
-	printf("Waiting for up to %d seconds for publication of %s\n"
-		   "on topic %s for client with ClientID: %s\n",
-		   (int) (TIMEOUT / 1000), "sss", topic, CLIENT_ID);
 	rc = MQTTClient_waitForCompletion(driverInfo->client, token, TIMEOUT);
 	if (rc != MQTTCLIENT_SUCCESS) {
 		printf("Message publish timed out, return code %d\n", rc);
 		return rc;
 	}
-	return token;
+	return MQTTCLIENT_SUCCESS;
 }
 
 int mqtt_subscribe(const char* topic, int qos) {
-	int rc = MQTTClient_subscribe(driverInfo->client, topic, qos);
-	if (rc != MQTTCLIENT_SUCCESS) {
+	MQTTSubscribe_options subopts = MQTTSubscribe_options_initializer;
+	subopts.retainAsPublished = false;
+	subopts.noLocal = true;
+
+	MQTTProperties props = MQTTProperties_initializer;
+	int rc = MQTTClient_subscribe5(driverInfo->client, topic, qos, &subopts, &props).reasonCode;
+	MQTTProperties_free(&props);
+	if (rc != qos) {
 		printf("Failed to subscribe '%s' return code %d\n", topic, rc);
 	}
-	return rc;
+	return MQTTCLIENT_SUCCESS;
 }
 
 int mqtt_unsubscribe(const char* topic) {
-	int rc = MQTTClient_unsubscribe(driverInfo->client, topic);
+	MQTTProperties props = MQTTProperties_initializer;
+	int rc = MQTTClient_unsubscribe5(driverInfo->client, topic, &props).reasonCode;
+	MQTTProperties_free(&props);
 	if (rc != MQTTCLIENT_SUCCESS) {
 		printf("Failed to unsubscribe return code %d\n", rc);
 	}
 	return rc;
 }
 
-int mqtt_receive_msg(const char* topic, int timeout, char** payload) {
+int mqtt_receive_msg(const char *topic, int timeout, char **payload, char **correlationId)
+{
 	char* topicName = NULL;
 	int topicLen;
 	MQTTClient_message* msg = NULL;
 
-	int rc = mqtt_subscribe(topic, QoS_ExactlyOnce);
+	int rc = MQTTClient_receive(driverInfo->client, &topicName, &topicLen, &msg, timeout);
 	if (rc != MQTTCLIENT_SUCCESS) {
-		return rc;
-	}
-
-	if ((rc = MQTTClient_receive(driverInfo->client, &topicName, &topicLen, &msg, timeout)) != MQTTCLIENT_SUCCESS) {
-		mqtt_unsubscribe(topic);
 		printf("Failed to receive, return code %d\n", rc);
 		return rc;
 	}
 
-	if (topicName) {
+	if (topicName)
+	{
 		if (msg != NULL) {
 			*payload = strndup((char*)(msg->payload), msg->payloadlen);
-			// printf("Message received on topic %s is %.*s", topicName, msg->payloadlen, (char*)(msg->payload));
+
+			if (MQTTProperties_hasProperty(&msg->properties, MQTTPROPERTY_CODE_CORRELATION_DATA))
+			{
+				MQTTProperty *prop = MQTTProperties_getProperty(&msg->properties, MQTTPROPERTY_CODE_CORRELATION_DATA);
+				*correlationId = strndup((char *)(prop->value.data.data), prop->value.data.len);
+			}
 			MQTTClient_freeMessage(&msg);
+
 		}
 		MQTTClient_free(topicName);
 	};
 
-	rc = mqtt_unsubscribe(topic);
-	if (rc != MQTTCLIENT_SUCCESS)
-		return rc;
-
 	return MQTTCLIENT_SUCCESS;
 }
-
-
 
 /*
 *  LbwELI() is the constructor of the interface object, which is required to use the interface. It expects the
@@ -228,20 +280,24 @@ LBELI_EXPORT const char* ELIOpen( const char* sUserList, const char* sSysID, con
 	{
 		printf("system %s unknown\n", sSysID);
 		node = new_session(&driverInfo->sessions, sUserList, sSysID, sExtData);
+		printf("create new session for '%s' \n", sSysID);
 	}
 	else {
 		update_session(node, sUserList, sExtData);
 	}
 
+
 	char* sSessID = session_id_to_string(node->session_id);
-	char* message = create_event_payload("ELIOpen", sSessID, "OPEN,sSystem,sExtData", RESPONSE_TOPIC);
-	rc = mqtt_publish(sSysID, message, QoS_FireAndForget);
-	free(message);
+	char *replyTo = topic_replyTo(node->sSystem, sSessID);
+	
+	rc = mqtt_subscribe(replyTo, QoS);
+
 	if (rc != MQTTCLIENT_SUCCESS) {
-		free(sSessID);
+		printf("no possible to subscripe to '%s' \n", replyTo);
 		return "EUNKNOWN,,,,0";
 	}
-	
+	free(replyTo);
+
 	const char* sessionId = isNewSession ? "" : sSessID;
 
 	printf("__^__ELIOpen(%s)\n",sSessID);
@@ -285,22 +341,21 @@ LBELI_EXPORT const char* ELIClose( const char* sSysID, const char* sSessID ) {
 
 	char* sessionID = session_id_to_string(node->session_id);
 
-	char* message = create_event_payload("ELIClose", sessionID, "CLOSE,session", RESPONSE_TOPIC);
-	int rc = mqtt_publish(node->sSystem, message, QoS_FireAndForget);
-	free(message);
+	char *replyTo = topic_replyTo(node->sSystem, sessionID);
+	int rc = mqtt_unsubscribe(replyTo);
+	free(replyTo);
 	free(sessionID);
-	if (rc != MQTTCLIENT_SUCCESS) {
-		printf("not publish to %s retcode %d \n", node->sSystem, rc);
-		return "ECONNECTION";
-	}
-
-	// remove the session from the list
-	// remove_session(&driverInfo->sessions, session_id);
+	
+	if (rc != MQTTCLIENT_SUCCESS)
+	{
+		printf("mqtt_unsubscripe() => %i\n", rc);
+		return "EUNKNOWN";
+	}	
 
 	// disconnet from mqtt broker
-	int ret = mqtt_disconnect();
-	if (ret != MQTTCLIENT_SUCCESS) {
-		printf("mqtt_disconnect() => %i\n", ret);
+	rc = mqtt_disconnect();
+	if (rc != MQTTCLIENT_SUCCESS) {
+		printf("mqtt_disconnect() => %i\n", rc);
 		return "EUNKNOWN";
 	}
 	printf("__^__ELIClose(%s)\n",sSessID);
@@ -315,34 +370,30 @@ LBELI_EXPORT int ELIApp2Drv( const char* sSysID, const char *sJobID, const char*
 		return -1;
 	}
 
-	int session_id = node->session_id;
-
-	char* sSessionID = session_id_to_string(session_id);
-
-	char* message = create_event_payload("ELIApp2Drv", sSessionID, sJobData, RESPONSE_TOPIC);
-	int rc = mqtt_publish(node->sSystem, message, QoS_FireAndForget);
-	free(message);
+	char *sSessionID = session_id_to_string(node->session_id);
+	char *replyTo = topic_replyTo(node->sSystem, sSessionID);
+	int rc = mqtt_publish(node->sSystem, sJobData, QoS, sJobID, replyTo);
 	free(sSessionID);
+
 	if (rc != MQTTCLIENT_SUCCESS) {
 		printf("not publish to %s retcode %d \n", node->sSystem, rc);
 		return -1;
 	}
 
-
 	//  "response" cames separatly and asynchron via ELIDrv2App
 	char* payload = NULL;
-	rc = mqtt_receive_msg(RESPONSE_TOPIC, 100L, &payload);
+	char *correlationId = NULL;
+	rc = mqtt_receive_msg(replyTo, 100L, &payload, &correlationId);
+	free(replyTo);
 
-	if (payload) {
-		char* sessionId = NULL;
-		char* text = NULL;
-		parse_payload(payload, &sessionId, &text);
-		printf("sessionId '%s'\n", sessionId);
-		printf("text '%s'\n", text);
-
-		free(sessionId);
-		free(text);
+	if (payload)
+	{
+		if (driverInfo->callback != NULL)
+		{
+			driverInfo->callback(sSysID, (correlationId) ? correlationId : sJobID, payload);
+		}
 		free(payload);
 	}
+
 	return 0;
 }

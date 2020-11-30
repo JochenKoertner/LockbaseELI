@@ -9,7 +9,7 @@ Folgende Schritte müssen gemacht werden um das Entwicklungssystem aufzusetzen.
 Benötigte Software 
 
 XCode 11.3 CommandLines Tools installieren
-(clang version 11.0.0 (clang-1100.0.33.16))
+(clang version 12.0.0 (clang-1200.0.32.2))
 
 `/Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild -version`
 `gcc --version`
@@ -20,16 +20,18 @@ CMake 3.15.6-Darwin installieren
 `cmake --version` 
 
 dotnet core 3.1.0 installieren
+`dotnet --list-sdks` 
 
-Clion Installieren (2019.3.2)
+mono 6.12.0 installieren 
+`mono --version`
 
 NodeJS installieren (v10.16.3)
 `node --version`
 
-yarn installieren (v1.17.3)
+yarn installieren (v1.22.4)
 `yarn --version`
 
-### SourceTree (optional)
+### Fork (optional)
 
 
 
@@ -45,8 +47,8 @@ At first you need to install Chocolatey.
 1. Powershell V6.1.0 win x86  
     `choco install powershell-core`
 
-1. NodeJS V8.12.0 x86  
-    `choco install nodejs --version 8.12.0`
+1. NodeJS V10.16.3  
+    `choco install nodejs --version 10.16.3`
 
 1. Git 2.19.1 32-bit  
     `choco install git`
@@ -68,8 +70,11 @@ At first you need to install Chocolatey.
 1. Powershell V6.1.0 win (64-bit)
     `choco install powershell-core -y`
 
-1. NodeJS V8.12.0 (64-bit)  
+1. NodeJS V10.16.3 (64-bit)  
     `choco install nodejs --version 8.12.0 -y`
+
+1. Yarn V1.22.5 
+    `choco install yarn --version 1.22.5 -y`
 
 1. Git 2.19.1 64-bit  
     `choco install git --version 2.19.1 -y `

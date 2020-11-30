@@ -39,6 +39,7 @@ Start React App for proxy usage on port 3000.
 
 ### Install all packages again in node_modules/
 
+`rm node_modules`
 `yarn install`
 `yarn upgrade`
 
@@ -74,6 +75,8 @@ Change path to `/backend/ui` path.
 ### Windows
 `$Env:ASPNETCORE_ENVIRONMENT = "Development"`
 `$Env:ASPNETCORE_CONTENTROOT = "../../../../../frontend"`
+`dotnet run`
+
 
 
 ## Build Deployment
@@ -88,6 +91,8 @@ This Builds a single executable that don't needs any netcore installed.
 Change path to `/driver/build` path. 
 
 For Mac Build call `../mac-build.sh` 
+
+For Win Build call `../win-build.ps1` 
 
 ## Windows Defender Firewall Regeln scripten 
 

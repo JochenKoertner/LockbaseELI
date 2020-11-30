@@ -24,6 +24,18 @@ Hierfür sind folgende Branches mit einer bestimmten Bedeutung hinterlegt.
 * `feature`  
     Dedizierte Branches um ein Feature zu entwickeln. Wird im Anschluß in `develop` zurückgeführt. Macht eigentlich nur Sinn wenn mit vielen Entwicklern auf oeinem Repository gearbeitet wird oder ein Versuch gestartet wird, bei dem im Vorwege noch nicht klar ist ob und wann dieses in dem `develop` Branch landen soll.
 
+# Configuration 
+
+Ein Repository sollte als erstes mit dem korrekt git-User versehen werden, insbesondere wenn mit verschiedenen Authentifikationen gearbeitet wird. 
+
+Mein Benutzer Name und EMail werden mit folgenden zwei Commands lokal für 
+ein Repositor konfiguriert:
+
+```
+git config user.email "sb@koertner-muth.com"
+git config user.name "Captain Future"
+````
+
 # Git Workflow's
 
 ## Start eines neuen Feature Branch

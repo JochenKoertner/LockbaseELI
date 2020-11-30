@@ -3,7 +3,7 @@ using System.Threading;
 
 namespace Lockbase.CoreDomain
 {
-    public class AtomicValue<T> where T : class
+	public class AtomicValue<T> where T : class
 	{
 		private T state;
 
@@ -16,6 +16,8 @@ namespace Lockbase.CoreDomain
 		{
 			return value.state;
 		}
+
+		public T Value => this.state;
 
 		public void SetValue(Func<T, T> func)
 		{

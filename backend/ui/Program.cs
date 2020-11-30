@@ -1,6 +1,6 @@
 using System;
 using System.IO;
-using ElectronNET.API;
+//using ElectronNET.API;
 using Lockbase.CoreDomain.ValueObjects;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
@@ -17,7 +17,6 @@ namespace ui
 		{
 			CreateHostBuilder(args)
 				.Build()
-				//.LoadSample("sample/ELIApp2Drv.txt")
 				.Run();
 		}
 
@@ -26,18 +25,8 @@ namespace ui
 			.ConfigureWebHostDefaults(webBuilder => webBuilder
 				.UseKestrel()
 				.UseStartup<Startup>()
-				.UseElectron(args)
+			//.UseElectron(args)
 			);
 
-		private static IHost LoadSample(this IHost host, string fileName)
-		{
-			var observer = host.Services.GetService<IObserver<Statement>>();
-			var brokerConfig = host.Services.GetService<IOptions<BrokerConfig>>().Value;
-
-			foreach (var statement in File.ReadAllLines(fileName))
-				observer.OnNext(new Statement(brokerConfig.Topic, 007, statement));
-
-			return host;
-		}
 	}
 }
