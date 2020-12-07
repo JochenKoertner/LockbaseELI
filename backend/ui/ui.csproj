@@ -3,7 +3,7 @@
 	<Import Project="../common.targets" />
 
 	<PropertyGroup>
-		<TargetFramework>netcoreapp3.1</TargetFramework>
+		<TargetFramework>net5</TargetFramework>
 		<AddRazorSupportForMvc>true</AddRazorSupportForMvc>
 		<SpaRoot>..\..\frontend\</SpaRoot>
 		<DefaultItemExcludes>$(DefaultItemExcludes);$(SpaRoot)node_modules\**</DefaultItemExcludes>
