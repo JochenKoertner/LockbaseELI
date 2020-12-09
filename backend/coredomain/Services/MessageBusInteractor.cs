@@ -82,7 +82,7 @@ namespace Lockbase.CoreDomain.Services
 								return DefinedLock(@lock);
 
 							case AccessPolicy accessPolicy:
-								return DefinedAccessPolicy(systemAfter, accessPolicy);
+								return DefinedAccessPolicy(accessPolicy);
 
 							default:
 								throw new ArgumentException(
@@ -165,9 +165,7 @@ namespace Lockbase.CoreDomain.Services
 		private string UpdatedKey(Key key) => $"DK,{key.Id},,,,{(key.ExtData+"\0").ToBase64()}";
 		private string DefinedLock(Lock @lock) => $"DL,{@lock.Id},,,,{@lock.ExtData}";
 		private string UpdatedLock(Lock @lock) => $"DL,{@lock.Id},,,,{(@lock.ExtData+"\0").ToBase64()}";
-		private string DefinedAccessPolicy(LockSystem system, AccessPolicy accessPolicy) =>
-			system.QueryKey(accessPolicy.Id) != (Key)null ?
-				$"AKR,{accessPolicy.Id},OK" : $"ALR,{accessPolicy.Id},OK";
+		private string DefinedAccessPolicy(AccessPolicy accessPolicy) => $"ATR,{accessPolicy.Id},OK";
 		private string RemovedKey(Key key) => $"RKR,{key.Id},OK";
 		private string RemovedLock(Lock @lock) => $"RDR,{@lock.Id},OK";
 
