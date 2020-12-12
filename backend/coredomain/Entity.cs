@@ -4,7 +4,7 @@ namespace Lockbase.CoreDomain
 {
 	public abstract class Entity : IEquatable<Entity>
 	{
-		public string Id { get; private set; }
+		public string Id { get; init; }
 
 		public Entity(string id)
 		{

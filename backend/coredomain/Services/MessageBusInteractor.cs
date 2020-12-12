@@ -25,11 +25,7 @@ namespace Lockbase.CoreDomain.Services
 
 		private readonly ILogger<MessageBusInteractor> logger;
 		private readonly AtomicValue<LockSystem> lockSystem;
-
 		private readonly IObserver<Statement> statementObserver;
-
-		// statementObserver.OnNext(new Statement(TOPIC_RESPONSE, 4711, 
-		// 	$"EK,{@event.Lock.Id},{@event.Key.Id},{@event.IsOpen}"));
 
 		public MessageBusInteractor(AtomicValue<LockSystem> lockSystem, ILoggerFactory loggerFactory,
 			IObserver<Statement> statementObserver, IObservable<Message> messageObservable)
@@ -84,6 +80,9 @@ namespace Lockbase.CoreDomain.Services
 							case AccessPolicy accessPolicy:
 								return DefinedAccessPolicy(accessPolicy);
 
+							case PolicyAssignment assignment:
+								return DefinedAssignment(assignment);
+
 							default:
 								throw new ArgumentException(
 									message: "Missing 'DefinedXXX' operation for entity",
@@ -125,10 +124,10 @@ namespace Lockbase.CoreDomain.Services
 				if (!statements.IsEmpty())
 				{
 					statements
-					   .ToObservable()
-					   .Aggregate((accu, current) => accu + "\n" + current)
-					   .Select(s => new Statement(replyTo, jobId, s))
-					   .Subscribe(this.statementObserver);
+						.ToObservable()
+						.Aggregate((accu, current) => accu + "\n" + current)
+						.Select(s => new Statement(replyTo, jobId, s))
+						.Subscribe(this.statementObserver);
 				}
 			}
 		}
@@ -161,13 +160,24 @@ namespace Lockbase.CoreDomain.Services
 			return lockSystem;
 		}
 
-		private string DefinedKey(Key key) => $"DK,{key.Id},,,,{key.ExtData}";
-		private string UpdatedKey(Key key) => $"DK,{key.Id},,,,{(key.ExtData+"\0").ToBase64()}";
-		private string DefinedLock(Lock @lock) => $"DL,{@lock.Id},,,,{@lock.ExtData}";
-		private string UpdatedLock(Lock @lock) => $"DL,{@lock.Id},,,,{(@lock.ExtData+"\0").ToBase64()}";
-		private string DefinedAccessPolicy(AccessPolicy accessPolicy) => $"ATR,{accessPolicy.Id},OK";
-		private string RemovedKey(Key key) => $"RKR,{key.Id},OK";
-		private string RemovedLock(Lock @lock) => $"RDR,{@lock.Id},OK";
+		private string DefinedKey(Key key)
+			=> $"DK,{key.Id},,,,{key.ExtData}";
+		private string UpdatedKey(Key key)
+			=> $"DK,{key.Id},,,,{(key.ExtData + "\0").ToBase64()}";
+		private string DefinedLock(Lock @lock)
+			=> $"DL,{@lock.Id},,,,{@lock.ExtData}";
+		private string UpdatedLock(Lock @lock)
+			=> $"DL,{@lock.Id},,,,{(@lock.ExtData + "\0").ToBase64()}";
+		private string DefinedAccessPolicy(AccessPolicy accessPolicy)
+			=> $"ATR,{accessPolicy.Id},OK";
+
+		private string DefinedAssignment(PolicyAssignment assignment)
+			=> $"A{assignment.Target.Match(_ => 'L', _ => 'K')}R,{assignment.Target.Match(l => l.Master.Id, k => k.Master.Id)},OK";
+
+		private string RemovedKey(Key key)
+			=> $"RKR,{key.Id},OK";
+		private string RemovedLock(Lock @lock)
+			=> $"RDR,{@lock.Id},OK";
 
 		private IEnumerable<string> FormatKey(Key key)
 		{

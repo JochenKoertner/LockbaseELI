@@ -2,15 +2,21 @@ using System;
 using System.Collections.Immutable;
 using System.Collections.Generic;
 using System.Linq;
+using System.Diagnostics.CodeAnalysis;
 using Lockbase.CoreDomain.Entities;
 using Lockbase.CoreDomain.ValueObjects;
 using Lockbase.CoreDomain.Extensions;
 using Lockbase.CoreDomain.Services;
 using Lockbase.CoreDomain.Enumerations;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Lockbase.CoreDomain.Aggregates
 {
+	using Entities = IEnumerable<Entity>;
+	using Keys = IEnumerable<Key>;
+	using Locks = IEnumerable<Lock>;
+	using AccessPolicies = IEnumerable<AccessPolicy>;
+	using PolicyAssignments = IEnumerable<PolicyAssignment>;
+
 	public class LockSystem : IEquatable<LockSystem>
 	{
 		public static LockSystem Create(Id id) => new LockSystem(id);
@@ -291,11 +297,10 @@ namespace Lockbase.CoreDomain.Aggregates
 
 		#endregion
 
-		public IEnumerable<Key> Keys => this.keys.Values;
-		public IEnumerable<Lock> Locks => this.locks.Values;
-		public IEnumerable<AccessPolicy> Policies => this.policies.Values;
-		public IEnumerable<PolicyAssignment> Assignments => this.assignments;
-
+		public Keys Keys => this.keys.Values;
+		public Locks Locks => this.locks.Values;
+		public AccessPolicies Policies => this.policies.Values;
+		public PolicyAssignments Assignments => this.assignments;
 
 		#region Query
 
@@ -303,7 +308,7 @@ namespace Lockbase.CoreDomain.Aggregates
 		public Lock QueryLock(string id) => this.locks.GetValueOrDefault(id);
 		public AccessPolicy QueryPolicy(string id) => this.policies.GetValueOrDefault(id);
 
-		public IEnumerable<AccessPolicy> QueryPolicies(Lock @lock, Key key) =>
+		public AccessPolicies QueryPolicies(Lock @lock, Key key) =>
 			this.assignments
 				.Where(assignment => assignment.Match(@lock, key))
 				.Select(assignment => assignment.Source);
@@ -323,15 +328,16 @@ namespace Lockbase.CoreDomain.Aggregates
 				assignments.Equals(other.assignments);
 		}
 
-		public static IEnumerable<Entity> CreatedEntities(LockSystem preceding, LockSystem present)
+		public static Entities CreatedEntities(LockSystem preceding, LockSystem present)
 		{
 			var newKeys = present.Keys.Except(preceding.Keys).Cast<Entity>();
 			var newLocks = present.Locks.Except(preceding.Locks).Cast<Entity>();
 			var newPolicies = present.Policies.Except(preceding.Policies).Cast<Entity>();
-			return newKeys.Concat(newLocks).Concat(newPolicies).ToList();
+			var newAssignments = present.Assignments.Except(preceding.Assignments).Cast<Entity>();
+			return newKeys.Concat(newLocks).Concat(newPolicies).Concat(newAssignments).ToList();
 		}
 
-		public static IEnumerable<Entity> UpdatedEntities(LockSystem preceding, LockSystem present)
+		public static Entities UpdatedEntities(LockSystem preceding, LockSystem present)
 		{
 			IEqualityComparer<Key> keyComparer = new KeyComparer();
 			var updatedKeys = present.Keys.Intersect(preceding.Keys).Except(preceding.Keys.Intersect(present.Keys), keyComparer).Cast<Entity>();
@@ -342,7 +348,7 @@ namespace Lockbase.CoreDomain.Aggregates
 			return updatedKeys.Concat(updatedLocks).ToList();
 		}
 
-		public static IEnumerable<Entity> RemovedEntities(LockSystem preceding, LockSystem present)
+		public static Entities RemovedEntities(LockSystem preceding, LockSystem present)
 		{
 			var removedKeys = preceding.Keys.Except(present.Keys).Cast<Entity>();
 			var removedLocks = preceding.Locks.Except(present.Locks).Cast<Entity>();
