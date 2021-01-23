@@ -1,8 +1,10 @@
-
 using System;
+using System.Diagnostics;
+using Lockbase.CoreDomain.Extensions;
 
 namespace Lockbase.CoreDomain.ValueObjects
 {
+	[DebuggerDisplay("{debugDescription,nq} (#{JobId,nq},{Topic,nq})")]
 
 	public readonly struct Statement
 	{
@@ -18,5 +20,8 @@ namespace Lockbase.CoreDomain.ValueObjects
 				statement.Substring(statement.IndexOf(',') + 1));
 
 		public string Message => $"{Head},{Tail}";
+
+		private string debugDescription => String.Join(',', new[]{this.Head, this.Tail.Shorten()});
+
 	}
 }

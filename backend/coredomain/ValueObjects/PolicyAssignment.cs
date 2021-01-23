@@ -6,15 +6,13 @@ using Lockbase.CoreDomain.Entities;
 
 namespace Lockbase.CoreDomain.ValueObjects
 {
-
-
-	public class Assignment<TMaster,TDetail> : IEquatable<Assignment<TMaster,TDetail>> 
+	public class Assignment<TMaster, TDetail> : IEquatable<Assignment<TMaster, TDetail>>
 		where TMaster : IEquatable<TMaster>
-		where TDetail : IEquatable<TDetail> 
+		where TDetail : IEquatable<TDetail>
 	{
-		public readonly TMaster Master;
+		public TMaster Master { get; init; }
 
-		public readonly ISet<TDetail> Details;
+		public ISet<TDetail> Details { get; init; }
 
 		public Assignment(TMaster master, IEnumerable<TDetail> details)
 		{
@@ -22,24 +20,26 @@ namespace Lockbase.CoreDomain.ValueObjects
 			Details = details.ToImmutableHashSet();
 		}
 
-		public bool Equals(Assignment<TMaster,TDetail> other)
+		public bool Equals(Assignment<TMaster, TDetail> other)
 		{
 			if (other == null)
 				return false;
 
 			if (this.Master.Equals(other.Master) && this.Details.SetEquals(other.Details))
 				return true;
-			 else
-				 return false;
+			else
+				return false;
 		}
 
-		public override int GetHashCode() {
+		public override int GetHashCode()
+		{
 			return this.Master.GetHashCode() * 13 + this.Details.GetHashCode();
 		}
 	}
-	public class LockAssignment : Assignment<Lock,Key>, IEquatable<LockAssignment>  {
-		
-		public LockAssignment(Lock @lock, IEnumerable<Key> keys):base(@lock, keys) 
+	public class LockAssignment : Assignment<Lock, Key>, IEquatable<LockAssignment>
+	{
+
+		public LockAssignment(Lock @lock, IEnumerable<Key> keys) : base(@lock, keys)
 		{
 		}
 
@@ -48,10 +48,11 @@ namespace Lockbase.CoreDomain.ValueObjects
 			return base.Equals(other);
 		}
 	}
-	
-	public class KeyAssignment : Assignment<Key,Lock>, IEquatable<KeyAssignment> {
-		
-		public KeyAssignment(Key key, IEnumerable<Lock> locks):base(key, locks) 
+
+	public class KeyAssignment : Assignment<Key, Lock>, IEquatable<KeyAssignment>
+	{
+
+		public KeyAssignment(Key key, IEnumerable<Lock> locks) : base(key, locks)
 		{
 		}
 
@@ -60,23 +61,26 @@ namespace Lockbase.CoreDomain.ValueObjects
 			return base.Equals(other);
 		}
 	}
-	
 
-	public readonly struct PolicyAssignment : IEquatable<PolicyAssignment> {
-			
-		public readonly AccessPolicy Source;
-		public readonly Either<LockAssignment,KeyAssignment> Target;
+	public class PolicyAssignment : Entity, IEquatable<PolicyAssignment>
+	{
 
-		public PolicyAssignment(AccessPolicy source, Either<LockAssignment,KeyAssignment> target) 
-			=> (Source, Target) = (source,target);
+		public AccessPolicy Source { get; init; }
+		public Either<LockAssignment, KeyAssignment> Target { get; init; }
+
+		public PolicyAssignment(AccessPolicy source, Either<LockAssignment, KeyAssignment> target) : base(source.Id)
+		{
+			Source = source;
+			Target = target;
+		}
 
 		public bool Equals(PolicyAssignment other)
 		{
 			return (this.Source.Equals(other.Source) && this.Target.Equals(other.Target));
 		}
 
-		public bool Match(Lock @lock, Key key) => Target.Match( 
-				lockAssignment => lockAssignment.Master == @lock && lockAssignment.Details.Contains(key), 
-				keyAssignment => keyAssignment.Master == key && keyAssignment.Details.Contains(@lock) );
+		public bool Match(Lock @lock, Key key) => Target.Match(
+				lockAssignment => lockAssignment.Master == @lock && lockAssignment.Details.Contains(key),
+				keyAssignment => keyAssignment.Master == key && keyAssignment.Details.Contains(@lock));
 	}
 }
