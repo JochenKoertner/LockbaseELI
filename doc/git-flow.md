@@ -34,7 +34,7 @@ ein Repositor konfiguriert:
 ```
 git config user.email "sb@koertner-muth.com"
 git config user.name "Captain Future"
-````
+```
 
 # Git Workflow's
 
