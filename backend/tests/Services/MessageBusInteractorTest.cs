@@ -1,7 +1,5 @@
 using System;
-using System.Collections.Immutable;
 using System.Reactive;
-using System.Text;
 using FakeItEasy;
 using Lockbase.CoreDomain;
 using Lockbase.CoreDomain.Aggregates;
@@ -12,7 +10,6 @@ using Lockbase.Tests.CoreDomain;
 using Microsoft.Extensions.Logging;
 using Microsoft.Reactive.Testing;
 using Xunit;
-
 
 namespace Lockbase.Tests.Services
 {
@@ -33,7 +30,8 @@ namespace Lockbase.Tests.Services
 		{
 			// Arrange 
 			var source = scheduler.CreateColdObservable(
-				OnNext(010, new Message() { text = "LD", correlationId = 4711, replyTo = nameof(LdOnEmptySystem) }),
+				OnNext(010, (MessageBuilder.Default + "LD")
+					.BuildMessage(4711, nameof(LdOnEmptySystem))),
 				OnCompleted<Message>(020)
 			);
 
@@ -43,7 +41,7 @@ namespace Lockbase.Tests.Services
 			var messageObserver = this.scheduler.Start(() => source, 0, 0, TimeSpan.FromSeconds(5).Ticks);
 
 			// Assert 
-			var expected = new Statement(nameof(LdOnEmptySystem), 4711, "LDR,OK");
+			var expected = (MessageBuilder.Default + "LDR,OK").BuildStatement(4711, nameof(LdOnEmptySystem));
 			ReactiveAssert.AreElementsEqual(
 				new Recorded<Notification<Statement>>[] { OnNext(010, expected), OnCompleted<Statement>(010) },
 				this.target.Messages);
@@ -54,10 +52,10 @@ namespace Lockbase.Tests.Services
 		{
 			// Arrange 
 			var source = scheduler.CreateColdObservable(
-				OnNext(010, (MessageBuilder.Default 
-					+ "CK,APP,103-1" 
+				OnNext(010, (MessageBuilder.Default
+					+ "CK,APP,103-1"
 					+ "CL,APP,105")
-					.Build( 4711, nameof(CkCLOnEmptySystem))),
+					.BuildMessage(4711, nameof(CkCLOnEmptySystem))),
 				OnCompleted<Message>(020)
 			);
 
@@ -66,9 +64,11 @@ namespace Lockbase.Tests.Services
 			// Act
 			var messageObserver = this.scheduler.Start(() => source, 0, 0, TimeSpan.FromSeconds(5).Ticks);
 
-			// Assert DK,040000jbookls,,,,\nDL,040000rbookls,,,,\nDK,040000jbookls,,,,AA==
-			var expected = new Statement(nameof(CkCLOnEmptySystem), 4711,
-				"DK,040000jbookls,,,,\nDL,040000rbookls,,,,");
+			// Assert
+			var expected = (MessageBuilder.Default
+				+ "DK,040000jbookls,,,,"
+				+ "DL,040000rbookls,,,,")
+				.BuildStatement(4711, nameof(CkCLOnEmptySystem));
 			ReactiveAssert.AreElementsEqual(
 				new Recorded<Notification<Statement>>[] {
 					OnNext(010, expected),
@@ -79,18 +79,17 @@ namespace Lockbase.Tests.Services
 		[Fact]
 		public void DKDLOnSystem()
 		{
-			// Arrange 
-
+			// Arrange
 			var lockSystem = CreateLockSystem();
 			lockSystem.SetValue(sys => sys
-			   .DefineStatement("CK,APP,103-1")
-			   .DefineStatement("CL,APP,105"));
+				.DefineStatement("CK,APP,103-1")
+				.DefineStatement("CL,APP,105"));
 
 			var source = scheduler.CreateColdObservable(
-				OnNext(010, (MessageBuilder.Default 
+				OnNext(010, (MessageBuilder.Default
 					+ $"DK,040000jbookls,,,{"103-1, Fender, Klaus\0".ToBase64()}"
 					+ $"DL,040000rbookls,,,{"105, Büro Vertrieb 2\0".ToBase64()}")
-					.Build(4711,nameof(DKDLOnSystem))
+					.BuildMessage(4711, nameof(DKDLOnSystem))
 				),
 				OnCompleted<Message>(020)
 			);
@@ -100,9 +99,51 @@ namespace Lockbase.Tests.Services
 			// Act
 			var messageObserver = this.scheduler.Start(() => source, 0, 0, TimeSpan.FromSeconds(5).Ticks);
 
-			// Assert 
-			var expected = new Statement(nameof(DKDLOnSystem), 4711,
-				$"DK,040000jbookls,,,,{"103-1, Fender, Klaus\0".ToBase64()}\nDL,040000rbookls,,,,{"105, Büro Vertrieb 2\0".ToBase64()}");
+			// Assert
+			var expected = (MessageBuilder.Default
+				+ $"DK,040000jbookls,,,,{"103-1, Fender, Klaus\0".ToBase64()}"
+				+ $"DL,040000rbookls,,,,{"105, Büro Vertrieb 2\0".ToBase64()}")
+				.BuildStatement(4711, nameof(DKDLOnSystem));
+
+			ReactiveAssert.AreElementsEqual(
+				new Recorded<Notification<Statement>>[] {
+					OnNext(010, expected),
+					OnCompleted<Statement>(010) },
+				this.target.Messages);
+		}
+
+		[Fact]
+		public void ATAKOnSystem()
+		{
+			// Arrange
+			var lockSystem = CreateLockSystem();
+			lockSystem.SetValue(sys => sys
+				.DefineStatement("CK,APP,103-1")
+				.DefineStatement("CL,APP,105")
+				.DefineStatement($"DK,040000jbookls,,,{"103-1, Fender, Klaus\0".ToBase64()}")
+				.DefineStatement($"DL,040000rbookls,,,{"105, Büro Vertrieb 2\0".ToBase64()}")
+			);
+
+			var source = scheduler.CreateColdObservable(
+				OnNext(010, (MessageBuilder.Default
+					+ $"AT,000002oe1g25o,,20190212T080000Z/28800/DW(Mo+Tu+We+Th+Fr)/20190329T160000Z,20190401T070000Z/28800/DW(Mo+Tu+We+Th+Fr)/20191025T150000Z,20191028T080000Z/28800/DW(Mo+Tu+We+Th+Fr)/20200211T160000Z"
+					+ $"AK,040000jbookls,000002oe1g25o,040000rbookls")
+					.BuildMessage(4711, nameof(ATAKOnSystem))
+				),
+				OnCompleted<Message>(020)
+			);
+
+			var _ = new MessageBusInteractor(lockSystem, CreateLoggerFactory(), this.target, source);
+
+			// Act
+			var messageObserver = this.scheduler.Start(() => source, 0, 0, TimeSpan.FromSeconds(5).Ticks);
+
+			// Assert
+			var expected = (MessageBuilder.Default
+				+ "ATR,000002oe1g25o,OK"
+				+ "AKR,040000jbookls,OK")
+				.BuildStatement(4711, nameof(ATAKOnSystem));
+
 			ReactiveAssert.AreElementsEqual(
 				new Recorded<Notification<Statement>>[] {
 					OnNext(010, expected),
@@ -121,22 +162,5 @@ namespace Lockbase.Tests.Services
 			A.CallTo(() => loggerFactory.CreateLogger(A<string>._)).Returns(logger);
 			return loggerFactory;
 		}
-
-		private class MessageBuilder {
-			private readonly ImmutableList<string> messages;
-
-			public static MessageBuilder Default => new MessageBuilder(ImmutableList<string>.Empty);
-
-			private MessageBuilder(ImmutableList<string> messages) {
-				this.messages=messages;
-			}
-
-			public MessageBuilder Add(string msg) => new MessageBuilder(this.messages.Add(msg));
-
-			public static MessageBuilder operator +(MessageBuilder a, string b) => a.Add(b);
-			
-			public Message Build(int correlationId, string replyTo) 
-			=> new Message() { text = String.Join("\n", this.messages), correlationId = correlationId, replyTo = replyTo };
-		} 
 	}
 }
