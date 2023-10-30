@@ -69,8 +69,8 @@
 		"caniuse-lite": "^1.0.30001114",
 		"electron-packager": "^13.1.1",
 		"jquery": "^3.4.1",
-		"json5": "1.0.1",
-		"node-sass": "^4.14.1",
+		"json5": "2.2.2",
+		"node-sass": "^7.0.0",
 		"react-scripts": "^3.4.3",
 		"typescript": "^3.9.7",
 		"yarn-deduplicate": "^2.1.1"
